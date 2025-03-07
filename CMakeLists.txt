@@ -1,4 +1,4 @@
-﻿cmake_minimum_required(VERSION 3.29.5)
+﻿cmake_minimum_required(VERSION 3.30.5)
 
 # Ensure install path is set correctly
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
