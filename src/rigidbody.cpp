@@ -12,6 +12,7 @@
 using std::cout;
 using std::string;
 using std::to_string;
+using glm::max;
 
 namespace ElypsoPhysics
 {
@@ -50,43 +51,25 @@ namespace ElypsoPhysics
 	{
 		//static objects cant move
 		if (!isDynamic) return;
+		//objects with no mass cant move
+		if (mass <= 0.0f) return;
 
 		WakeUp();
 
 		vec3 acceleration = force / mass;
 		velocity += acceleration;
-
-/*
-#ifdef NDEBUG
-#else
-		uint32_t index = handle.index;
-		uint32_t gen = handle.generation;
-		string forceValue = to_string(force.x) + ", " + to_string(force.y) + ", " + to_string(force.z);
-		string message = "[ELYPSO-PHYSICS | SUCCESS] Applied force '" + forceValue + "' to rigidbody (" + to_string(index) + ", " + to_string(gen) + ")!\n";
-		cout << message;
-#endif
-*/
 	}
 
 	void RigidBody::ApplyImpulse(const vec3& impulse)
 	{
 		//static objects cant move
 		if (!isDynamic) return;
+		//objects with no mass cant move
+		if (mass <= 0.0f) return;
 
 		WakeUp();
 
 		velocity += impulse / mass;
-
-/*
-#ifdef NDEBUG
-#else
-		uint32_t index = handle.index;
-		uint32_t gen = handle.generation;
-		string impulseValue = to_string(impulse.x) + ", " + to_string(impulse.y) + ", " + to_string(impulse.z);
-		string message = "[ELYPSO-PHYSICS | SUCCESS] Applied impulse '" + impulseValue + "' to rigidbody (" + to_string(index) + ", " + to_string(gen) + ")!\n";
-		cout << message;
-#endif
-*/
 	}
 
 	void RigidBody::ApplyTorque(const vec3& torque)
@@ -97,17 +80,6 @@ namespace ElypsoPhysics
 		WakeUp();
 
 		angularVelocity += torque / inertiaTensor;
-
-/*
-#ifdef NDEBUG
-#else
-		uint32_t index = handle.index;
-		uint32_t gen = handle.generation;
-		string torqueValue = to_string(torque.x) + ", " + to_string(torque.y) + ", " + to_string(torque.z);
-		string message = "[ELYPSO-PHYSICS | SUCCESS] Applied torque '" + torqueValue + "' to rigidbody (" + to_string(index) + ", " + to_string(gen) + ")!\n";
-		cout << message;
-#endif
-*/
 	}
 
 	void RigidBody::ComputeInertiaTensor(const vec3& scale)
@@ -131,6 +103,46 @@ namespace ElypsoPhysics
 			float inertia = (2.0f / 5.0f) * mass * (sphere->radius * sphere->radius);
 			inertiaTensor = vec3(inertia);
 		}
+	}
+
+	void RigidBody::UpdateCenterOfGravity()
+	{
+		if (!collider 
+			|| collider->type != ColliderType::BOX)
+		{
+			centerOfGravity = vec3(0.0f);
+			return;
+		}
+
+		const BoxCollider* box = static_cast<const BoxCollider*>(collider);
+		vec3 halfExtents = box->halfExtents;
+
+		//find the largest axis
+		float maxExtent = 
+			max(halfExtents.x, 
+			max(halfExtents.y, 
+				halfExtents.z));
+
+		//wide along X (horizontal, sideways object)
+		if (halfExtents.x > halfExtents.y 
+			&& halfExtents.x > halfExtents.z)
+		{
+			centerOfGravity = vec3(halfExtents.x * 0.2f, 0.0f, 0.0f);
+		}
+		//tall along Y (standing vertical object)
+		else if (halfExtents.y > halfExtents.x 
+			&& halfExtents.y > halfExtents.z)
+		{
+			centerOfGravity = vec3(0.0f, -halfExtents.y * 0.2f, 0.0f);
+		}
+		//deep along Z (lying forward/backward)
+		else if (halfExtents.z > halfExtents.x 
+			&& halfExtents.z > halfExtents.y)
+		{
+			centerOfGravity = vec3(0.0f, 0.0f, halfExtents.z * 0.2f);
+		}
+		//almost uniform cube shape, keep CoG centered
+		else centerOfGravity = vec3(0.0f);
 	}
 
 	void RigidBody::SetCollider(

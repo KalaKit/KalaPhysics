@@ -12,3 +12,7 @@
 - global gravity, per-rigidbody gravity toggle, dynamic state toggle and gravity factor float
 - automatic sleep-wake system to efficiently handle system resources
 - automatic resource cleanup if physics library goes out of scope
+
+0.2:
+
+- replaced AABB collision with OBBvOBB

@@ -36,9 +36,8 @@ namespace ElypsoPhysics
 	}
 
 	PhysicsWorld::PhysicsWorld() :
-		gravity(0.0f, -9.81f, 0.0f),
-		isInitialized(false) {
-	}
+		gravity(),
+		isInitialized(false) {}
 	PhysicsWorld::~PhysicsWorld()
 	{
 		if (!isInitialized)
@@ -221,6 +220,8 @@ namespace ElypsoPhysics
 					continue;
 				}
 
+				bodyA.centerOfGravity = vec3(0.0f);
+
 				float maxDistance = bodyA.collider->boundingRadius + bodyB.collider->boundingRadius;
 				if (length(bodyA.combinedPosition - bodyB.combinedPosition) > maxDistance) continue;
 
@@ -236,7 +237,6 @@ namespace ElypsoPhysics
 						useOBB = true;
 					}
 				}
-
 				
 				if (useOBB)
 				{
@@ -266,6 +266,8 @@ namespace ElypsoPhysics
 
 			if (!body.isDynamic) continue;
 
+			body.UpdateCenterOfGravity();
+
 			if (body.useGravity)
 			{
 				vec3 gravityImpulse = (gravity * body.gravityFactor) * deltaTime;
@@ -273,6 +275,19 @@ namespace ElypsoPhysics
 			}
 
 			vec3 futurePosition = body.combinedPosition + body.velocity * deltaTime;
+
+			//predict future rotation using angular velocity
+			quat angularRotation = quat(
+				0,
+				body.angularVelocity.x,
+				body.angularVelocity.y,
+				body.angularVelocity.z)
+				* 0.5f * deltaTime;
+
+			quat futureRotation = normalize(
+				body.combinedRotation 
+				+ angularRotation 
+				* body.combinedRotation);
 
 			//check future collision before applying movement
 			for (auto& otherBodyPtr : bodies)
@@ -283,7 +298,7 @@ namespace ElypsoPhysics
 
 				if (!otherBody.collider) continue;
 
-				if (CollisionDetection::CheckOBBCollisionAt(body, futurePosition, otherBody))
+				if (CollisionDetection::CheckOBBCollisionAt(body, futurePosition, otherBody, deltaTime))
 				{
 					body.velocity = vec3(0.0f);
 					break;
@@ -296,23 +311,36 @@ namespace ElypsoPhysics
 			//apply angular velocity
 			if (length(body.angularVelocity) > 0.001f)
 			{
-				quat angularRotation = quat(
-					0,
-					body.angularVelocity.x,
-					body.angularVelocity.y,
-					body.angularVelocity.z)
-					* 0.5f
-					* deltaTime;
-
-				body.combinedRotation += angularRotation * body.combinedRotation;
-				body.combinedRotation = normalize(body.combinedRotation);
+				body.combinedRotation = futureRotation;
 			}
 
-			float linearDampingFactor = pow(0.99f, deltaTime * 60.0f);
-			float angularDampingFactor = pow(angularDamping, deltaTime * 60.0f);
+			body.tiltTimer += deltaTime;
+			if (body.tiltTimer >= 0.05f) 
+			{
+				if (CanTilt(body)) TiltBody(body);
+				body.tiltTimer = 0.0f;
+			}
 
+			//dampen angular velocity over time
+			float constantDampingFactor = 0.95f;
+			body.angularVelocity *= pow(constantDampingFactor, deltaTime * 60.0f);
+
+			//small damping at close to face
+			if (body.angleToFlat >= 2.0f 
+				&& body.angleToFlat < 15.0f) 
+			{
+				body.angularVelocity *= 0.90f;
+			}
+
+			//apply small residual damping if the rotation is minimal
+			if (length(body.angularVelocity) < 0.05f)
+			{
+				body.angularVelocity *= 0.85f;
+			}
+
+			//apply linear damping (reduces endless sliding)
+			float linearDampingFactor = pow(0.99f, deltaTime * 60.0f);
 			body.velocity *= linearDampingFactor;
-			body.angularVelocity *= angularDampingFactor;
 
 			if (length(body.velocity) < body.sleepThreshold
 				&& length(body.angularVelocity) < body.sleepThreshold)
@@ -338,6 +366,20 @@ namespace ElypsoPhysics
 		const vec3& contactPoint,
 		float penetration)
 	{
+		//world space center of gravity
+		vec3 worldCoGA =
+			bodyA.combinedPosition
+			+ mat3_cast(bodyA.combinedRotation)
+			* bodyA.centerOfGravity;
+		vec3 worldCoGB =
+			bodyB.combinedPosition
+			+ mat3_cast(bodyB.combinedRotation)
+			* bodyB.centerOfGravity;
+
+		//constant offsets based on world cog
+		vec3 rA = contactPoint - worldCoGA;
+		vec3 rB = contactPoint - worldCoGB;
+
 		//compute relative velocity
 		vec3 relativeVelocity = bodyB.velocity - bodyA.velocity;
 
@@ -349,10 +391,6 @@ namespace ElypsoPhysics
 
 		//combute combied restitution (take the minimum)
 		float restitution = clamp(min(bodyA.restitution, bodyB.restitution), 0.0f, 0.5f);
-
-		//compute contact offsets
-		vec3 rA = contactPoint - bodyA.combinedPosition;
-		vec3 rB = contactPoint - bodyB.combinedPosition;
 
 		//compute inverse mass and inverse inertia tensors
 		float invMassA = (bodyA.mass > 0.0f) ? (1.0f / bodyA.mass) : 0.0f;
@@ -382,23 +420,7 @@ namespace ElypsoPhysics
 		bodyA.ApplyImpulse(-impulse);
 		bodyB.ApplyImpulse(impulse);
 
-		vec3 torqueImpulseA = cross(rA, impulse);
-		vec3 torqueImpulseB = cross(rB, impulse);
-
-		bodyA.ApplyTorque(-torqueImpulseA);
-		bodyB.ApplyTorque(torqueImpulseB);
-
-		//clamp small residual angular velocities
-		if (length(bodyA.angularVelocity) < 0.01f)
-		{
-			bodyA.ApplyTorque(-bodyA.angularVelocity * bodyA.inertiaTensor);
-		}
-
-		if (length(bodyB.angularVelocity) < 0.01f)
-		{
-			bodyB.ApplyTorque(-bodyB.angularVelocity * bodyB.inertiaTensor);
-		}
-
+		//position correction for penetration
 		float corrected = max(0.0f, penetration - minPenetrationThreshold);
 		if (corrected > 0.0f)
 		{
@@ -455,12 +477,6 @@ namespace ElypsoPhysics
 		bodyA.ApplyImpulse(-frictionImpulse);
 		bodyB.ApplyImpulse(frictionImpulse);
 
-		vec3 torqueA = cross(rA, -frictionImpulse);
-		vec3 torqueB = cross(rB, frictionImpulse);
-
-		bodyA.ApplyTorque(torqueA);
-		bodyB.ApplyTorque(torqueB);
-
 		if (length(bodyA.velocity) < 0.01f)
 		{
 			bodyA.angularVelocity *= lowAngularVelocityFactor;
@@ -469,6 +485,81 @@ namespace ElypsoPhysics
 		if (length(bodyB.velocity) < 0.01f)
 		{
 			bodyB.angularVelocity *= lowAngularVelocityFactor;
+		}
+	}
+
+	bool PhysicsWorld::CanTilt(RigidBody& body)
+	{
+		//calculate the six candidate directions (in world space)
+		vec3 possibleUps[6] = 
+		{
+			body.combinedRotation * vec3(0, 1, 0),
+			body.combinedRotation * vec3(0, -1, 0),
+			body.combinedRotation * vec3(1, 0, 0),
+			body.combinedRotation * vec3(-1, 0, 0),
+			body.combinedRotation * vec3(0, 0, 1),
+			body.combinedRotation * vec3(0, 0, -1)
+		};
+
+		vec3 bestUp = possibleUps[0];
+		for (int i = 1; i < 6; i++) 
+		{
+			if (abs(dot(possibleUps[i], vec3(0, 1, 0))) 
+				> abs(dot(bestUp, vec3(0, 1, 0)))) 
+			{
+				bestUp = possibleUps[i];
+			}
+		}
+
+		body.closestUp = bestUp;
+
+		//calculate the angle difference in degrees between the best candidate and world up
+		float angleDiff = acos(
+			clamp(dot(bestUp, vec3(0, 1, 0)), -1.0f, 1.0f)) 
+			* (180.0f / 3.14159f);
+
+		return angleDiff > 1.0f;
+	}
+
+	void PhysicsWorld::TiltBody(RigidBody& body)
+	{
+		//get tilt axis
+		vec3 tiltAxis = normalize(cross(body.closestUp, vec3(0, 1, 0)));
+
+		//if tiltAxis is too small, set a default rotation axis (prevents divide-by-zero issues)
+		if (length(tiltAxis) < 1e-5f)
+		{
+			tiltAxis = vec3(1, 0, 0);
+			cout << "Warning: Small tilt axis detected, using default (1,0,0)\n";
+		}
+
+		float upAlignment = clamp(fabs(dot(body.closestUp, vec3(0, 1, 0))), 0.0f, 1.0f);
+		body.angleToFlat = acos(upAlignment) * (180.0f / 3.14159f);
+		cout << "Clamped Up Alignment: " << upAlignment
+			<< " | Angle to Flat: " << body.angleToFlat << "\n";
+
+		float correctionScale = clamp(body.angleToFlat / 15.0f, 0.0f, 1.0f);
+		vec3 tiltTorque = tiltAxis * correctionScale * 5.0f;
+
+		//moderate correction
+		if (body.angleToFlat >= 15.0f)
+		{
+			body.ApplyTorque(tiltTorque);
+			cout << "tilt a\n";
+		}
+		//faster correction
+		else if (body.angleToFlat >= 2.0f)
+		{
+			body.ApplyTorque(tiltTorque * 1.25f);
+			cout << "tilt b\n";
+		}
+		//stop rotation
+		else if (body.angleToFlat < 2.0f
+			     && length(body.angularVelocity) < 0.1f)
+		{
+			body.angularVelocity = vec3(0.0f);
+			body.combinedRotation = normalize(body.combinedRotation);
+			cout << "tilt snap\n";
 		}
 	}
 }
