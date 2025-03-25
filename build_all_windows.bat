@@ -17,10 +17,10 @@ if exist "%BUILD_DEBUG%" rmdir /S /Q "%BUILD_DEBUG%"
 cmd /c "build_windows_release.bat"
 cmd /c "build_windows_debug.bat"
 
-set "ORIGIN_RELEASE_DLL=%INSTALL_RELEASE%\bin\ElypsoPhysics.dll"
-set "ORIGIN_RELEASE_LIB=%INSTALL_RELEASE%\lib\ElypsoPhysics.lib"
-set "ORIGIN_DEBUG_DLL=%INSTALL_DEBUG%\bin\ElypsoPhysicsD.dll"
-set "ORIGIN_DEBUG_LIB=%INSTALL_DEBUG%\lib\ElypsoPhysicsD.lib"
+set "ORIGIN_RELEASE_DLL=%INSTALL_RELEASE%\bin\KalaPhysics.dll"
+set "ORIGIN_RELEASE_LIB=%INSTALL_RELEASE%\lib\KalaPhysics.lib"
+set "ORIGIN_DEBUG_DLL=%INSTALL_DEBUG%\bin\KalaPhysicsD.dll"
+set "ORIGIN_DEBUG_LIB=%INSTALL_DEBUG%\lib\KalaPhysicsD.lib"
 set "ORIGIN_HEADER1=%INPUT_ROOT%\install-release\include\collider.hpp"
 set "ORIGIN_HEADER2=%INPUT_ROOT%\install-release\include\collisiondetection.hpp"
 set "ORIGIN_HEADER3=%INPUT_ROOT%\install-release\include\gameobjecthandle.hpp"
@@ -73,7 +73,7 @@ if not exist "%ORIGIN_HEADER5%" (
 	exit /b 1
 )
 
-set "TARGET_ROOT=%INPUT_ROOT%..\Elypso-engine\_external_shared\elypsophysics"
+set "TARGET_ROOT=%INPUT_ROOT%..\Elypso-engine\_external_shared\KalaPhysics"
 
 if not exist "%TARGET_ROOT%" (
 	echo Failed to find target root from '%TARGET_ROOT%'!
@@ -81,10 +81,10 @@ if not exist "%TARGET_ROOT%" (
 	exit /b 1
 )
 
-set "TARGET_RELEASE_DLL=%TARGET_ROOT%\release\ElypsoPhysics.dll"
-set "TARGET_RELEASE_LIB=%TARGET_ROOT%\release\ElypsoPhysics.lib"
-set "TARGET_DEBUG_DLL=%TARGET_ROOT%\debug\ElypsoPhysicsD.dll"
-set "TARGET_DEBUG_LIB=%TARGET_ROOT%\debug\ElypsoPhysicsD.lib"
+set "TARGET_RELEASE_DLL=%TARGET_ROOT%\release\KalaPhysics.dll"
+set "TARGET_RELEASE_LIB=%TARGET_ROOT%\release\KalaPhysics.lib"
+set "TARGET_DEBUG_DLL=%TARGET_ROOT%\debug\KalaPhysicsD.dll"
+set "TARGET_DEBUG_LIB=%TARGET_ROOT%\debug\KalaPhysicsD.lib"
 set "TARGET_HEADER1=%TARGET_ROOT%\collider.hpp"
 set "TARGET_HEADER2=%TARGET_ROOT%\collisiondetection.hpp"
 set "TARGET_HEADER3=%TARGET_ROOT%\gameobjecthandle.hpp"
@@ -106,7 +106,7 @@ copy /Y "%ORIGIN_HEADER3%" "%TARGET_HEADER3%"
 copy /Y "%ORIGIN_HEADER4%" "%TARGET_HEADER4%"
 copy /Y "%ORIGIN_HEADER5%" "%TARGET_HEADER5%"
 
-echo Successfully installed ElypsoPhysics!
+echo Successfully installed KalaPhysics!
 
 pause
 exit /b 0

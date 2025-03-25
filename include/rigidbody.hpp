@@ -6,13 +6,13 @@
 #pragma once
 
 #ifdef _WIN32
-	#ifdef PHYSICS_DLL_EXPORT
-		#define PHYSICS_API __declspec(dllexport)
+	#ifdef KALAPHYSICS_DLL_EXPORT
+		#define KALAPHYSICS_API __declspec(dllexport)
 	#else
-		#define PHYSICS_API __declspec(dllimport)
+		#define KALAPHYSICS_API __declspec(dllimport)
 	#endif
 #else
-	#define PHYSICS_API
+	#define KALAPHYSICS_API
 #endif
 
 //external
@@ -23,12 +23,12 @@
 #include "gameobjecthandle.hpp"
 #include "collider.hpp"
 
-namespace ElypsoPhysics
+namespace KalaKit
 {
 	using glm::vec3;
 	using glm::quat;
 
-	class PHYSICS_API RigidBody
+	class KALAPHYSICS_API RigidBody
 	{
 	public:
 		GameObjectHandle handle;        //Reference to the associated game object

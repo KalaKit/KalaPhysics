@@ -6,13 +6,13 @@
 #pragma once
 
 #ifdef _WIN32
-	#ifdef PHYSICS_DLL_EXPORT
-		#define PHYSICS_API __declspec(dllexport)
+	#ifdef KALAPHYSICS_DLL_EXPORT
+		#define KALAPHYSICS_API __declspec(dllexport)
 	#else
-		#define PHYSICS_API __declspec(dllimport)
+		#define KALAPHYSICS_API __declspec(dllimport)
 	#endif
 #else
-	#define PHYSICS_API
+	#define KALAPHYSICS_API
 #endif
 
 #include <string>
@@ -25,7 +25,7 @@
 //physics
 #include "gameobjecthandle.hpp"
 
-namespace ElypsoPhysics
+namespace KalaKit
 {
 	using glm::vec3;
 	using glm::mat3;
@@ -41,7 +41,7 @@ namespace ElypsoPhysics
 		SPHERE
 	};
 
-	class PHYSICS_API Collider
+	class KALAPHYSICS_API Collider
 	{
 	public:
 		ColliderType type;
@@ -65,7 +65,7 @@ namespace ElypsoPhysics
 		Collider& operator=(const Collider&) = delete;
 	};
 
-	class PHYSICS_API BoxCollider : public Collider
+	class KALAPHYSICS_API BoxCollider : public Collider
 	{
 	public:
 		BoxCollider(
@@ -86,7 +86,7 @@ namespace ElypsoPhysics
 		vec3 halfExtents;
 	};
 
-	class PHYSICS_API SphereCollider : public Collider
+	class KALAPHYSICS_API SphereCollider : public Collider
 	{
 	public:
 		SphereCollider(

@@ -6,7 +6,7 @@
 //physics
 #include "collider.hpp"
 
-namespace ElypsoPhysics
+namespace KalaKit
 {
 	Collider::Collider(
 		const vec3& offsetScale,

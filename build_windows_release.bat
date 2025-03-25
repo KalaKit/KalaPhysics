@@ -1,11 +1,11 @@
 @echo off
 
-:: This batch file builds ElypsoPhysics from source code using MSVC (cl.exe) for Release.
+:: This batch file builds KalaKit from source code using MSVC (cl.exe) for Release.
 
 :: Set the root folder as the location of this script
-set "PHYSICS_ROOT=%~dp0"
-set "BUILD_DIR=%PHYSICS_ROOT%build-release"
-set "INSTALL_DIR=%PHYSICS_ROOT%install-release"
+set "KALAPHYSICS_ROOT=%~dp0"
+set "BUILD_DIR=%KALAPHYSICS_ROOT%build-release"
+set "INSTALL_DIR=%KALAPHYSICS_ROOT%install-release"
 
 :: Ensure Visual Studio environment is set up correctly
 call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat" || (
@@ -24,8 +24,8 @@ cd /d "%BUILD_DIR%" || (
     exit /b 1
 )
 
-:: Configure ElypsoPhysics with CMake
-echo [INFO] Configuring ElypsoPhysics with CMake...
+:: Configure KalaKit with CMake
+echo [INFO] Configuring KalaKit with CMake...
 cmake -G "Ninja" ^
   -DCMAKE_BUILD_TYPE=Release ^
   -DCMAKE_C_COMPILER=cl ^
@@ -33,22 +33,22 @@ cmake -G "Ninja" ^
   -DCMAKE_C_FLAGS="/O2 /GL /DNDEBUG /EHsc /MD" ^
   -DCMAKE_INSTALL_PREFIX="%INSTALL_DIR%" ^
   -Wno-dev ^
-  "%PHYSICS_ROOT%" || (
+  "%KALAPHYSICS_ROOT%" || (
     echo [ERROR] CMake configuration failed.
 	pause
     exit /b 1
 )
 
-:: Build ElypsoPhysics with Ninja
-echo [INFO] Building ElypsoPhysics...
+:: Build KalaKit with Ninja
+echo [INFO] Building KalaKit...
 ninja -j%NUMBER_OF_PROCESSORS% || (
     echo [ERROR] Build process failed.
 	pause
     exit /b 1
 )
 
-:: Install ElypsoPhysics
-echo [INFO] Installing ElypsoPhysics...
+:: Install KalaKit
+echo [INFO] Installing KalaKit...
 ninja install || (
     echo [ERROR] Install process failed.
 	pause
@@ -59,10 +59,10 @@ ninja install || (
 for /f "tokens=1-4 delims=:.," %%a in ("%TIME%") do set "TIME_END=%%a:%%b:%%c"
 
 :: Success message
-echo [SUCCESS] ElypsoPhysics built and installed successfully.
+echo [SUCCESS] KalaKit built and installed successfully.
 echo ---------------------------------------------
-echo Shared library: %INSTALL_DIR%\bin\ElypsoPhysics.dll
-echo Static library: %INSTALL_DIR%\lib\ElypsoPhysics_Static.lib
+echo Shared library: %INSTALL_DIR%\bin\KalaKit.dll
+echo Static library: %INSTALL_DIR%\lib\KalaKit.lib
 echo Include headers: %INSTALL_DIR%\include
 echo Build duration: %TIME_START% - %TIME_END%
 echo ---------------------------------------------

@@ -32,7 +32,7 @@ set(PROJECT_MINOR_VERSION 0)
 set(PROJECT_PATCH_VERSION 0)
 set(PROJECT_VERSION "${PROJECT_MAJOR_VERSION}.${PROJECT_MINOR_VERSION}.${PROJECT_PATCH_VERSION}")
 
-project("Elypso Physics" VERSION ${PROJECT_VERSION})
+project("KalaPhysics" VERSION ${PROJECT_VERSION})
 
 # Set runtime library type for MSVC
 if (MSVC)
@@ -43,60 +43,60 @@ endif()
 get_filename_component(PARENT_DIR "${CMAKE_SOURCE_DIR}" DIRECTORY)
 set(PARENT_DIR_PATH "${PARENT_DIR}")
 
-# Physics files
-set(PHYSICS_SRC_DIR "${CMAKE_SOURCE_DIR}/src")
-set(PHYSICS_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
+# KALA files
+set(KALA_SRC_DIR "${CMAKE_SOURCE_DIR}/src")
+set(KALA_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
 
 # External files
 set(EXT_GLM_DIR "${CMAKE_SOURCE_DIR}/_external_shared/GLM")
 
 # Add source files
-file(GLOB_RECURSE PHYSICS_SOURCE_FILES CONFIGURE_DEPENDS
-    ${PHYSICS_SRC_DIR}/*.cpp
-    ${PHYSICS_SRC_DIR}/*/*.cpp
+file(GLOB_RECURSE KALA_SOURCE_FILES CONFIGURE_DEPENDS
+    ${KALA_SRC_DIR}/*.cpp
+    ${KALA_SRC_DIR}/*/*.cpp
 )
 
 # Build as a shared library (DLL)
-add_library(ElypsoPhysics SHARED ${PHYSICS_SOURCE_FILES})
-set_target_properties(ElypsoPhysics PROPERTIES OUTPUT_NAME "ElypsoPhysics")
-target_compile_features(ElypsoPhysics PRIVATE cxx_std_20)
-target_include_directories(ElypsoPhysics PRIVATE ${PHYSICS_INCLUDE_DIRS})
+add_library(KalaPhysics SHARED ${KALA_SOURCE_FILES})
+set_target_properties(KalaPhysics PROPERTIES OUTPUT_NAME "KalaPhysics")
+target_compile_features(KalaPhysics PRIVATE cxx_std_20)
+target_include_directories(KalaPhysics PRIVATE ${KALA_INCLUDE_DIRS})
 
 # Append 'D' suffix to debug builds for both Windows and Linux
-set_target_properties(ElypsoPhysics PROPERTIES
-    OUTPUT_NAME "ElypsoPhysics$<$<CONFIG:Debug>:D>"
+set_target_properties(KalaPhysics PROPERTIES
+    OUTPUT_NAME "KalaPhysics$<$<CONFIG:Debug>:D>"
 )
 
 # Apply all directories to target
-target_include_directories(ElypsoPhysics PRIVATE
+target_include_directories(KalaPhysics PRIVATE
 	# Library files
-    ${PHYSICS_INCLUDE_DIR}
+    ${KALA_INCLUDE_DIR}
 	
 	# External libraries
     ${EXT_GLM_DIR}
 )
 
 if (WIN32)
-    target_link_libraries(ElypsoPhysics PRIVATE)
+    target_link_libraries(KalaPhysics PRIVATE)
 else()
     find_package(X11 QUIET)
     if (X11_FOUND)
-        target_link_libraries(ElypsoPhysics PRIVATE ${X11_LIBRARIES})
+        target_link_libraries(KalaPhysics PRIVATE ${X11_LIBRARIES})
     endif()
 endif()
 
 # Define preprocessor directives
-target_compile_definitions(ElypsoPhysics PRIVATE PHYSICS_DLL_EXPORT)
+target_compile_definitions(KalaPhysics PRIVATE KALAPHYSICS_DLL_EXPORT)
 
-# Install the DLL and its import library (ElypsoPhysics.dll + ElypsoPhysics.lib)
-install(TARGETS ElypsoPhysics
+# Install the DLL and its import library (KalaPhysics.dll + KalaPhysics.lib)
+install(TARGETS KalaPhysics
     RUNTIME DESTINATION bin  # .dll (Windows) and .so (Linux)
     LIBRARY DESTINATION lib  # .lib (Windows import lib) or .so (Linux)
     ARCHIVE DESTINATION lib  # .lib (Linux static lib)
 )
 
 # Install header files
-install(DIRECTORY ${PHYSICS_INCLUDE_DIR}/
+install(DIRECTORY ${KALA_INCLUDE_DIR}/
     DESTINATION include
     FILES_MATCHING PATTERN "*.hpp"
 )

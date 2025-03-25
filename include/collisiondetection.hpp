@@ -6,13 +6,13 @@
 #pragma once
 
 #ifdef _WIN32
-	#ifdef PHYSICS_DLL_EXPORT
-		#define PHYSICS_API __declspec(dllexport)
+	#ifdef KALAPHYSICS_DLL_EXPORT
+		#define KALAPHYSICS_API __declspec(dllexport)
 	#else
-		#define PHYSICS_API __declspec(dllimport)
+		#define KALAPHYSICS_API __declspec(dllimport)
 	#endif
 #else
-	#define PHYSICS_API
+	#define KALAPHYSICS_API
 #endif
 
 #include <vector>
@@ -24,7 +24,7 @@
 #include "rigidbody.hpp"
 #include "collider.hpp"
 
-namespace ElypsoPhysics
+namespace KalaKit
 {
 	using glm::vec3;
 	using std::vector;
@@ -44,7 +44,7 @@ namespace ElypsoPhysics
 		vector<Contact> contacts;
 	};
 
-	class PHYSICS_API CollisionDetection
+	class KALAPHYSICS_API CollisionDetection
 	{
 	public:
 		static ContactManifold GenerateOBBContactManifold(const RigidBody& a, const RigidBody& b);

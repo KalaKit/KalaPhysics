@@ -28,7 +28,7 @@ using glm::quat;
 using glm::cross;
 using std::fabs;
 
-namespace ElypsoPhysics
+namespace KalaKit
 {
 	PhysicsWorld& PhysicsWorld::GetInstance()
 	{

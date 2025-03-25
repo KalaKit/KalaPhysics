@@ -14,7 +14,7 @@ using glm::mat3_cast;
 using std::abs;
 using glm::max;
 
-namespace ElypsoPhysics
+namespace KalaKit
 {
 	ContactManifold CollisionDetection::GenerateOBBContactManifold(const RigidBody& a, const RigidBody& b)
 	{

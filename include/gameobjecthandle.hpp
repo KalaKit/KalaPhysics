@@ -6,21 +6,21 @@
 #pragma once
 
 #ifdef _WIN32
-	#ifdef PHYSICS_DLL_EXPORT
-		#define PHYSICS_API __declspec(dllexport)
+	#ifdef KALAPHYSICS_DLL_EXPORT
+		#define KALAPHYSICS_API __declspec(dllexport)
 	#else
-		#define PHYSICS_API __declspec(dllimport)
+		#define KALAPHYSICS_API __declspec(dllimport)
 	#endif
 #else
-	#define PHYSICS_API
+	#define KALAPHYSICS_API
 #endif
 
 #include <cstdint>
 #include <functional>
 
-namespace ElypsoPhysics
+namespace KalaKit
 {
-	class PHYSICS_API GameObjectHandle
+	class KALAPHYSICS_API GameObjectHandle
 	{
 	public:
 		uint32_t index;
@@ -40,9 +40,9 @@ namespace ElypsoPhysics
 namespace std
 {
 	template <>
-	struct hash<ElypsoPhysics::GameObjectHandle>
+	struct hash<KalaKit::GameObjectHandle>
 	{
-		size_t operator()(const ElypsoPhysics::GameObjectHandle& handle) const
+		size_t operator()(const KalaKit::GameObjectHandle& handle) const
 		{
 			size_t h1 = hash<uint32_t>()(handle.index);
 			size_t h2 = hash<uint32_t>()(handle.generation);

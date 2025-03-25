@@ -14,7 +14,7 @@ using std::string;
 using std::to_string;
 using glm::max;
 
-namespace ElypsoPhysics
+namespace KalaKit
 {
 	RigidBody::RigidBody(
 		GameObjectHandle h,

@@ -6,13 +6,13 @@
 #pragma once
 
 #ifdef _WIN32
-	#ifdef PHYSICS_DLL_EXPORT
-		#define PHYSICS_API __declspec(dllexport)
+	#ifdef KALAPHYSICS_DLL_EXPORT
+		#define KALAPHYSICS_API __declspec(dllexport)
 	#else
-		#define PHYSICS_API __declspec(dllimport)
+		#define KALAPHYSICS_API __declspec(dllimport)
 	#endif
 #else
-	#define PHYSICS_API
+	#define KALAPHYSICS_API
 #endif
 
 #include <vector>
@@ -25,7 +25,7 @@
 //physics
 #include "rigidbody.hpp"
 
-namespace ElypsoPhysics
+namespace KalaKit
 {
 	using std::vector;
 	using std::unordered_map;
@@ -33,7 +33,7 @@ namespace ElypsoPhysics
 	using glm::quat;
 	using std::hash;
 
-	class PHYSICS_API PhysicsWorld
+	class KALAPHYSICS_API PhysicsWorld
 	{
 	public:
 		static PhysicsWorld& GetInstance();

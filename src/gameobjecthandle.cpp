@@ -6,6 +6,6 @@
 //physics
 #include "gameobjecthandle.hpp"
 
-namespace ElypsoPhysics
+namespace KalaKit
 {
 }
