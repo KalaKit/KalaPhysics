@@ -4,7 +4,7 @@
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20Mac-brightgreen)
 ![Development Stage](https://img.shields.io/badge/development-Alpha-yellow)
 
-![Crash Screenshot](logo.png)
+![Logo](logo.png)
 
 **KalaPhysics** is a lightweight **C++ 20** physics library that utilizes **GLM** for core mathematical operations while maintaining compatibility with any graphics API, not just **OpenGL**.
 

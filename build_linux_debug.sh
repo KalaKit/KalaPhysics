@@ -45,6 +45,6 @@ echo "Include headers: $INSTALL_DIR/include"
 echo "Build duration: $TIME_START - $TIME_END"
 echo "---------------------------------------------"
 
-# Optional: Pause to allow the user to review the output
+# Pause to allow to review the output
 read -r -p "Press enter to exit..."
 exit 0

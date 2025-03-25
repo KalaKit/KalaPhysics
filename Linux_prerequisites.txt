@@ -1,5 +1,5 @@
 ===========================================================================
-THESE COMMANDS SHOULD ALWAYS BE RAN BEFORE COMPILING ELYPSO PHYSICS FOR THE FIRST TIME
+THESE COMMANDS SHOULD ALWAYS BE RAN BEFORE COMPILING KALAPHYSICS
 ===========================================================================
 
 --- SYSTEM SETUP ---
