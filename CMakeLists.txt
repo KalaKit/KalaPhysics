@@ -86,7 +86,17 @@ else()
 endif()
 
 # Define preprocessor directives
-target_compile_definitions(KalaPhysics PRIVATE KALAPHYSICS_DLL_EXPORT)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+	target_compile_definitions(KalaPhysics PRIVATE 
+		KALAPHYSICS_DLL_EXPORT
+		KALAPHYSICS_DEBUG=1
+	)
+else()
+	target_compile_definitions(KalaPhysics PRIVATE 
+		KALAPHYSICS_DLL_EXPORT
+		KALAPHYSICS_DEBUG=0
+	)
+endif()
 
 # Install the DLL and its import library (KalaPhysics.dll + KalaPhysics.lib)
 install(TARGETS KalaPhysics

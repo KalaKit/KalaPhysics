@@ -3,13 +3,23 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
-#include <iostream>
+//main log macro
+#define WRITE_LOG(type, msg) std::cout << "[KALAKIT_PHYSICS | " << type << "] " << msg << "\n"
+
+//log types
+#if KALAPHYSICS_DEBUG
+	#define LOG_DEBUG(msg) WRITE_LOG("DEBUG", msg)
+#else
+	#define LOG_DEBUG(msg)
+#endif
+#define LOG_SUCCESS(msg) WRITE_LOG("SUCCESS", msg)
+#define LOG_ERROR(msg) WRITE_LOG("ERROR", msg)
+
 #include <string>
 
 //physics
 #include "rigidbody.hpp"
 
-using std::cout;
 using std::string;
 using std::to_string;
 using glm::max;
@@ -159,14 +169,10 @@ namespace KalaKit
 				combinedPosition,
 				handle);
 
-#ifdef NDEBUG
-#else
 			uint32_t index = handle.index;
 			uint32_t gen = handle.generation;
 			string sizeString = to_string(combinedScale.x) + ", " + to_string(combinedScale.y) + ", " + to_string(combinedScale.z);
-			string message = "[ELYPSO-PHYSICS | SUCCESS] Set size to '" + sizeString + "' and collider to box for rigidbody (" + to_string(index) + ", " + to_string(gen) + ")!\n";
-			cout << message;
-#endif
+			LOG_SUCCESS("Set size to '" + sizeString + "' and collider to box for rigidbody(" + to_string(index) + ", " + to_string(gen) + ")!");
 		}
 		else if (type == ColliderType::SPHERE)
 		{
@@ -175,14 +181,10 @@ namespace KalaKit
 				combinedPosition,
 				handle);
 
-#ifdef NDEBUG
-#else
 			uint32_t index = handle.index;
 			uint32_t gen = handle.generation;
 			string radius = to_string(combinedScale.x);
-			string message = "[ELYPSO-PHYSICS | SUCCESS] Set radius to '" + radius + "' and collider to sphere for rigidbody (" + to_string(index) + ", " + to_string(gen) + ")!\n";
-			cout << message;
-#endif
+			LOG_SUCCESS("Set radius to '" + radius + "' and collider to sphere for rigidbody(" + to_string(index) + ", " + to_string(gen) + ")!");
 		}
 	}
 

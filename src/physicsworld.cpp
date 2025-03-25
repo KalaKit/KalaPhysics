@@ -3,7 +3,18 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
-#include <iostream>
+//main log macro
+#define WRITE_LOG(type, msg) std::cout << "[KALAKIT_PHYSICS | " << type << "] " << msg << "\n"
+
+//log types
+#if KALAPHYSICS_DEBUG
+	#define LOG_DEBUG(msg) WRITE_LOG("DEBUG", msg)
+#else
+	#define LOG_DEBUG(msg)
+#endif
+#define LOG_SUCCESS(msg) WRITE_LOG("SUCCESS", msg)
+#define LOG_ERROR(msg) WRITE_LOG("ERROR", msg)
+
 #include <string>
 
 //external
@@ -15,8 +26,6 @@
 
 using glm::normalize;
 using glm::length;
-using std::cerr;
-using std::cout;
 using std::min;
 using std::max;
 using glm::clamp;
@@ -43,7 +52,7 @@ namespace KalaKit
 	{
 		if (!isInitialized)
 		{
-			cerr << "[ELYPSO-PHYSICS | ERROR] Cannot shut down Elypso Physics because it has not yet been initialized!\n";
+			LOG_ERROR("Cannot shut down Elypso Physics because it has not yet been initialized!");
 			return;
 		}
 
@@ -61,17 +70,14 @@ namespace KalaKit
 		generations.clear();   //clear the generations map
 		isInitialized = false;
 
-#ifdef NDEBUG
-#else
-		cout << "[ELYPSO-PHYSICS | SUCCESS] Shutdown completed!\n";
-#endif
+		LOG_SUCCESS("Shutdown completed!");
 	}
 
 	void PhysicsWorld::InitializePhysics(const vec3& newGravity)
 	{
 		if (isInitialized)
 		{
-			cerr << "[ELYPSO-PHYSICS | ERROR] Elypso Physics is already initialized!\n";
+			LOG_ERROR("Elypso Physics is already initialized!");
 			return;
 		}
 
@@ -82,10 +88,8 @@ namespace KalaKit
 		gravity = newGravity;
 
 		isInitialized = true;
-#ifdef NDEBUG
-#else
-		cout << "[ELYPSO-PHYSICS | SUCCESS] Initialization completed!\n";
-#endif
+
+		LOG_SUCCESS("Initialization completed!");
 	}
 
 	GameObjectHandle PhysicsWorld::CreateRigidBody(
@@ -104,7 +108,7 @@ namespace KalaKit
 	{
 		if (!isInitialized)
 		{
-			cerr << "[ELYPSO-PHYSICS | ERROR] Cannot create a RigidBody if Elypso Physics isnt initialized!\n";
+			LOG_ERROR("Cannot create a RigidBody if Elypso Physics isnt initialized!");
 			return GameObjectHandle(UINT32_MAX, UINT32_MAX);
 		}
 
@@ -137,11 +141,7 @@ namespace KalaKit
 
 		if (generations.size() <= index) generations.push_back(0);
 
-#ifdef NDEBUG
-#else
-		string message = "[ELYPSO-PHYSICS | SUCCESS] Created rigidbody (" + to_string(index) + ", " + to_string(generation) + ")!\n";
-		cout << message;
-#endif
+		LOG_SUCCESS("Created rigidbody(" + to_string(index) + ", " + to_string(generation) + ")!");
 
 		return handle;
 	}
@@ -185,13 +185,9 @@ namespace KalaKit
 				bodyMap[bodies[index]->handle] = index;
 			}
 
-#ifdef NDEBUG
-#else
 			uint32_t idx = handle.index;
 			uint32_t gen = handle.generation;
-			string message = "[ELYPSO-PHYSICS | SUCCESS] Removed rigidbody (" + to_string(idx) + ", " + to_string(gen) + ")!\n";
-			cout << message;
-#endif
+			LOG_SUCCESS("Removed rigidbody(" + to_string(idx) + ", " + to_string(gen) + ")!");
 
 			bodies.pop_back();
 		}
@@ -531,13 +527,13 @@ namespace KalaKit
 		if (length(tiltAxis) < 1e-5f)
 		{
 			tiltAxis = vec3(1, 0, 0);
-			cout << "Warning: Small tilt axis detected, using default (1,0,0)\n";
+			LOG_ERROR("Small tilt axis detected, using default (1, 0, 0)");
 		}
 
 		float upAlignment = clamp(fabs(dot(body.closestUp, vec3(0, 1, 0))), 0.0f, 1.0f);
 		body.angleToFlat = acos(upAlignment) * (180.0f / 3.14159f);
-		cout << "Clamped Up Alignment: " << upAlignment
-			<< " | Angle to Flat: " << body.angleToFlat << "\n";
+		LOG_DEBUG("Clamped Up Alignment: " << upAlignment
+			<< " | Angle to Flat: " << body.angleToFlat << "");
 
 		float correctionScale = clamp(body.angleToFlat / 15.0f, 0.0f, 1.0f);
 		vec3 tiltTorque = tiltAxis * correctionScale * 5.0f;
@@ -546,13 +542,13 @@ namespace KalaKit
 		if (body.angleToFlat >= 15.0f)
 		{
 			body.ApplyTorque(tiltTorque);
-			cout << "tilt a\n";
+			LOG_DEBUG("tilt a");
 		}
 		//faster correction
 		else if (body.angleToFlat >= 2.0f)
 		{
 			body.ApplyTorque(tiltTorque * 1.25f);
-			cout << "tilt b\n";
+			LOG_DEBUG("tilt b");
 		}
 		//stop rotation
 		else if (body.angleToFlat < 2.0f
@@ -560,7 +556,7 @@ namespace KalaKit
 		{
 			body.angularVelocity = vec3(0.0f);
 			body.combinedRotation = normalize(body.combinedRotation);
-			cout << "tilt snap\n";
+			LOG_DEBUG("tilt snap");
 		}
 	}
 }
