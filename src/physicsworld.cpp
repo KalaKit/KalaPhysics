@@ -297,7 +297,7 @@ namespace KalaKit
 
 				if (CollisionDetection::CheckOBBCollisionAt(body, futurePosition, otherBody, deltaTime))
 				{
-					body.velocity = vec3(0.0f);
+					body.velocity.y = 0.0f;
 					break;
 				}
 			}
@@ -448,6 +448,9 @@ namespace KalaKit
 		vec3 vA = bodyA.velocity + cross(bodyA.angularVelocity, rA);
 		vec3 vB = bodyB.velocity + cross(bodyB.angularVelocity, rB);
 		vec3 relativeVelocity = vB - vA;
+
+		//apply friction only if there's significant tangential velocity
+		if (length(relativeVelocity) < 0.01f) return;
 
 		//tangential direction
 		vec3 tangent = relativeVelocity - dot(relativeVelocity, collisionNormal) * collisionNormal;
