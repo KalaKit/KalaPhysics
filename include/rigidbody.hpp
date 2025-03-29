@@ -48,7 +48,6 @@ namespace KalaKit
 		float dynamicFriction;          //Slows down sliding objects
 		float gravityFactor;            //Gravity multiplier (1.0 = normal gravity)
 		bool useGravity;                //True if affected by global gravity
-		bool isColliding;               //True if this rigidbody is currently colliding with anything
 
 		float tiltTimer = 0.0f;         //Tracks time elapsed since the last tilt correction for this body
 		float angleToFlat;              //Tilt angle from the best UP-facing side
