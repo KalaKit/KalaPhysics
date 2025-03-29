@@ -197,6 +197,11 @@ namespace KalaKit
 	{
 		if (bodyMap.size() == 0) return;
 
+		for (auto& bodyPtr : bodies)
+		{
+			if (bodyPtr) bodyPtr->isColliding = false;
+		}
+
 		for (size_t i = 0; i < bodies.size(); i++)
 		{
 			RigidBody& bodyA = *bodies[i];
@@ -241,6 +246,9 @@ namespace KalaKit
 					if (manifold.colliding
 						&& !manifold.contacts.empty())
 					{
+						bodyA.isColliding = true;
+						bodyB.isColliding = true;
+
 						for (const auto& contact : manifold.contacts)
 						{
 							ResolveCollision(bodyA, bodyB, contact.normal, contact.point, contact.penetration);
@@ -472,6 +480,13 @@ namespace KalaKit
 		if (abs(frictionImpulseScalar) > maxStaticFriction)
 		{
 			frictionImpulse = dynamicFriction * frictionImpulse;
+		}
+
+		//clamp friction force to avoid cancelling small impulses
+		float maxFrictionForce = bodyA.mass * 1.0f;
+		if (length(frictionImpulse) > maxFrictionForce)
+		{
+			frictionImpulse = normalize(frictionImpulse) * maxFrictionForce;
 		}
 
 		bodyA.ApplyImpulse(-frictionImpulse);
