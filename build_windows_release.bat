@@ -3,9 +3,9 @@
 :: This batch file builds KalaKit from source code using MSVC (cl.exe) for Release.
 
 :: Set the root folder as the location of this script
-set "KALAPHYSICS_ROOT=%~dp0"
-set "BUILD_DIR=%KALAPHYSICS_ROOT%build-release"
-set "INSTALL_DIR=%KALAPHYSICS_ROOT%install-release"
+set "PHYSICS_ROOT=%~dp0"
+set "BUILD_DIR=%PHYSICS_ROOT%build-release"
+set "INSTALL_DIR=%PHYSICS_ROOT%install-release"
 
 :: Ensure Visual Studio environment is set up correctly
 call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat" || (
@@ -30,10 +30,10 @@ cmake -G "Ninja" ^
   -DCMAKE_BUILD_TYPE=Release ^
   -DCMAKE_C_COMPILER=cl ^
   -DBUILD_SHARED_LIBS=ON ^
-  -DCMAKE_C_FLAGS="/O2 /GL /DNDEBUG /EHsc /MD" ^
+  -DCMAKE_C_FLAGS="/O2 /GL /DNDEBUG /EHsc /MT" ^
   -DCMAKE_INSTALL_PREFIX="%INSTALL_DIR%" ^
   -Wno-dev ^
-  "%KALAPHYSICS_ROOT%" || (
+  %PHYSICS_ROOT% || (
     echo [ERROR] CMake configuration failed.
 	pause
     exit /b 1
