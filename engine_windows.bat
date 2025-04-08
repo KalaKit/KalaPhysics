@@ -1,11 +1,11 @@
 @echo off
 
-set "INPUT_ROOT=%~dp0"
+set "PHYSICS_ROOT=%~dp0"
 
-set "INSTALL_RELEASE=%INPUT_ROOT%install-release"
-set "INSTALL_DEBUG=%INPUT_ROOT%install-debug"
-set "BUILD_RELEASE=%INPUT_ROOT%build-release"
-set "BUILD_DEBUG=%INPUT_ROOT%build-debug"
+set "INSTALL_RELEASE=%PHYSICS_ROOT%install-release"
+set "INSTALL_DEBUG=%PHYSICS_ROOT%install-debug"
+set "BUILD_RELEASE=%PHYSICS_ROOT%build-release"
+set "BUILD_DEBUG=%PHYSICS_ROOT%build-debug"
 
 :: Remove old build and install folders
 if exist "%INSTALL_RELEASE%" rmdir /S /Q "%INSTALL_RELEASE%"
@@ -21,11 +21,11 @@ set "ORIGIN_RELEASE_DLL=%INSTALL_RELEASE%\bin\KalaPhysics.dll"
 set "ORIGIN_RELEASE_LIB=%INSTALL_RELEASE%\lib\KalaPhysics.lib"
 set "ORIGIN_DEBUG_DLL=%INSTALL_DEBUG%\bin\KalaPhysicsD.dll"
 set "ORIGIN_DEBUG_LIB=%INSTALL_DEBUG%\lib\KalaPhysicsD.lib"
-set "ORIGIN_HEADER1=%INPUT_ROOT%\install-release\include\collider.hpp"
-set "ORIGIN_HEADER2=%INPUT_ROOT%\install-release\include\collisiondetection.hpp"
-set "ORIGIN_HEADER3=%INPUT_ROOT%\install-release\include\gameobjecthandle.hpp"
-set "ORIGIN_HEADER4=%INPUT_ROOT%\install-release\include\physicsworld.hpp"
-set "ORIGIN_HEADER5=%INPUT_ROOT%\install-release\include\rigidbody.hpp"
+set "ORIGIN_HEADER1=%PHYSICS_ROOT%\install-release\include\collider.hpp"
+set "ORIGIN_HEADER2=%PHYSICS_ROOT%\install-release\include\collisiondetection.hpp"
+set "ORIGIN_HEADER3=%PHYSICS_ROOT%\install-release\include\gameobjecthandle.hpp"
+set "ORIGIN_HEADER4=%PHYSICS_ROOT%\install-release\include\physicsworld.hpp"
+set "ORIGIN_HEADER5=%PHYSICS_ROOT%\install-release\include\rigidbody.hpp"
 
 if not exist "%ORIGIN_RELEASE_DLL%" (
 	echo Failed to find origin release dll from '%ORIGIN_RELEASE_DLL%'!
@@ -73,7 +73,7 @@ if not exist "%ORIGIN_HEADER5%" (
 	exit /b 1
 )
 
-set "TARGET_ROOT=%INPUT_ROOT%..\Elypso-engine\_external_shared\KalaPhysics"
+set "TARGET_ROOT=%PHYSICS_ROOT%..\Elypso-engine\_external_shared\KalaPhysics"
 
 if not exist "%TARGET_ROOT%" (
 	echo Failed to find target root from '%TARGET_ROOT%'!
