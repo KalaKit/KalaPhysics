@@ -48,57 +48,92 @@ file(GLOB_RECURSE KALA_SOURCE_FILES CONFIGURE_DEPENDS
     ${KALA_SRC_DIR}/*/*.cpp
 )
 
-# Build as a shared library (DLL)
+# Shared library
 add_library(KalaPhysics SHARED ${KALA_SOURCE_FILES})
-set_target_properties(KalaPhysics PROPERTIES OUTPUT_NAME "KalaPhysics")
+set_target_properties(KalaPhysics PROPERTIES OUTPUT_NAME "KalaPhysics$<$<CONFIG:Debug>:D>")
 target_compile_features(KalaPhysics PRIVATE cxx_std_20)
-target_include_directories(KalaPhysics PRIVATE ${KALA_INCLUDE_DIRS})
 
-# Append 'D' suffix to debug builds for both Windows and Linux
-set_target_properties(KalaPhysics PROPERTIES
-    OUTPUT_NAME "KalaPhysics$<$<CONFIG:Debug>:D>"
-)
+# Static library
+add_library(KalaPhysicsStatic STATIC  ${KALA_SOURCE_FILES})
+set_target_properties(KalaPhysicsStatic PROPERTIES OUTPUT_NAME "KalaPhysics$<$<CONFIG:Debug>:D>")
+target_compile_features(KalaPhysicsStatic PRIVATE cxx_std_20)
 
-# Apply all directories to target
-target_include_directories(KalaPhysics PRIVATE
-	# Library files
-    ${KALA_INCLUDE_DIR}
-	
-	# External libraries
-    ${EXT_GLM_DIR}
-)
+# Apply all directories
+function(set_kalaphysics_includes target)
+	target_include_directories(${target} PRIVATE
+        # Library files
+        ${KALA_INCLUDE_DIR}
 
-if (WIN32)
-    target_link_libraries(KalaPhysics PRIVATE)
-else()
-    find_package(X11 QUIET)
-    if (X11_FOUND)
-        target_link_libraries(KalaPhysics PRIVATE ${X11_LIBRARIES})
+        # External libraries
+        ${EXT_GLM_DIR}
+	)
+endfunction()
+
+set_kalaphysics_includes(KalaPhysics)
+set_kalaphysics_includes(KalaPhysicsStatic)
+
+function(configure_kalaphysics_target target)
+	if (WIN32)
+        target_link_libraries(${target} PRIVATE)
+    else()
+        target_link_libraries(${target} PRIVATE)
     endif()
-endif()
+endfunction()
+
+configure_kalaphysics_target(KalaPhysics)
+configure_kalaphysics_target(KalaPhysicsStatic)
 
 # Define preprocessor directives
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-	target_compile_definitions(KalaPhysics PRIVATE 
-		KALAPHYSICS_DLL_EXPORT
-		KALAPHYSICS_DEBUG=1
-	)
-else()
-	target_compile_definitions(KalaPhysics PRIVATE 
-		KALAPHYSICS_DLL_EXPORT
-		KALAPHYSICS_DEBUG=0
-	)
-endif()
+function(set_debug_defines target)
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        target_compile_definitions(${target} PRIVATE
+            KALAPHYSICS_DLL_EXPORT
+            KALAPHYSICS_DEBUG=1
+        )
+    else()
+        target_compile_definitions(${target} PRIVATE
+            KALAPHYSICS_DLL_EXPORT
+            KALAPHYSICS_DEBUG=0
+        )
+    endif()
+endfunction()
 
-# Install the DLL and its import library (KalaPhysics.dll + KalaPhysics.lib)
-install(TARGETS KalaPhysics
-    RUNTIME DESTINATION bin  # .dll (Windows) and .so (Linux)
-    LIBRARY DESTINATION lib  # .lib (Windows import lib) or .so (Linux)
-    ARCHIVE DESTINATION lib  # .lib (Linux static lib)
+set_debug_defines(KalaPhysics)
+set_debug_defines(KalaPhysicsStatic)
+
+# Copy shared library to bin (.dll or .so)
+add_custom_command(TARGET KalaPhysics POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/bin"
+
+    # Copy the shared library to the bin directory
+    COMMAND ${CMAKE_COMMAND} -E copy
+        $<TARGET_FILE:KalaPhysics>
+        "${CMAKE_BINARY_DIR}/bin"
+
+    # Remove the original
+    COMMAND ${CMAKE_COMMAND} -E remove
+        $<TARGET_FILE:KalaPhysics>
 )
 
-# Install header files
-install(DIRECTORY ${KALA_INCLUDE_DIR}/
-    DESTINATION include
-    FILES_MATCHING PATTERN "*.hpp"
+# Copy static library to lib (.lib or .a)
+add_custom_command(TARGET KalaPhysicsStatic POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/lib"
+
+    # Copy the static library to the lib directory
+    COMMAND ${CMAKE_COMMAND} -E copy
+        $<TARGET_LINKER_FILE:KalaPhysicsStatic>
+        "${CMAKE_BINARY_DIR}/lib"
+
+    # Remove the original
+    COMMAND ${CMAKE_COMMAND} -E remove
+        $<TARGET_LINKER_FILE:KalaPhysicsStatic>
+)
+
+# Copy all headers to include folder
+add_custom_command(TARGET KalaPhysics POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/include"
+
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${KALA_INCLUDE_DIR}/"
+        "${CMAKE_BINARY_DIR}/include"
 )

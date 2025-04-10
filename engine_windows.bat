@@ -3,14 +3,10 @@
 set "PROJECT_ROOT=%~dp0"
 cd "%PROJECT_ROOT%"
 
-set "INSTALL_RELEASE=%PROJECT_ROOT%install-release"
-set "INSTALL_DEBUG=%PROJECT_ROOT%install-debug"
 set "BUILD_RELEASE=%PROJECT_ROOT%build-release"
 set "BUILD_DEBUG=%PROJECT_ROOT%build-debug"
 
-:: Remove old build and install folders
-if exist "%INSTALL_RELEASE%" rmdir /S /Q "%INSTALL_RELEASE%"
-if exist "%INSTALL_DEBUG%" rmdir /S /Q "%INSTALL_DEBUG%"
+:: Remove old build folders
 if exist "%BUILD_RELEASE%" rmdir /S /Q "%BUILD_RELEASE%"
 if exist "%BUILD_DEBUG%" rmdir /S /Q "%BUILD_DEBUG%"
 
@@ -45,11 +41,11 @@ echo [SUCCESS] Finished building and installing KalaPhysics!
 echo =====================================
 echo.
 
-set "ORIGIN_RELEASE_DLL=%INSTALL_RELEASE%\bin\KalaPhysics.dll"
-set "ORIGIN_RELEASE_LIB=%INSTALL_RELEASE%\lib\KalaPhysics.lib"
-set "ORIGIN_DEBUG_DLL=%INSTALL_DEBUG%\bin\KalaPhysicsD.dll"
-set "ORIGIN_DEBUG_LIB=%INSTALL_DEBUG%\lib\KalaPhysicsD.lib"
-set "ORIGIN_FOLDER=%PROJECT_ROOT%\install-release\include"
+set "ORIGIN_RELEASE_DLL=%BUILD_RELEASE%\bin\KalaPhysics.dll"
+set "ORIGIN_RELEASE_LIB=%BUILD_RELEASE%\lib\KalaPhysics.lib"
+set "ORIGIN_DEBUG_DLL=%BUILD_DEBUG%\bin\KalaPhysicsD.dll"
+set "ORIGIN_DEBUG_LIB=%BUILD_DEBUG%\lib\KalaPhysicsD.lib"
+set "ORIGIN_FOLDER=%PROJECT_ROOT%\ibuild-release\include"
 
 if not exist "%ORIGIN_RELEASE_DLL%" (
 	echo Failed to find origin release dll from '%ORIGIN_RELEASE_DLL%'!
