@@ -6,10 +6,6 @@ cd "%PROJECT_ROOT%"
 set "BUILD_RELEASE=%PROJECT_ROOT%build-release"
 set "BUILD_DEBUG=%PROJECT_ROOT%build-debug"
 
-:: Remove old build folders
-if exist "%BUILD_RELEASE%" rmdir /S /Q "%BUILD_RELEASE%"
-if exist "%BUILD_DEBUG%" rmdir /S /Q "%BUILD_DEBUG%"
-
 echo =====================================
 echo [INFO] Building KalaPhysics in Release mode...
 echo =====================================
