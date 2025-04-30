@@ -41,7 +41,7 @@ set "ORIGIN_RELEASE_DLL=%BUILD_RELEASE%\bin\KalaPhysics.dll"
 set "ORIGIN_RELEASE_LIB=%BUILD_RELEASE%\lib\KalaPhysics.lib"
 set "ORIGIN_DEBUG_DLL=%BUILD_DEBUG%\bin\KalaPhysicsD.dll"
 set "ORIGIN_DEBUG_LIB=%BUILD_DEBUG%\lib\KalaPhysicsD.lib"
-set "ORIGIN_FOLDER=%PROJECT_ROOT%\ibuild-release\include"
+set "ORIGIN_FOLDER=%PROJECT_ROOT%\build-release\include"
 
 if not exist "%ORIGIN_RELEASE_DLL%" (
 	echo Failed to find origin release dll from '%ORIGIN_RELEASE_DLL%'!

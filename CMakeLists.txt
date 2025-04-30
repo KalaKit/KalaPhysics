@@ -54,9 +54,11 @@ set_target_properties(KalaPhysics PROPERTIES OUTPUT_NAME "KalaPhysics$<$<CONFIG:
 target_compile_features(KalaPhysics PRIVATE cxx_std_20)
 
 # Static library
-add_library(KalaPhysicsStatic STATIC  ${KALA_SOURCE_FILES})
-set_target_properties(KalaPhysicsStatic PROPERTIES OUTPUT_NAME "KalaPhysics$<$<CONFIG:Debug>:D>")
-target_compile_features(KalaPhysicsStatic PRIVATE cxx_std_20)
+if (NOT WIN32)
+	add_library(KalaPhysicsStatic STATIC  ${KALA_SOURCE_FILES})
+	set_target_properties(KalaPhysicsStatic PROPERTIES OUTPUT_NAME "KalaPhysics$<$<CONFIG:Debug>:D>")
+	target_compile_features(KalaPhysicsStatic PRIVATE cxx_std_20)
+endif()
 
 # Apply all directories
 function(set_kalaphysics_includes target)
@@ -70,7 +72,9 @@ function(set_kalaphysics_includes target)
 endfunction()
 
 set_kalaphysics_includes(KalaPhysics)
-set_kalaphysics_includes(KalaPhysicsStatic)
+if (NOT WIN32)
+	set_kalaphysics_includes(KalaPhysicsStatic)
+endif()
 
 function(configure_kalaphysics_target target)
 	if (WIN32)
@@ -81,7 +85,9 @@ function(configure_kalaphysics_target target)
 endfunction()
 
 configure_kalaphysics_target(KalaPhysics)
-configure_kalaphysics_target(KalaPhysicsStatic)
+if (NOT WIN32)
+	configure_kalaphysics_target(KalaPhysicsStatic)
+endif()
 
 # Define preprocessor directives
 function(set_debug_defines target)
@@ -99,7 +105,9 @@ function(set_debug_defines target)
 endfunction()
 
 set_debug_defines(KalaPhysics)
-set_debug_defines(KalaPhysicsStatic)
+if (NOT WIN32)
+	set_debug_defines(KalaPhysicsStatic)
+endif()
 
 # Copy shared library to bin (.dll or .so)
 add_custom_command(TARGET KalaPhysics POST_BUILD
@@ -115,19 +123,26 @@ add_custom_command(TARGET KalaPhysics POST_BUILD
         $<TARGET_FILE:KalaPhysics>
 )
 
-# Copy static library to lib (.lib or .a)
-add_custom_command(TARGET KalaPhysicsStatic POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/lib"
+# Copy library file to lib folder (.lib or .so)
+if (WIN32)
+	add_custom_command(TARGET KalaPhysics POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/lib"
 
-    # Copy the static library to the lib directory
-    COMMAND ${CMAKE_COMMAND} -E copy
-        $<TARGET_LINKER_FILE:KalaPhysicsStatic>
-        "${CMAKE_BINARY_DIR}/lib"
+		# Copy the shared library to the lib directory
+		COMMAND ${CMAKE_COMMAND} -E copy
+			$<TARGET_LINKER_FILE:KalaPhysics>
+			"${CMAKE_BINARY_DIR}/lib"
+	)
+else()
+	add_custom_command(TARGET KalaPhysicsStatic POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/lib"
 
-    # Remove the original
-    COMMAND ${CMAKE_COMMAND} -E remove
-        $<TARGET_LINKER_FILE:KalaPhysicsStatic>
-)
+		# Copy the static library to the lib directory
+		COMMAND ${CMAKE_COMMAND} -E copy
+			$<TARGET_LINKER_FILE:KalaPhysicsStatic>
+			"${CMAKE_BINARY_DIR}/lib"
+	)
+endif()
 
 # Copy all headers to include folder
 add_custom_command(TARGET KalaPhysics POST_BUILD
