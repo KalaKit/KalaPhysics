@@ -194,6 +194,66 @@ namespace KalaKit
 		}
 	}
 
+	bool PhysicsWorld::IsValidCollision(RigidBody& bodyA, RigidBody& bodyB)
+	{
+		//avoid sleeping bodies
+
+		if (bodyA.isSleeping
+			&& bodyB.isSleeping)
+		{
+			return false;
+		}
+
+		//avoid non-collider bodies
+
+		if (!bodyA.collider
+			|| !bodyB.collider)
+		{
+			return false;
+		}
+
+		//avoid same body
+
+		if (&bodyA == &bodyB)
+		{
+			return false;
+		}
+
+		//avoid non-dynamic and non-gravity bodies
+
+		bool bodyMoves =
+			bodyA.isDynamic
+			|| bodyA.useGravity;
+		bool otherMoves =
+			bodyB.isDynamic
+			|| bodyB.useGravity;
+		if (!bodyMoves
+			&& !otherMoves)
+		{
+			return false;
+		}
+
+		//bounding sphere distance culling
+
+		vec3 posA = bodyA.combinedPosition;
+		vec3 posB = bodyB.combinedPosition;
+
+		float radiusA = (bodyA.collider->boundingRadius > 0.0f)
+			? bodyA.collider->boundingRadius
+			: length(bodyA.collider->combinedScale) * 0.5f;
+
+		float radiusB = (bodyB.collider->boundingRadius > 0.0f)
+			? bodyB.collider->boundingRadius
+			: length(bodyB.collider->combinedScale) * 0.5f;
+
+		if (length(posA - posB) > (radiusA + radiusB))
+		{
+			return false;
+		}
+
+		return true;
+	}
+
 	void PhysicsWorld::StepSimulation(float deltaTime)
 	{
 		if (bodyMap.size() == 0) return;
@@ -206,22 +266,9 @@ namespace KalaKit
 			{
 				RigidBody& bodyB = *bodies[j];
 
-				if (bodyA.isSleeping
-					&& bodyB.isSleeping)
-				{
-					continue;
-				}
-
-				if (!bodyA.collider
-					|| !bodyB.collider)
-				{
-					continue;
-				}
+				if (!IsValidCollision(bodyA, bodyB)) continue;
 
 				bodyA.centerOfGravity = vec3(0.0f);
-
-				float maxDistance = bodyA.collider->boundingRadius + bodyB.collider->boundingRadius;
-				if (length(bodyA.combinedPosition - bodyB.combinedPosition) > maxDistance) continue;
 
 				bool useOBB = false;
 
@@ -245,8 +292,6 @@ namespace KalaKit
 						for (const auto& contact : manifold.contacts)
 						{
 							ResolveCollision(bodyA, bodyB, contact.normal, contact.point, contact.penetration);
-
-							ApplyFriction(bodyA, bodyB, contact.normal, contact.point);
 						}
 					}
 				}
@@ -262,7 +307,12 @@ namespace KalaKit
 		{
 			RigidBody& body = *bodyPtr;
 
-			if (!body.isDynamic) continue;
+			if (!body.isDynamic
+				|| !body.useGravity
+				|| !body.collider)
+			{
+				continue;
+			}
 
 			body.UpdateCenterOfGravity();
 
@@ -360,16 +410,14 @@ namespace KalaKit
 
 			for (auto& otherBodyPtr : bodies)
 			{
-				if (bodyPtr == otherBodyPtr) continue;
-
 				RigidBody& otherBody = *otherBodyPtr;
-				if (!otherBody.collider) continue;
-				
-				bool bodyMoves = 
-					body.isDynamic 
+				if (!IsValidCollision(body, otherBody)) continue;
+
+				bool bodyMoves =
+					body.isDynamic
 					|| body.useGravity;
-				bool otherMoves = 
-					otherBody.isDynamic 
+				bool otherMoves =
+					otherBody.isDynamic
 					|| otherBody.useGravity;
 
 				//skip prediction if neither bodies actually move or are affected by gravity
@@ -407,6 +455,20 @@ namespace KalaKit
 		const vec3& contactPoint,
 		float penetration)
 	{
+		//correctly handle ramp and slope detection before other collision types
+
+		float upDot = dot(collisionNormal, vec3(0, 1, 0));
+		float walkLimitCos = cos(radians(angleLimit));
+		if (upDot > walkLimitCos)
+		{
+			ApplyFriction(bodyA, bodyB, collisionNormal, contactPoint);
+
+			vec3& v = bodyA.velocity;
+			v = v - dot(v, collisionNormal) * collisionNormal;
+
+			return;
+		}
+
 		//world space center of gravity
 		vec3 worldCoGA =
 			bodyA.combinedPosition

@@ -101,6 +101,8 @@ namespace KalaKit
 		PhysicsWorld(const PhysicsWorld&) = delete;
 		PhysicsWorld& operator=(const PhysicsWorld&) = delete;
 
+		bool IsValidCollision(RigidBody& bodyA, RigidBody& bodyB);
+
 		void ApplyPhysicsIntegration(float deltaTime);
 
 		void PredictCollision(
