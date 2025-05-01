@@ -36,6 +36,7 @@ using glm::acos;
 using glm::quat;
 using glm::cross;
 using std::fabs;
+using glm::radians;
 
 namespace KalaKit
 {
@@ -271,8 +272,6 @@ namespace KalaKit
 				body.ApplyImpulse(gravityImpulse * body.mass);
 			}
 
-			vec3 futurePosition = body.combinedPosition + body.velocity * deltaTime;
-
 			//predict future rotation using angular velocity
 			quat angularRotation = quat(
 				0,
@@ -286,21 +285,7 @@ namespace KalaKit
 				+ angularRotation 
 				* body.combinedRotation);
 
-			//check future collision before applying movement
-			for (auto& otherBodyPtr : bodies)
-			{
-				if (bodyPtr == otherBodyPtr) continue;
-
-				RigidBody& otherBody = *otherBodyPtr;
-
-				if (!otherBody.collider) continue;
-
-				if (CollisionDetection::CheckOBBCollisionAt(body, futurePosition, otherBody, deltaTime))
-				{
-					body.velocity.y = 0.0f;
-					break;
-				}
-			}
+			PredictCollision(bodyPtr, body, deltaTime);
 
 			//apply simple Euler integration
 			body.combinedPosition += body.velocity * deltaTime;
@@ -353,6 +338,65 @@ namespace KalaKit
 				body.sleepTimer = 0.0f;
 				body.WakeUp();
 			}
+		}
+	}
+
+	void PhysicsWorld::PredictCollision(
+		RigidBody* bodyPtr, 
+		RigidBody& body,
+		float deltaTime)
+	{
+		vec3 originalVelocity = body.velocity;
+		const float maxWalkableAngle = radians(angleLimit);
+
+		for (int axis = 0; axis < 3; ++axis)
+		{
+			vec3 axisVelocity(0.0f);
+			axisVelocity[axis] = originalVelocity[axis];
+
+			vec3 testPos = body.combinedPosition + axisVelocity * deltaTime;
+
+			bool cancelAxis = false;
+
+			for (auto& otherBodyPtr : bodies)
+			{
+				if (bodyPtr == otherBodyPtr) continue;
+
+				RigidBody& otherBody = *otherBodyPtr;
+				if (!otherBody.collider) continue;
+				
+				bool bodyMoves = 
+					body.isDynamic 
+					|| body.useGravity;
+				bool otherMoves = 
+					otherBody.isDynamic 
+					|| otherBody.useGravity;
+
+				//skip prediction if neither bodies actually move or are affected by gravity
+				if (!bodyMoves
+					&& !otherMoves)
+				{
+					continue;
+				}
+
+				RigidBody tempBody = body;
+				tempBody.combinedPosition = testPos;
+
+				auto manifold = CollisionDetection::GenerateOBBContactManifold(tempBody, otherBody);
+				if (manifold.colliding
+					&& !manifold.contacts.empty())
+				{
+					vec3 n = normalize(manifold.contacts[0].normal);
+					float angleToUp = acos(clamp(dot(n, vec3(0, 1, 0)), -1.0f, 1.0f));
+
+					if (angleToUp >= maxWalkableAngle)
+					{
+						cancelAxis = true;
+					}
+				}
+			}
+
+			if (cancelAxis) body.velocity[axis] = 0.0f;
 		}
 	}
 
