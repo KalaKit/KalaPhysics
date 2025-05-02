@@ -75,7 +75,7 @@ namespace KalaKit::Physics::Simulation
 
 	bool HandleMotion::CanTilt(RigidBody& body)
 	{
-
+		return false;
 	}
 	void HandleMotion::TiltBody(RigidBody& body)
 	{
