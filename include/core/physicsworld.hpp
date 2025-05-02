@@ -69,11 +69,6 @@ namespace KalaKit::Physics::Core
 		/// </summary>
 		void RemoveRigidBody(const GameObjectHandle& handle);
 
-		/// <summary>
-		/// Update physics simulation
-		/// </summary>
-		void StepSimulation(float deltaTime);
-
 		void SetGravity(const vec3& newGravity) { gravity = newGravity; }
 		void SetAngleLimit(float value) { angleLimit = value; }
 		void SetAngularDamping(float value) { angularDamping = value; }
@@ -99,37 +94,6 @@ namespace KalaKit::Physics::Core
 		~PhysicsWorld();
 		PhysicsWorld(const PhysicsWorld&) = delete;
 		PhysicsWorld& operator=(const PhysicsWorld&) = delete;
-
-		bool IsValidCollision(RigidBody& bodyA, RigidBody& bodyB);
-
-		void ApplyPhysicsIntegration(float deltaTime);
-
-		void PredictCollision(
-			RigidBody* bodyPtr, 
-			RigidBody& body, 
-			float deltaTime);
-
-		/// <summary>
-		/// Resolves a collision by applying impulse forces to separate the bodies and simulate realistic response
-		/// </summary>
-		void ResolveCollision(
-			RigidBody& bodyA,
-			RigidBody& bodyB,
-			const vec3& collisionNormal,
-			const vec3& contactPoint,
-			float penetration);
-
-		/// <summary>
-		/// Applies frictional forces to reduce sliding and simulate surface resistance after a collision
-		/// </summary>
-		void ApplyFriction(
-			RigidBody& bodyA,
-			RigidBody& bodyB,
-			const vec3& collisionNormal,
-			const vec3& contactPoint) const;
-
-		bool CanTilt(RigidBody& body);
-		void TiltBody(RigidBody& body);
 
 		bool isInitialized = false;
 
