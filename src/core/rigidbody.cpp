@@ -105,6 +105,11 @@ namespace KalaKit::Physics::Core
 			float I_z = (1.0f / 12.0f) * mass * (halfExtents.x * halfExtents.x + halfExtents.y * halfExtents.y);
 
 			inertiaTensor = vec3(I_x, I_y, I_z);
+
+			if (length(inertiaTensor) < 1e-5f)
+			{
+				inertiaTensor = vec3(1.0f);
+			}
 		}
 		else if (collider->type == ColliderType::SPHERE)
 		{

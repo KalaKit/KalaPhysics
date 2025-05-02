@@ -269,7 +269,7 @@ namespace KalaKit::Physics::Collision
 		float radius = sphereB.radius;
 
 		//no contact
-		if (distSq > radius * radius) return {};
+		if (distSq > (radius + 0.01f) * (radius + 0.01f)) return {};
 
 		//compare penetration and safe normal
 

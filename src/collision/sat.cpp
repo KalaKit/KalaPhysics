@@ -114,6 +114,42 @@ namespace KalaKit::Physics::Collision
 			}
 		}
 
+		//finally check the 9 edge-edge cross product axes
+		for (int i = 0; i < 3; ++i)
+		{
+			for (int j = 0; j < 3; ++j)
+			{
+				vec3 axis = cross(rotA[i], rotB[j]);
+				float axisLength = length(axis);
+				if (axisLength < 1e-5f) continue; //skip nearly parallel axes
+
+				axis = normalize(axis);
+
+				//project extents of both boxes onto this axis
+
+				float ra =
+					extentsA[0] * abs(dot(axis, rotA[0]))
+					+ extentsA[1] * abs(dot(axis, rotA[1]))
+					+ extentsA[2] * abs(dot(axis, rotA[2]));
+
+				float rb =
+					extentsB[0] * abs(dot(axis, rotB[0]))
+					+ extentsB[1] * abs(dot(axis, rotB[1]))
+					+ extentsB[2] * abs(dot(axis, rotB[2]));
+
+				float proj = abs(dot(centerB - centerA, axis));
+				float overlap = ra + rb - proj;
+
+				if (overlap < 0.0f) return { false };
+
+				if (overlap < minPenetration)
+				{
+					minPenetration = overlap;
+					bestAxis = axis * ((dot(centerB - centerA, axis) < 0) ? -1.0f : 1.0f);
+				}
+			}
+		}
+
 		//if no gaps were found, the boxes are colliding.
 		//return the axis with the smallest overlap as the "separation axis"
 		return SATResult{ true, bestAxis, minPenetration };
