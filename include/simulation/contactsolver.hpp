@@ -23,6 +23,7 @@
 //physics
 #include "simulation/solver.hpp"
 #include "core/rigidbody.hpp"
+#include "core/physicsworld.hpp"
 
 namespace KalaKit::Physics::Simulation
 {
@@ -30,33 +31,37 @@ namespace KalaKit::Physics::Simulation
 	using std::vector;
 
 	using KalaKit::Physics::Core::RigidBody;
+	using KalaKit::Physics::Core::PhysicsWorld;
+
+	struct Contact
+	{
+		RigidBody* bodyA;
+		RigidBody* bodyB;
+		vec3 point;
+		vec3 normal;
+		vec3 rA;
+		vec3 rB;
+		float penetration;
+		float effectiveMass;
+		float accumulatedImpulse;
+		float bias;
+	};
 
 	class KALAPHYSICS_API ContactSolver : public Solver
 	{
 	public:
-		void AddContact(
+		Contact& AddContact(
+			PhysicsWorld& world,
 			RigidBody* bodyA,
 			RigidBody* bodyB,
 			const vec3& point,
 			const vec3& normal,
-			float penetration);
+			float penetration,
+			float deltaTime);
 
 		void Solve(float deltaTime, int interations) override;
 		void Clear() override;
 	private:
-		struct Contact
-		{
-			RigidBody* bodyA;
-			RigidBody* bodyB;
-			vec3 point;
-			vec3 normal;
-			vec3 rA;
-			vec3 rB;
-			float penetration;
-			float effectiveMass;
-			float accumulatedImpulse;
-		};
-
 		vector<Contact> contacts;
 	};
 }

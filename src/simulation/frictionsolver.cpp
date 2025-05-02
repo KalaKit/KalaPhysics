@@ -8,6 +8,7 @@
 
 //physics
 #include "simulation/frictionsolver.hpp"
+#include "simulation/contactsolver.hpp"
 
 using glm::mat3_cast;
 using glm::clamp;
@@ -20,7 +21,8 @@ namespace KalaKit::Physics::Simulation
 		const vec3& point,
 		const vec3& normal,
 		float staticFriction,
-		float dynamicFriction)
+		float dynamicFriction,
+		Contact* linkedContact)
 	{
 		vec3 rA = point
 			- (bodyA->position
@@ -64,6 +66,7 @@ namespace KalaKit::Physics::Simulation
 		fc.rB = rB;
 		fc.effectiveMass = 1.0f / effMass;
 		fc.tangentImpulse = dynamicFriction;
+		fc.linkedContact = linkedContact;
 
 		constraints.push_back(fc);
 	}
@@ -84,10 +87,17 @@ namespace KalaKit::Physics::Simulation
 				//accumulate impulse (clamp to avoid pulling)
 
 				float oldImpulse = fc.accumulatedImpulse;
+
+				float maxFrictionImpulse{};
+				if (fc.linkedContact)
+				{
+					maxFrictionImpulse = fc.linkedContact->accumulatedImpulse * fc.tangentImpulse;
+				}
+
 				fc.accumulatedImpulse = clamp(
 					oldImpulse + lambda, 
-					-fc.tangentImpulse,
-					fc.tangentImpulse);
+					-maxFrictionImpulse,
+					maxFrictionImpulse);
 				float actualImpulse = fc.accumulatedImpulse - oldImpulse;
 
 				vec3 impulse = actualImpulse * fc.tangent;

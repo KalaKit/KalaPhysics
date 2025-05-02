@@ -30,6 +30,7 @@ namespace KalaKit::Physics::Simulation
 	using std::vector;
 
 	using KalaKit::Physics::Core::RigidBody;
+	using KalaKit::Physics::Simulation::Contact;
 
 	class KALAPHYSICS_API FrictionSolver : public Solver
 	{
@@ -40,7 +41,8 @@ namespace KalaKit::Physics::Simulation
 			const vec3& point,
 			const vec3& normal,
 			float staticFriction,
-			float dynamicFriction);
+			float dynamicFriction,
+			Contact* linkedContact);
 
 		void Solve(float deltaTime, int iterations) override;
 		void Clear() override;
@@ -57,6 +59,7 @@ namespace KalaKit::Physics::Simulation
 			float effectiveMass;
 			float tangentImpulse;
 			float accumulatedImpulse;
+			Contact* linkedContact;
 		};
 
 		vector<FrictionConstraint> constraints;

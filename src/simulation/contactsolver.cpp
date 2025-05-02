@@ -14,12 +14,14 @@ using glm::max;
 
 namespace KalaKit::Physics::Simulation
 {
-	void ContactSolver::AddContact(
+	Contact& ContactSolver::AddContact(
+		PhysicsWorld& world,
 		RigidBody* bodyA,
 		RigidBody* bodyB,
 		const vec3& point,
 		const vec3& normal,
-		float penetration)
+		float penetration,
+		float deltaTime)
 	{
 		Contact contact{};
 		contact.bodyA = bodyA;
@@ -27,6 +29,11 @@ namespace KalaKit::Physics::Simulation
 		contact.point = point;
 		contact.normal = normal;
 		contact.penetration = penetration;
+
+		//gently pushes bodies apart when they're penetrating, without adding bounce
+
+		float penetrationBias = max(0.0f, penetration - world.GetBaumgarteSlop());
+		contact.bias = (world.GetBaumgarteFactor() / deltaTime) * penetrationBias;
 
 		//local lever arms
 
@@ -53,10 +60,20 @@ namespace KalaKit::Physics::Simulation
 		contact.effectiveMass = (totalInvMass > 0.0f) ? 1.0f / totalInvMass : 0.0f;
 
 		contacts.push_back(contact);
+		return contacts.back();
 	}
 
 	void ContactSolver::Solve(float deltaTime, int iterations)
 	{
+		//start each frame with a good approximation from the previous frame,
+		//boosting stack ability and reducing jitter
+		for (auto& c : contacts)
+		{
+			vec3 impulse = c.accumulatedImpulse * c.normal;
+			c.bodyA->ApplyImpulse(-impulse);
+			c.bodyB->ApplyImpulse(impulse);
+		}
+
 		for (int i = 0; i < iterations; ++i)
 		{
 			for (auto& c : contacts)
@@ -66,7 +83,7 @@ namespace KalaKit::Physics::Simulation
 				vec3 relVel = vB - vA;
 
 				float normalVel = dot(relVel, c.normal);
-				float lambda = -normalVel * c.effectiveMass;
+				float lambda = -(normalVel + c.bias) * c.effectiveMass;
 
 				//accumulate impulse (clamp to avoid pulling)
 

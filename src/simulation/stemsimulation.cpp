@@ -112,12 +112,14 @@ namespace KalaKit::Physics::Simulation
 
 				for (const auto& contact : manifold.contacts)
 				{
-					contactSolver.AddContact(
+					auto& contactSolv = contactSolver.AddContact(
+						world,
 						&bodyA,
 						&bodyB,
 						contact.point,
 						contact.normal,
-						contact.penetration);
+						contact.penetration,
+						deltaTime);
 
 					frictionSolver.AddFrictionPair(
 						&bodyA,
@@ -125,7 +127,8 @@ namespace KalaKit::Physics::Simulation
 						contact.point,
 						contact.normal,
 						bodyA.staticFriction,
-						bodyA.dynamicFriction);
+						bodyA.dynamicFriction,
+						&contactSolv);
 				}
 			}
 		}
