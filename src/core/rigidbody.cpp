@@ -36,6 +36,9 @@ namespace KalaKit::Physics::Core
 		GameObjectHandle h,
 		const vec3& position,
 		const quat& rotation,
+		const vec3& scale,
+		bool isDynamic,
+		bool useGravity,
 		float m,
 		float rest,
 		float staticFrict,
@@ -44,20 +47,14 @@ namespace KalaKit::Physics::Core
 		handle(h),
 		position(position),
 		rotation(rotation),
-		velocity(0.0f),
-		angularVelocity(0.0f),
+		scale(scale),
+		isDynamic(isDynamic),
+		useGravity(useGravity),
 		mass(m),
-		isDynamic(false),
-		collider(nullptr),
 		restitution(rest),
 		staticFriction(staticFrict),
 		dynamicFriction(dynamicFrict),
-		gravityFactor(gFactor),
-		useGravity(false),
-		inertiaTensor(vec3(1.0f))
-	{
-		ComputeInertiaTensor();
-	}
+		gravityFactor(gFactor) {}
 
 	void RigidBody::ApplyForce(const vec3& force)
 	{
@@ -94,7 +91,7 @@ namespace KalaKit::Physics::Core
 		angularVelocity += torque / inertiaTensor;
 	}
 
-	void RigidBody::ComputeInertiaTensor(const vec3& scale)
+	void RigidBody::ComputeInertiaTensor()
 	{
 		if (!collider) return;
 
@@ -183,6 +180,7 @@ namespace KalaKit::Physics::Core
 		}
 
 		UpdateCenterOfGravity();
+		ComputeInertiaTensor();
 	}
 
 	void RigidBody::SetCollider(ColliderType type)

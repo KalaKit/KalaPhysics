@@ -55,7 +55,7 @@ namespace KalaKit::Physics::Core
 	{
 		if (!isInitialized)
 		{
-			LOG_ERROR("Cannot shut down Elypso Physics because it has not yet been initialized!");
+			LOG_ERROR("Cannot shut down KalaPhysics because it has not yet been initialized!");
 			return;
 		}
 
@@ -80,7 +80,7 @@ namespace KalaKit::Physics::Core
 	{
 		if (isInitialized)
 		{
-			LOG_ERROR("Elypso Physics is already initialized!");
+			LOG_ERROR("KalaPhysics is already initialized!");
 			return;
 		}
 
@@ -98,18 +98,19 @@ namespace KalaKit::Physics::Core
 	GameObjectHandle PhysicsWorld::CreateRigidBody(
 		const vec3& position,
 		const quat& rotation,
+		const vec3& scale,
+		bool isDynamic,
+		bool useGravity,
 		ColliderType colliderType,
-		const vec3& colliderSizeOrRadius,
 		float mass,
 		float restitution,
 		float staticFriction,
 		float dynamicFriction,
-		float gravityFactor,
-		bool useGravity)
+		float gravityFactor)
 	{
 		if (!isInitialized)
 		{
-			LOG_ERROR("Cannot create a RigidBody if Elypso Physics isnt initialized!");
+			LOG_ERROR("Cannot create a RigidBody if KalaPhysics isnt initialized!");
 			return GameObjectHandle(UINT32_MAX, UINT32_MAX);
 		}
 
@@ -123,6 +124,9 @@ namespace KalaKit::Physics::Core
 			handle,
 			position,
 			rotation,
+			scale,
+			isDynamic,
+			useGravity,
 			mass,
 			restitution,
 			staticFriction,
@@ -251,28 +255,10 @@ namespace KalaKit::Physics::Core
 		for (size_t i = 0; i < bodies.size(); i++)
 		{
 			RigidBody& bodyA = *bodies[i];
-			if (bodyA.scale == vec3(0))
-			{
-				GameObjectHandle& ha_a = bodyA.handle;
-				string index_a = to_string(ha_a.index);
-				string gen_a = to_string(ha_a.generation);
-				LOG_ERROR("Rigidbody (" + index_a + ", " + gen_a + ") has no scale!\n");
-
-				continue;
-			}
 
 			for (size_t j = i + 1; j < bodies.size(); j++)
 			{
 				RigidBody& bodyB = *bodies[j];
-				if (bodyB.scale == vec3(0))
-				{
-					GameObjectHandle& ha_b = bodyB.handle;
-					string index_b = to_string(ha_b.index);
-					string gen_b = to_string(ha_b.generation);
-					LOG_ERROR("Rigidbody (" + index_b + ", " + gen_b + ") has no scale!\n");
-
-					continue;
-				}
 
 				if (!IsValidCollision(bodyA, bodyB)) continue;
 

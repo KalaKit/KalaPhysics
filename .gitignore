@@ -1,4 +1,4 @@
-# Elypso Physics ignored files and folders
+# KalaPhysics ignored files and folders
 .vs/
 out/
 build-release/
