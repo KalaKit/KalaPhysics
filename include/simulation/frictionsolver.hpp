@@ -15,6 +15,11 @@
 	#define KALAPHYSICS_API
 #endif
 
+namespace KalaKit::Physics::Simulation
+{
+	struct Contact;
+}
+
 #include <vector>
 
 //external
@@ -30,7 +35,6 @@ namespace KalaKit::Physics::Simulation
 	using std::vector;
 
 	using KalaKit::Physics::Core::RigidBody;
-	using KalaKit::Physics::Simulation::Contact;
 
 	class KALAPHYSICS_API FrictionSolver : public Solver
 	{
