@@ -37,9 +37,23 @@ namespace KalaKit::Physics::Simulation
 		vec3 vB = bodyB->velocity + cross(bodyB->angularVelocity, rB);
 		vec3 relVel = vB - vA;
 
-		vec3 tangent = relVel - dot(relVel, normal) * normal;
-		if (dot(tangent, tangent) < 1e-6f) return; //no tangential movement
-		tangent = normalize(tangent);
+		//try to get tangent1 from relative velocity
+
+		vec3 tangent1 = relVel - dot(relVel, normal) * normal;
+		if (dot(tangent1, tangent1) < 1e-6f)
+		{
+			//nearly aligned with normal,
+			//so fallback to any perpendicular direction
+
+			tangent1 = abs(normal.x) < 0.9f
+				? cross(normal, vec3(1, 0, 0))
+				: cross(normal, vec3(0, 1, 0));
+		}
+		tangent1 = normalize(tangent1);
+
+		//always compute tangent2 as orthogonal to normal and tangent1
+
+		vec3 tangent2 = normalize(cross(normal, tangent1));
 
 		float invMassA = (bodyA->mass > 0.0f) ? 1.0f / bodyA->mass : 0.0f;
 		float invMassB = (bodyB->mass > 0.0f) ? 1.0f / bodyB->mass : 0.0f;
@@ -48,27 +62,47 @@ namespace KalaKit::Physics::Simulation
 		vec3 invInertiaB = (bodyB->mass > 0.0f) 
 			? (1.0f / bodyB->inertiaTensor) : vec3(0.0f);
 
-		vec3 crossRA = cross(rA, tangent);
-		vec3 crossRB = cross(rB, tangent);
-		float angularA = dot(crossRA * invInertiaA, crossRA);
-		float angularB = dot(crossRB * invInertiaB, crossRB);
-		float effMass = invMassA + invMassB + angularA + angularB;
+		vec3 crossRA1 = cross(rA, tangent1);
+		vec3 crossRB1 = cross(rB, tangent1);
+		float angularA1 = dot(crossRA1 * invInertiaA, crossRA1);
+		float angularB1 = dot(crossRB1 * invInertiaB, crossRB1);
+		float effMass1 = invMassA + invMassB + angularA1 + angularB1;
+		if (effMass1 >= 1e-5f)
+		{
+			FrictionConstraint fc1{};
+			fc1.bodyA = bodyA;
+			fc1.bodyB = bodyB;
+			fc1.point = point;
+			fc1.normal = normal;
+			fc1.tangent = tangent1;
+			fc1.rA = rA;
+			fc1.rB = rB;
+			fc1.effectiveMass = 1.0f / effMass1;
+			fc1.tangentImpulse = dynamicFriction;
+			fc1.linkedContact = linkedContact;
+			constraints.push_back(fc1);
+		}
 
-		if (effMass < 1e-5f) return;
-
-		FrictionConstraint fc{};
-		fc.bodyA = bodyA;
-		fc.bodyB = bodyB;
-		fc.point = point;
-		fc.normal = normal;
-		fc.tangent = tangent;
-		fc.rA = rA;
-		fc.rB = rB;
-		fc.effectiveMass = 1.0f / effMass;
-		fc.tangentImpulse = dynamicFriction;
-		fc.linkedContact = linkedContact;
-
-		constraints.push_back(fc);
+		vec3 crossRA2 = cross(rA, tangent2);
+		vec3 crossRB2 = cross(rB, tangent2);
+		float angularA2 = dot(crossRA2 * invInertiaA, crossRA2);
+		float angularB2 = dot(crossRB2 * invInertiaB, crossRB2);
+		float effMass2 = invMassA + invMassB + angularA2 + angularB2;
+		if (effMass2 >= 1e-5f)
+		{
+			FrictionConstraint fc2{};
+			fc2.bodyA = bodyA;
+			fc2.bodyB = bodyB;
+			fc2.point = point;
+			fc2.normal = normal;
+			fc2.tangent = tangent2;
+			fc2.rA = rA;
+			fc2.rB = rB;
+			fc2.effectiveMass = 1.0f / effMass2;
+			fc2.tangentImpulse = dynamicFriction;
+			fc2.linkedContact = linkedContact;
+			constraints.push_back(fc2);
+		}
 	}
 
 	void FrictionSolver::Solve(float deltaTime, int iterations)
