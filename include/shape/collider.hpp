@@ -15,6 +15,17 @@
 	#define KALAPHYSICS_API
 #endif
 
+namespace KalaKit::Physics::Core 
+{
+	class RigidBody;
+}
+
+namespace KalaKit::Physics::Collision::Manifold 
+{
+	struct SATResult;
+	struct ContactManifold;
+}
+
 #include <string>
 #include <iostream>
 
@@ -24,6 +35,7 @@
 
 //physics
 #include "core/gameobjecthandle.hpp"
+#include "collision/manifold.hpp"
 
 namespace KalaKit::Physics::Shape
 {
@@ -36,6 +48,9 @@ namespace KalaKit::Physics::Shape
 	using std::cout;
 
 	using KalaKit::Physics::Core::GameObjectHandle;
+	using KalaKit::Physics::Core::RigidBody;
+	using KalaKit::Physics::Collision::SATResult;
+	using KalaKit::Physics::Collision::ContactManifold;
 
 	enum class ColliderType
 	{
@@ -52,59 +67,34 @@ namespace KalaKit::Physics::Shape
 		vec3 combinedScale;           //The combined scale of target gameobject scale and local offset
 		float boundingRadius = 0.0f;
 
-		explicit Collider(
+		Collider(
 			const vec3& offsetScale,
 			const vec3& combinedScale,
 			ColliderType type, 
-			const GameObjectHandle& h);
+			const GameObjectHandle& h)
+			: offsetScale(offsetScale),
+			combinedScale(combinedScale),
+			type(type),
+			handle(h) {}
 		
 		virtual ~Collider() = default;
+
+		virtual ColliderType GetColliderType() const { return type; }
+
+		virtual SATResult SATAgainst(
+			const RigidBody& self,
+			const RigidBody& other,
+			const Collider& otherCol) const = 0;
+
+		virtual ContactManifold GenerateContacts(
+			const RigidBody& self,
+			const RigidBody& other,
+			const Collider& otherCol) const = 0;
 
 		virtual void CalculateBoundingRadius() = 0;
 		virtual void UpdateScale(const vec3& newCombinedScale) = 0;
 
 		Collider(const Collider&) = delete;
 		Collider& operator=(const Collider&) = delete;
-	};
-
-	class KALAPHYSICS_API BoxCollider : public Collider
-	{
-	public:
-		BoxCollider(
-			const vec3& offsetScale,
-			const vec3& combinedScale,
-			const GameObjectHandle& h);
-		void UpdateScale(const vec3& newCombinedScale) override
-		{
-			halfExtents = newCombinedScale * 0.5f;
-			CalculateBoundingRadius();
-		}
-		void CalculateBoundingRadius() override
-		{
-			boundingRadius = length(halfExtents) * 2.0f * 0.5f; //half diagonal
-		}
-
-		//half size of box in each axis
-		vec3 halfExtents;
-	};
-
-	class KALAPHYSICS_API SphereCollider : public Collider
-	{
-	public:
-		SphereCollider(
-			const vec3& offsetScale,
-			const vec3& combinedScale,
-			const GameObjectHandle& h);
-		void UpdateScale(const vec3& newCombinedScale) override
-		{
-			radius = newCombinedScale.x * 0.5f;
-			CalculateBoundingRadius();
-		}
-		void CalculateBoundingRadius() override
-		{
-			boundingRadius = radius;
-		}
-
-		float radius;
 	};
 }
