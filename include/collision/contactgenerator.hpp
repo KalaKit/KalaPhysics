@@ -53,5 +53,11 @@ namespace KalaKit::Physics::Collision
 			const SphereCollider& sphereA,
 			const SphereCollider& sphereB,
 			const SATResult& sat);
+
+		static ContactManifold GenerateBoxSphereContacts(
+			const RigidBody& bodyA,
+			const RigidBody& bodyB,
+			const BoxCollider& boxA,
+			const SphereCollider& sphereB);
 	};
 }

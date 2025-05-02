@@ -22,6 +22,8 @@ using glm::mat3;
 using glm::dot;
 using std::sort;
 using std::min;
+using glm::clamp;
+using glm::transpose;
 
 namespace KalaKit::Physics::Collision
 {
@@ -228,6 +230,59 @@ namespace KalaKit::Physics::Collision
 		contact.penetration = combinedRadius - distance;
 
 		manifold.contacts.push_back(contact);
+		return manifold;
+	}
+
+	ContactManifold ContactGenerator::GenerateBoxSphereContacts(
+		const RigidBody& bodyA,
+		const RigidBody& bodyB,
+		const BoxCollider& boxA,
+		const SphereCollider& sphereB)
+	{
+		ContactManifold manifold{};
+
+		const vec3& boxCenter = bodyA.combinedPosition;
+		const vec3& sphereCenter = bodyB.combinedPosition;
+
+		const mat3 boxRot = mat3_cast(bodyA.combinedRotation);
+		const mat3 boxInvRot = transpose(boxRot); //inverse of orthonormal matrix
+
+		//transform spherre center into box local space
+
+		vec3 localSphereCenter = boxInvRot * (sphereCenter - boxCenter);
+
+		//clamp to box bounds (closest point on box in local space)
+
+		vec3 localClosestPoint = clamp(
+			localSphereCenter,
+			-boxA.halfExtents,
+			boxA.halfExtents);
+
+		//convert closest point back to world space
+
+		vec3 worldClosestPoint = boxRot * localClosestPoint + boxCenter;
+
+		//vector from sphere to box surface
+
+		vec3 normal = sphereCenter - worldClosestPoint;
+		float distSq = dot(normal, normal);
+		float radius = sphereB.radius;
+
+		//no contact
+		if (distSq > radius * radius) return {};
+
+		//compare penetration and safe normal
+
+		float distance = sqrt(distSq);
+		vec3 safeNormal = (distance > 1e-5f) ? (normal / distance) : vec3(0, 1, 0);
+
+		Contact contact{};
+		contact.point = worldClosestPoint;
+		contact.normal = safeNormal;
+		contact.penetration = radius - distance;
+
+		manifold.contacts.push_back(contact);
+		manifold.colliding = true;
 		return manifold;
 	}
 }

@@ -5,6 +5,7 @@
 
 //physics
 #include "shape/spherecollider.hpp"
+#include "shape/boxcollider.hpp"
 #include "collision/sat.hpp"
 #include "collision/contactgenerator.hpp"
 
@@ -43,13 +44,35 @@ namespace KalaKit::Physics::Shape
 		const RigidBody& other,
 		const Collider& otherCol) const
 	{
-		if (otherCol.GetColliderType() != ColliderType::SPHERE) return {};
+		switch (otherCol.GetColliderType())
+		{
+		case ColliderType::BOX:
+		{
+			const auto& box = static_cast<const BoxCollider&>(otherCol);
+			ContactManifold manifold = ContactGenerator::GenerateBoxSphereContacts(
+				self, 
+				other, 
+				box, 
+				*this);
 
-		const auto& otherSphere = static_cast<const SphereCollider&>(otherCol);
-		auto sat = SAT::PerformSphereSAT(self, other, *this, otherSphere);
+			//flip normal to point from this sphere
+			for (auto& contact : manifold.contacts)
+			{
+				contact.normal = -contact.normal;
+			}
+			return manifold;
+		}
+		case ColliderType::SPHERE:
+		{
+			const auto& otherSphere = static_cast<const SphereCollider&>(otherCol);
+			auto sat = SAT::PerformSphereSAT(self, other, *this, otherSphere);
 
-		if (!sat.colliding) return {};
+			if (!sat.colliding) return {};
 
-		return ContactGenerator::GenerateSphereContacts(self, other, *this, otherSphere, sat);
+			return ContactGenerator::GenerateSphereContacts(self, other, *this, otherSphere, sat);
+		}
+		}
+
+		return {};
 	}
 }
