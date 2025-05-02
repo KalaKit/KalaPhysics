@@ -104,7 +104,20 @@ namespace KalaKit::Physics::Core
 			float I_y = (1.0f / 12.0f) * mass * (halfExtents.x * halfExtents.x + halfExtents.z * halfExtents.z);
 			float I_z = (1.0f / 12.0f) * mass * (halfExtents.x * halfExtents.x + halfExtents.y * halfExtents.y);
 
-			inertiaTensor = vec3(I_x, I_y, I_z);
+			vec3 I = vec3(I_x, I_y, I_z);
+
+			//apply parallel axis theorem if centerOfGravity is offset
+
+			vec3 d = centerOfGravity;
+			float dx2 = d.x * d.x;
+			float dy2 = d.y * d.y;
+			float dz2 = d.x * d.z;
+
+			I.x += mass * (dy2 + dz2);
+			I.y += mass * (dx2 + dz2);
+			I.z += mass * (dx2 + dy2);
+
+			inertiaTensor = I;
 
 			if (length(inertiaTensor) < 1e-5f)
 			{
