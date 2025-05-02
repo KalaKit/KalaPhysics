@@ -16,3 +16,5 @@
 0.2:
 
 - replaced AABB collision with OBBvOBB
+- major restructuring - better namespace, file structure
+- major restructuring - better separation of shapes and collision systems

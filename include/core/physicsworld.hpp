@@ -23,9 +23,9 @@
 #include "glm.hpp"
 
 //physics
-#include "rigidbody.hpp"
+#include "core/rigidbody.hpp"
 
-namespace KalaKit
+namespace KalaKit::Physics::Core
 {
 	using std::vector;
 	using std::unordered_map;

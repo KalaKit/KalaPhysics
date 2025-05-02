@@ -18,7 +18,7 @@
 #include <cstdint>
 #include <functional>
 
-namespace KalaKit
+namespace KalaKit::Physics::Core
 {
 	class KALAPHYSICS_API GameObjectHandle
 	{
@@ -39,10 +39,12 @@ namespace KalaKit
 
 namespace std
 {
+	using KalaKit::Physics::Core::GameObjectHandle;
+
 	template <>
-	struct hash<KalaKit::GameObjectHandle>
+	struct hash<GameObjectHandle>
 	{
-		size_t operator()(const KalaKit::GameObjectHandle& handle) const
+		size_t operator()(const GameObjectHandle& handle) const
 		{
 			size_t h1 = hash<uint32_t>()(handle.index);
 			size_t h2 = hash<uint32_t>()(handle.generation);

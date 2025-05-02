@@ -4,9 +4,11 @@
 //Read LICENSE.md for more information.
 
 //physics
-#include "collider.hpp"
+#include "shape/collider.hpp"
 
-namespace KalaKit
+using KalaKit::Physics::Core::GameObjectHandle;
+
+namespace KalaKit::Physics::Shape
 {
 	Collider::Collider(
 		const vec3& offsetScale,

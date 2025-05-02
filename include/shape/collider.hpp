@@ -23,9 +23,9 @@
 #include "gtc/quaternion.hpp"
 
 //physics
-#include "gameobjecthandle.hpp"
+#include "core/gameobjecthandle.hpp"
 
-namespace KalaKit
+namespace KalaKit::Physics::Shape
 {
 	using glm::vec3;
 	using glm::mat3;
@@ -34,6 +34,8 @@ namespace KalaKit
 	using std::string;
 	using std::to_string;
 	using std::cout;
+
+	using KalaKit::Physics::Core::GameObjectHandle;
 
 	enum class ColliderType
 	{

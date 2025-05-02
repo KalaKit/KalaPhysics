@@ -6,15 +6,21 @@
 #include <cmath>
 
 //physics
-#include "collisiondetection.hpp"
+#include "collision/collisiondetection.hpp"
 
 using glm::dot;
 using glm::mat3;
 using glm::mat3_cast;
 using std::abs;
 using glm::max;
+using glm::normalize;
+using glm::quat;
 
-namespace KalaKit
+using KalaKit::Physics::Core::RigidBody;
+using KalaKit::Physics::Shape::BoxCollider;
+using KalaKit::Physics::Shape::ColliderType;
+
+namespace KalaKit::Physics::Collision
 {
 	ContactManifold CollisionDetection::GenerateOBBContactManifold(const RigidBody& a, const RigidBody& b)
 	{
@@ -109,6 +115,18 @@ namespace KalaKit
 			c.penetration = minPenetration;
 			c.point = contactPoints[i];
 			manifold.contacts.push_back(c);
+		}
+
+		//no contacts were generated, but collision was confired
+		if (manifold.contacts.empty())
+		{
+			Contact fallback{};
+			fallback.normal = normalize(collisionNormal);
+
+			//estimate the contact point to be halfway between the boxes
+			fallback.point = (a.combinedPosition + b.combinedPosition) * 0.5f;
+
+			manifold.contacts.push_back(fallback);
 		}
 
 		return manifold;

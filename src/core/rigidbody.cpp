@@ -18,13 +18,17 @@
 #include <string>
 
 //physics
-#include "rigidbody.hpp"
+#include "core/rigidbody.hpp"
 
 using std::string;
 using std::to_string;
 using glm::max;
 
-namespace KalaKit
+using KalaKit::Physics::Shape::ColliderType;
+using KalaKit::Physics::Shape::BoxCollider;
+using KalaKit::Physics::Shape::SphereCollider;
+
+namespace KalaKit::Physics::Core
 {
 	RigidBody::RigidBody(
 		GameObjectHandle h,

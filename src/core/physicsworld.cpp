@@ -21,8 +21,12 @@
 #include "gtc/quaternion.hpp"
 
 //physics
-#include "physicsworld.hpp"
-#include "collisiondetection.hpp"
+#include "core/physicsworld.hpp"
+#include "collision/collisiondetection.hpp"
+
+using KalaKit::Physics::Shape::ColliderType;
+using KalaKit::Physics::Collision::ContactManifold;
+using KalaKit::Physics::Collision::CollisionDetection;
 
 using glm::normalize;
 using glm::length;
@@ -38,7 +42,7 @@ using glm::cross;
 using std::fabs;
 using glm::radians;
 
-namespace KalaKit
+namespace KalaKit::Physics::Core
 {
 	PhysicsWorld& PhysicsWorld::GetInstance()
 	{
@@ -399,6 +403,45 @@ namespace KalaKit
 		vec3 originalVelocity = body.velocity;
 		const float maxWalkableAngle = radians(angleLimit);
 
+		const float groundingProbeDistance = 0.05f;
+
+		//if the body is not moving, thest slightly below to stay grounded on slopes
+		if (dot(originalVelocity, originalVelocity) < 0.0001f)
+		{
+			vec3 probePos = body.combinedPosition + vec3(0, -groundingProbeDistance, 0);
+
+			for (auto& otherBodyPtr : bodies)
+			{
+				RigidBody& otherBody = *otherBodyPtr;
+				if (!IsValidCollision(body, otherBody)) continue;
+
+				RigidBody tempBody = body;
+				tempBody.combinedPosition = probePos;
+
+				auto manifold = CollisionDetection::GenerateOBBContactManifold(tempBody, otherBody);
+				if (manifold.colliding
+					&& !manifold.contacts.empty())
+				{
+					float smallestAngle = FLT_MAX;
+
+					//find the smallest angle between any contact normal and 'up'
+					for (const auto& contact : manifold.contacts)
+					{
+						vec3 n = normalize(contact.normal);
+						float angleToUp = acos(clamp(dot(n, vec3(0, 1, 0)), -1.0f, 1.0f));
+						smallestAngle = min(smallestAngle, angleToUp);
+					}
+
+					if (smallestAngle < maxWalkableAngle)
+					{
+						body.velocity.y = 0.0f;
+						body.combinedPosition.y -= groundingProbeDistance;
+					}
+				}
+			}
+		}
+
+		//test each axis separately to allow natural sliding along walls or slopes
 		for (int axis = 0; axis < 3; ++axis)
 		{
 			vec3 axisVelocity(0.0f);
@@ -413,20 +456,6 @@ namespace KalaKit
 				RigidBody& otherBody = *otherBodyPtr;
 				if (!IsValidCollision(body, otherBody)) continue;
 
-				bool bodyMoves =
-					body.isDynamic
-					|| body.useGravity;
-				bool otherMoves =
-					otherBody.isDynamic
-					|| otherBody.useGravity;
-
-				//skip prediction if neither bodies actually move or are affected by gravity
-				if (!bodyMoves
-					&& !otherMoves)
-				{
-					continue;
-				}
-
 				RigidBody tempBody = body;
 				tempBody.combinedPosition = testPos;
 
@@ -434,12 +463,30 @@ namespace KalaKit
 				if (manifold.colliding
 					&& !manifold.contacts.empty())
 				{
-					vec3 n = normalize(manifold.contacts[0].normal);
-					float angleToUp = acos(clamp(dot(n, vec3(0, 1, 0)), -1.0f, 1.0f));
+					float smallestAngle = FLT_MAX;
 
-					if (angleToUp >= maxWalkableAngle)
+					//find the smallest angle between any contact normal and 'up'
+					for (const auto& contact : manifold.contacts)
 					{
+						vec3 n = normalize(contact.normal);
+						float angleToUp = acos(clamp(dot(n, vec3(0, 1, 0)), -1.0f, 1.0f));
+						smallestAngle = min(smallestAngle, angleToUp);
+					}
+
+					if (smallestAngle >= maxWalkableAngle)
+					{
+						//block movement if against wall or steep slope
 						cancelAxis = true;
+					}
+					else
+					{
+						//snap down to stay grounded while not moving
+						if (dot(originalVelocity, originalVelocity) < 0.0001f)
+						{
+							body.velocity.y = 0.0f;
+							body.combinedPosition.y -= groundingProbeDistance;
+						}
+						break;
 					}
 				}
 			}

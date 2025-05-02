@@ -20,13 +20,16 @@
 #include "gtc/quaternion.hpp"
 
 //physics
-#include "gameobjecthandle.hpp"
-#include "collider.hpp"
+#include "core/gameobjecthandle.hpp"
+#include "shape/collider.hpp"
 
-namespace KalaKit
+namespace KalaKit::Physics::Core
 {
 	using glm::vec3;
 	using glm::quat;
+
+	using KalaKit::Physics::Shape::Collider;
+	using KalaKit::Physics::Shape::ColliderType;
 
 	class KALAPHYSICS_API RigidBody
 	{
