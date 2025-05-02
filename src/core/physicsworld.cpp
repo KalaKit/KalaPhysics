@@ -251,10 +251,28 @@ namespace KalaKit::Physics::Core
 		for (size_t i = 0; i < bodies.size(); i++)
 		{
 			RigidBody& bodyA = *bodies[i];
+			if (bodyA.scale == vec3(0))
+			{
+				GameObjectHandle& ha_a = bodyA.handle;
+				string index_a = to_string(ha_a.index);
+				string gen_a = to_string(ha_a.generation);
+				LOG_ERROR("Rigidbody (" + index_a + ", " + gen_a + ") has no scale!\n");
+
+				continue;
+			}
 
 			for (size_t j = i + 1; j < bodies.size(); j++)
 			{
 				RigidBody& bodyB = *bodies[j];
+				if (bodyB.scale == vec3(0))
+				{
+					GameObjectHandle& ha_b = bodyB.handle;
+					string index_b = to_string(ha_b.index);
+					string gen_b = to_string(ha_b.generation);
+					LOG_ERROR("Rigidbody (" + index_b + ", " + gen_b + ") has no scale!\n");
+
+					continue;
+				}
 
 				if (!IsValidCollision(bodyA, bodyB)) continue;
 
