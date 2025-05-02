@@ -27,13 +27,13 @@ namespace KalaKit::Physics::Collision
 		const BoxCollider& boxA,
 		const BoxCollider& boxB)
 	{
-		const vec3& centerA = bodyA.combinedPosition;
-		const vec3& centerB = bodyB.combinedPosition;
+		const vec3& centerA = bodyA.position;
+		const vec3& centerB = bodyB.position;
 		const vec3& extentsA = boxA.halfExtents;
 		const vec3& extentsB = boxB.halfExtents;
 
-		const mat3 rotA = mat3_cast(bodyA.combinedRotation);
-		const mat3 rotB = mat3_cast(bodyB.combinedRotation);
+		const mat3 rotA = mat3_cast(bodyA.rotation);
+		const mat3 rotB = mat3_cast(bodyB.rotation);
 
 		//build a rotation matrix to compare directions of the two boxes.
 		//AbsR is used to test distances safely
@@ -127,7 +127,7 @@ namespace KalaKit::Physics::Collision
 	{
 		//get the vector between the centers of the two spheres
 
-		vec3 delta = bodyB.combinedPosition - bodyA.combinedPosition;
+		vec3 delta = bodyB.position - bodyA.position;
 
 		//compare how far apart they are to how big they are combined
 

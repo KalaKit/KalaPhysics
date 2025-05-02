@@ -34,20 +34,16 @@ namespace KalaKit::Physics::Core
 {
 	RigidBody::RigidBody(
 		GameObjectHandle h,
-		const vec3& offsetPosition,
-		const vec3& combinedPosition,
-		const quat& offsetRotation,
-		const quat& combinedRotation,
+		const vec3& position,
+		const quat& rotation,
 		float m,
 		float rest,
 		float staticFrict,
 		float dynamicFrict,
 		float gFactor) :
 		handle(h),
-		offsetPosition(offsetPosition),
-		combinedPosition(combinedPosition),
-		offsetRotation(offsetRotation),
-		combinedRotation(combinedRotation),
+		position(position),
+		rotation(rotation),
 		velocity(0.0f),
 		angularVelocity(0.0f),
 		mass(m),
@@ -161,37 +157,54 @@ namespace KalaKit::Physics::Core
 		else centerOfGravity = vec3(0.0f);
 	}
 
-	void RigidBody::SetCollider(
-		const vec3& offsetScale,
-		const vec3& combinedScale,
-		ColliderType type)
+	void RigidBody::UpdateScale(const vec3& scale)
+	{
+		Collider* collider = this->collider;
+		if (collider == nullptr) return;
+
+		switch (collider->GetColliderType())
+		{
+		case ColliderType::BOX:
+		{
+			BoxCollider* box = static_cast<BoxCollider*>(collider);
+			box->halfExtents = scale * 0.5f;
+			box->CalculateBoundingRadius();
+			break;
+		}
+		case ColliderType::SPHERE:
+		{
+			SphereCollider* sphere = static_cast<SphereCollider*>(collider);
+			sphere->radius = scale.x * 0.5f;
+			sphere->CalculateBoundingRadius();
+			break;
+		}
+		}
+	}
+
+	void RigidBody::SetCollider(ColliderType type)
 	{
 		if (collider) delete collider;
 
+		uint32_t index = handle.index;
+		uint32_t gen = handle.generation;
+		string handleStr = "(" + to_string(index) + ", " + to_string(gen) + ")";
+		string sizeString = to_string(scale.x) + ", " + to_string(scale.y) + ", " + to_string(scale.z);
+		string colliderType = "";
+
 		if (type == ColliderType::BOX)
 		{
-			collider = new BoxCollider(
-				offsetPosition,
-				combinedPosition,
-				handle);
-
-			uint32_t index = handle.index;
-			uint32_t gen = handle.generation;
-			string sizeString = to_string(combinedScale.x) + ", " + to_string(combinedScale.y) + ", " + to_string(combinedScale.z);
-			LOG_SUCCESS("Set size to '" + sizeString + "' and collider to box for rigidbody(" + to_string(index) + ", " + to_string(gen) + ")!");
+			collider = new BoxCollider(handle);
+			UpdateScale(scale);
+			colliderType = "box";
 		}
 		else if (type == ColliderType::SPHERE)
 		{
-			collider = new SphereCollider(
-				offsetPosition,
-				combinedPosition,
-				handle);
-
-			uint32_t index = handle.index;
-			uint32_t gen = handle.generation;
-			string radius = to_string(combinedScale.x);
-			LOG_SUCCESS("Set radius to '" + radius + "' and collider to sphere for rigidbody(" + to_string(index) + ", " + to_string(gen) + ")!");
+			collider = new SphereCollider(handle);
+			UpdateScale(scale);
+			colliderType = "sphere";
 		}
+
+		LOG_SUCCESS("Set size to '" + sizeString + "' and collider to " + colliderType + " for rigidbody(" + handleStr + ")!");
 	}
 
 	void RigidBody::WakeUp()

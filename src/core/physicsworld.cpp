@@ -96,10 +96,8 @@ namespace KalaKit::Physics::Core
 	}
 
 	GameObjectHandle PhysicsWorld::CreateRigidBody(
-		const vec3& offsetPosition,
-		const vec3& combinedPosition,
-		const quat& offsetRotation,
-		const quat& combinedRotation,
+		const vec3& position,
+		const quat& rotation,
 		ColliderType colliderType,
 		const vec3& colliderSizeOrRadius,
 		float mass,
@@ -123,10 +121,8 @@ namespace KalaKit::Physics::Core
 		//create the rigidbody
 		RigidBody* rb = new RigidBody(
 			handle,
-			offsetPosition,
-			combinedPosition,
-			offsetRotation,
-			combinedRotation,
+			position,
+			rotation,
 			mass,
 			restitution,
 			staticFriction,
@@ -134,10 +130,7 @@ namespace KalaKit::Physics::Core
 			gravityFactor);
 
 		//assign collider based on collider type
-		rb->SetCollider(
-			vec3(0.0f),
-			vec3(1.0f),
-			colliderType);
+		rb->SetCollider(colliderType);
 
 		bodies.push_back(rb);
 		bodyMap[handle] = index;
@@ -237,16 +230,11 @@ namespace KalaKit::Physics::Core
 
 		//bounding sphere distance culling
 
-		vec3 posA = bodyA.combinedPosition;
-		vec3 posB = bodyB.combinedPosition;
+		vec3 posA = bodyA.position;
+		vec3 posB = bodyB.position;
 
-		float radiusA = (bodyA.collider->boundingRadius > 0.0f)
-			? bodyA.collider->boundingRadius
-			: length(bodyA.collider->combinedScale) * 0.5f;
-
-		float radiusB = (bodyB.collider->boundingRadius > 0.0f)
-			? bodyB.collider->boundingRadius
-			: length(bodyB.collider->combinedScale) * 0.5f;
+		float radiusA = bodyA.collider->boundingRadius;
+		float radiusB = bodyB.collider->boundingRadius;
 
 		if (length(posA - posB) > (radiusA + radiusB))
 		{
@@ -316,19 +304,19 @@ namespace KalaKit::Physics::Core
 				* 0.5f * deltaTime;
 
 			quat futureRotation = normalize(
-				body.combinedRotation 
+				body.rotation 
 				+ angularRotation 
-				* body.combinedRotation);
+				* body.rotation);
 
 			PredictCollision(bodyPtr, body, deltaTime);
 
 			//apply simple Euler integration
-			body.combinedPosition += body.velocity * deltaTime;
+			body.position += body.velocity * deltaTime;
 
 			//apply angular velocity
 			if (length(body.angularVelocity) > 0.001f)
 			{
-				body.combinedRotation = futureRotation;
+				body.rotation = futureRotation;
 			}
 
 			body.tiltTimer += deltaTime;
@@ -389,7 +377,7 @@ namespace KalaKit::Physics::Core
 		//if the body is not moving, thest slightly below to stay grounded on slopes
 		if (dot(originalVelocity, originalVelocity) < 0.0001f)
 		{
-			vec3 probePos = body.combinedPosition + vec3(0, -groundingProbeDistance, 0);
+			vec3 probePos = body.position + vec3(0, -groundingProbeDistance, 0);
 
 			for (auto& otherBodyPtr : bodies)
 			{
@@ -397,7 +385,7 @@ namespace KalaKit::Physics::Core
 				if (!IsValidCollision(body, otherBody)) continue;
 
 				RigidBody tempBody = body;
-				tempBody.combinedPosition = probePos;
+				tempBody.position = probePos;
 
 				auto& colA = *tempBody.collider;
 				auto& colB = *otherBody.collider;
@@ -418,7 +406,7 @@ namespace KalaKit::Physics::Core
 					if (smallestAngle < maxWalkableAngle)
 					{
 						body.velocity.y = 0.0f;
-						body.combinedPosition.y -= groundingProbeDistance;
+						body.position.y -= groundingProbeDistance;
 					}
 				}
 			}
@@ -430,7 +418,7 @@ namespace KalaKit::Physics::Core
 			vec3 axisVelocity(0.0f);
 			axisVelocity[axis] = originalVelocity[axis];
 
-			vec3 testPos = body.combinedPosition + axisVelocity * deltaTime;
+			vec3 testPos = body.position + axisVelocity * deltaTime;
 
 			bool cancelAxis = false;
 
@@ -440,7 +428,7 @@ namespace KalaKit::Physics::Core
 				if (!IsValidCollision(body, otherBody)) continue;
 
 				RigidBody tempBody = body;
-				tempBody.combinedPosition = testPos;
+				tempBody.position = testPos;
 
 				auto& colA = *tempBody.collider;
 				auto& colB = *otherBody.collider;
@@ -469,7 +457,7 @@ namespace KalaKit::Physics::Core
 						if (dot(originalVelocity, originalVelocity) < 0.0001f)
 						{
 							body.velocity.y = 0.0f;
-							body.combinedPosition.y -= groundingProbeDistance;
+							body.position.y -= groundingProbeDistance;
 						}
 						break;
 					}
@@ -503,12 +491,12 @@ namespace KalaKit::Physics::Core
 
 		//world space center of gravity
 		vec3 worldCoGA =
-			bodyA.combinedPosition
-			+ mat3_cast(bodyA.combinedRotation)
+			bodyA.position
+			+ mat3_cast(bodyA.rotation)
 			* bodyA.centerOfGravity;
 		vec3 worldCoGB =
-			bodyB.combinedPosition
-			+ mat3_cast(bodyB.combinedRotation)
+			bodyB.position
+			+ mat3_cast(bodyB.rotation)
 			* bodyB.centerOfGravity;
 
 		//constant offsets based on world cog
@@ -567,8 +555,8 @@ namespace KalaKit::Physics::Core
 
 				vec3 correctionVec = collisionNormal * (corrected * correctionFactor);
 
-				bodyA.combinedPosition -= correctionVec * ratioA;
-				bodyB.combinedPosition += correctionVec * ratioB;
+				bodyA.position -= correctionVec * ratioA;
+				bodyB.position += correctionVec * ratioB;
 			}
 		}
 	}
@@ -580,8 +568,8 @@ namespace KalaKit::Physics::Core
 		const vec3& contactPoint) const
 	{
 		//compute relative velocity at the contact point
-		vec3 rA = contactPoint - bodyA.combinedPosition;
-		vec3 rB = contactPoint - bodyB.combinedPosition;
+		vec3 rA = contactPoint - bodyA.position;
+		vec3 rB = contactPoint - bodyB.position;
 
 		vec3 vA = bodyA.velocity + cross(bodyA.angularVelocity, rA);
 		vec3 vB = bodyB.velocity + cross(bodyB.angularVelocity, rB);
@@ -622,6 +610,11 @@ namespace KalaKit::Physics::Core
 		bodyA.ApplyImpulse(-frictionImpulse);
 		bodyB.ApplyImpulse(frictionImpulse);
 
+		vec3 torqueA = cross(rA, -frictionImpulse);
+		vec3 torqueB = cross(rB, frictionImpulse);
+		bodyA.ApplyTorque(torqueA);
+		bodyB.ApplyTorque(torqueB);
+
 		if (length(bodyA.velocity) < 0.01f)
 		{
 			bodyA.angularVelocity *= lowAngularVelocityFactor;
@@ -638,12 +631,12 @@ namespace KalaKit::Physics::Core
 		//calculate the six candidate directions (in world space)
 		vec3 possibleUps[6] = 
 		{
-			body.combinedRotation * vec3(0, 1, 0),
-			body.combinedRotation * vec3(0, -1, 0),
-			body.combinedRotation * vec3(1, 0, 0),
-			body.combinedRotation * vec3(-1, 0, 0),
-			body.combinedRotation * vec3(0, 0, 1),
-			body.combinedRotation * vec3(0, 0, -1)
+			body.rotation * vec3(0, 1, 0),
+			body.rotation * vec3(0, -1, 0),
+			body.rotation * vec3(1, 0, 0),
+			body.rotation * vec3(-1, 0, 0),
+			body.rotation * vec3(0, 0, 1),
+			body.rotation * vec3(0, 0, -1)
 		};
 
 		vec3 bestUp = possibleUps[0];
@@ -703,7 +696,7 @@ namespace KalaKit::Physics::Core
 			     && length(body.angularVelocity) < 0.1f)
 		{
 			body.angularVelocity = vec3(0.0f);
-			body.combinedRotation = normalize(body.combinedRotation);
+			body.rotation = normalize(body.rotation);
 			LOG_DEBUG("tilt snap");
 		}
 	}

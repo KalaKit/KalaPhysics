@@ -17,22 +17,9 @@ using KalaKit::Physics::Collision::ContactGenerator;
 namespace KalaKit::Physics::Shape
 {
 	BoxCollider::BoxCollider(
-		const vec3& offsetScale,
-		const vec3& combinedScale,
 		const GameObjectHandle& handle)
-		: Collider(offsetScale,
-				   combinedScale,
-			       ColliderType::BOX,
-				   handle),
-		halfExtents(combinedScale * 0.5f)
+		: Collider(ColliderType::BOX, handle)
 	{
-		CalculateBoundingRadius();
-	}
-
-	void BoxCollider::UpdateScale(const vec3& newCombinedScale)
-	{
-		combinedScale = newCombinedScale;
-		halfExtents = combinedScale * 0.5f;
 		CalculateBoundingRadius();
 	}
 

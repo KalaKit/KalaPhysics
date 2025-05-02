@@ -15,22 +15,9 @@ using KalaKit::Physics::Collision::ContactGenerator;
 namespace KalaKit::Physics::Shape
 {
 	SphereCollider::SphereCollider(
-		const vec3& offsetScale,
-		const vec3& combinedScale,
 		const GameObjectHandle& handle)
-		: Collider(offsetScale,
-				   combinedScale,
-				   ColliderType::SPHERE,
-				   handle),
-		radius(combinedScale.x * 0.5f)
+		: Collider(ColliderType::SPHERE, handle)
 	{
-		CalculateBoundingRadius();
-	}
-
-	void SphereCollider::UpdateScale(const vec3& newCombinedScale)
-	{
-		combinedScale = newCombinedScale;
-		radius = combinedScale.x * 0.5f;
 		CalculateBoundingRadius();
 	}
 

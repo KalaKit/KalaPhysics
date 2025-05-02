@@ -39,13 +39,13 @@ namespace KalaKit::Physics::Collision
 
 		//convert orientations into 3x3 rotation matrices
 
-		mat3 rotA = mat3_cast(bodyA.combinedRotation);
-		mat3 rotB = mat3_cast(bodyB.combinedRotation);
+		mat3 rotA = mat3_cast(bodyA.rotation);
+		mat3 rotB = mat3_cast(bodyB.rotation);
 
 		//get each box's world center and local half extents
 
-		vec3 centerA = bodyA.combinedPosition;
-		vec3 centerB = bodyB.combinedPosition;
+		vec3 centerA = bodyA.position;
+		vec3 centerB = bodyB.position;
 		vec3 extentsA = boxA.halfExtents;
 		vec3 extentsB = boxB.halfExtents;
 
@@ -90,7 +90,7 @@ namespace KalaKit::Physics::Collision
 
 		//compute the plane offset (distance from origin along the face normal)
 
-		vec3 refCenter = refBody.combinedPosition;
+		vec3 refCenter = refBody.position;
 		float planeOffset = dot(worldNormal, refCenter + worldNormal * refExtents[bestRefFace]);
 
 		//find the face of the incident box that is
@@ -112,7 +112,7 @@ namespace KalaKit::Physics::Collision
 
 		vec3 axisU = incRot[(bestIncFace + 1) % 3];
 		vec3 axisV = incRot[(bestIncFace + 2) % 3];
-		vec3 faceCenter = incBody.combinedPosition - incRot[bestIncFace] * incExtents[bestIncFace];
+		vec3 faceCenter = incBody.position - incRot[bestIncFace] * incExtents[bestIncFace];
 
 		vector<vec3> incidentFace{};
 		incidentFace.push_back(
@@ -206,8 +206,8 @@ namespace KalaKit::Physics::Collision
 		ContactManifold manifold{};
 		manifold.colliding = true;
 
-		vec3 posA = bodyA.combinedPosition;
-		vec3 posB = bodyB.combinedPosition;
+		vec3 posA = bodyA.position;
+		vec3 posB = bodyB.position;
 
 		vec3 delta = posB - posA;
 		float distSq = dot(delta, delta);
@@ -241,10 +241,10 @@ namespace KalaKit::Physics::Collision
 	{
 		ContactManifold manifold{};
 
-		const vec3& boxCenter = bodyA.combinedPosition;
-		const vec3& sphereCenter = bodyB.combinedPosition;
+		const vec3& boxCenter = bodyA.position;
+		const vec3& sphereCenter = bodyB.position;
 
-		const mat3 boxRot = mat3_cast(bodyA.combinedRotation);
+		const mat3 boxRot = mat3_cast(bodyA.rotation);
 		const mat3 boxInvRot = transpose(boxRot); //inverse of orthonormal matrix
 
 		//transform spherre center into box local space
