@@ -15,13 +15,19 @@
 	#define KALAPHYSICS_API
 #endif
 
+#include "glm.hpp"
+
 //physics
 #include "core/rigidbody.hpp"
 #include "core/physicsworld.hpp"
-#include "core/rigidbody.hpp"
 
-namespace KalaKit::Physics::Core
+namespace KalaKit::Physics::Simulation
 {
+	using glm::vec3;
+
+	using KalaKit::Physics::Core::RigidBody;
+	using KalaKit::Physics::Core::PhysicsWorld;
+
 	class KALAPHYSICS_API StepSimulation
 	{
 	public:
@@ -39,27 +45,6 @@ namespace KalaKit::Physics::Core
 			RigidBody* bodyPtr,
 			RigidBody& body,
 			float deltaTime);
-
-		/// <summary>
-		/// Resolves a collision by applying impulse forces to separate the bodies and simulate realistic response
-		/// </summary>
-		static void ResolveCollision(
-			PhysicsWorld& world,
-			RigidBody& bodyA,
-			RigidBody& bodyB,
-			const vec3& collisionNormal,
-			const vec3& contactPoint,
-			float penetration);
-
-		/// <summary>
-		/// Applies frictional forces to reduce sliding and simulate surface resistance after a collision
-		/// </summary>
-		static void ApplyFriction(
-			PhysicsWorld& world,
-			RigidBody& bodyA,
-			RigidBody& bodyB,
-			const vec3& collisionNormal,
-			const vec3& contactPoint);
 
 		static bool CanTilt(RigidBody& body);
 		static void TiltBody(RigidBody& body);

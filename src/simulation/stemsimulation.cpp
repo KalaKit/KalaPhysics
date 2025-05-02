@@ -19,15 +19,21 @@
 #include "glm.hpp"
 
 //physics
-#include "core/stepsimulation.hpp"
+#include "simulation/stepsimulation.hpp"
+#include "simulation/contactsolver.hpp"
+#include "simulation/frictionsolver.hpp"
 
 using glm::radians;
 using glm::clamp;
 using glm::min;
 using glm::max;
+using glm::quat;
 
-namespace KalaKit::Physics::Core
+namespace KalaKit::Physics::Simulation
 {
+	ContactSolver contactSolver;
+	FrictionSolver frictionSolver;
+
 	bool StepSimulation::IsValidCollision(RigidBody& bodyA, RigidBody& bodyB)
 	{
 		//avoid sleeping bodies
@@ -106,10 +112,32 @@ namespace KalaKit::Physics::Core
 
 				for (const auto& contact : manifold.contacts)
 				{
-					ResolveCollision(world, bodyA, bodyB, contact.normal, contact.point, contact.penetration);
+					contactSolver.AddContact(
+						&bodyA,
+						&bodyB,
+						contact.point,
+						contact.normal,
+						contact.penetration);
+
+					frictionSolver.AddFrictionPair(
+						&bodyA,
+						&bodyB,
+						contact.point,
+						contact.normal,
+						bodyA.staticFriction,
+						bodyA.dynamicFriction);
 				}
 			}
 		}
+
+		//loop over all contact points 10 times, adjusting the objects' 
+		//velocities and impulses a bit each time until everything stabilizes
+
+		contactSolver.Solve(deltaTime, 10);
+		frictionSolver.Solve(deltaTime, 10);
+
+		contactSolver.Clear();
+		frictionSolver.Clear();
 
 		ApplyPhysicsIntegration(world, deltaTime);
 	}
@@ -312,166 +340,6 @@ namespace KalaKit::Physics::Core
 		}
 	}
 
-	void StepSimulation::ResolveCollision(
-		PhysicsWorld& world,
-		RigidBody& bodyA,
-		RigidBody& bodyB,
-		const vec3& collisionNormal,
-		const vec3& contactPoint,
-		float penetration)
-	{
-		//correctly handle ramp and slope detection before other collision types
-
-		float upDot = dot(collisionNormal, vec3(0, 1, 0));
-		float walkLimitCos = cos(radians(world.GetAngleLimit()));
-		if (upDot > walkLimitCos)
-		{
-			ApplyFriction(world, bodyA, bodyB, collisionNormal, contactPoint);
-
-			vec3& v = bodyA.velocity;
-			v = v - dot(v, collisionNormal) * collisionNormal;
-
-			return;
-		}
-
-		//world space center of gravity
-		vec3 worldCoGA =
-			bodyA.position
-			+ mat3_cast(bodyA.rotation)
-			* bodyA.centerOfGravity;
-		vec3 worldCoGB =
-			bodyB.position
-			+ mat3_cast(bodyB.rotation)
-			* bodyB.centerOfGravity;
-
-		//constant offsets based on world cog
-		vec3 rA = contactPoint - worldCoGA;
-		vec3 rB = contactPoint - worldCoGB;
-
-		//compute relative velocity
-		vec3 relativeVelocity = bodyB.velocity - bodyA.velocity;
-
-		//compute velocity along the collision normal
-		float velocityAlongNormal = dot(relativeVelocity, collisionNormal);
-
-		//if objects are separating, do nothing
-		if (velocityAlongNormal > 0.0f) return;
-
-		//combute combied restitution (take the minimum)
-		float restitution = clamp(min(bodyA.restitution, bodyB.restitution), 0.0f, 0.5f);
-
-		//compute inverse mass and inverse inertia tensors
-		float invMassA = (bodyA.mass > 0.0f) ? (1.0f / bodyA.mass) : 0.0f;
-		float invMassB = (bodyB.mass > 0.0f) ? (1.0f / bodyB.mass) : 0.0f;
-
-		vec3 invInertiaA = (bodyA.mass > 0.0f) ? (1.0f / bodyA.inertiaTensor) : vec3(0.0f);
-		vec3 invInertiaB = (bodyB.mass > 0.0f) ? (1.0f / bodyB.inertiaTensor) : vec3(0.0f);
-
-		//compute impulse scalar
-		vec3 crossRA_N = cross(rA, collisionNormal);
-		vec3 crossRB_N = cross(rB, collisionNormal);
-
-		float denominator = invMassA + invMassB
-			+ dot(crossRA_N * invInertiaA, crossRA_N)
-			+ dot(crossRB_N * invInertiaB, crossRB_N);
-
-		if (denominator < 0.0001f) return;
-
-		float impulseScalar = -(1.0f + restitution) * velocityAlongNormal / denominator;
-
-		//clamp the impulse to prevent excessive velocity spikes
-		const float maxImpulse = 50.0f;
-		impulseScalar = clamp(impulseScalar, -maxImpulse, maxImpulse);
-
-		vec3 impulse = impulseScalar * collisionNormal;
-
-		bodyA.ApplyImpulse(-impulse);
-		bodyB.ApplyImpulse(impulse);
-
-		//position correction for penetration
-		float corrected = max(0.0f, penetration - world.GetMinPenetrationThreshold());
-		if (corrected > 0.0f)
-		{
-			float totalMass = bodyA.mass + bodyB.mass;
-			if (totalMass > 0.00001f)
-			{
-				float ratioA = (bodyB.mass / totalMass);
-				float ratioB = (bodyA.mass / totalMass);
-
-				vec3 correctionVec = collisionNormal * (corrected * world.GetCorrectionFactor());
-
-				bodyA.position -= correctionVec * ratioA;
-				bodyB.position += correctionVec * ratioB;
-			}
-		}
-	}
-
-	void StepSimulation::ApplyFriction(
-		PhysicsWorld& world,
-		RigidBody& bodyA,
-		RigidBody& bodyB,
-		const vec3& collisionNormal,
-		const vec3& contactPoint)
-	{
-		//compute relative velocity at the contact point
-		vec3 rA = contactPoint - bodyA.position;
-		vec3 rB = contactPoint - bodyB.position;
-
-		vec3 vA = bodyA.velocity + cross(bodyA.angularVelocity, rA);
-		vec3 vB = bodyB.velocity + cross(bodyB.angularVelocity, rB);
-		vec3 relativeVelocity = vB - vA;
-
-		//apply friction only if there's significant tangential velocity
-		if (length(relativeVelocity) < 0.01f) return;
-
-		//tangential direction
-		vec3 tangent = relativeVelocity - dot(relativeVelocity, collisionNormal) * collisionNormal;
-		if (length(tangent) < 1e-6f) return;
-		tangent = normalize(tangent);
-
-		//compute static and dynamic friction coefficients (use average)
-		float staticFriction = (bodyA.staticFriction + bodyB.staticFriction) * world.GetFrictionMultiplier();
-		float dynamicFriction = (bodyA.dynamicFriction + bodyB.dynamicFriction) * world.GetFrictionMultiplier();
-
-		//compute friction impulse magnitude
-		float frictionImpulseScalar = -dot(relativeVelocity, tangent);
-		frictionImpulseScalar /= (1.0f / bodyA.mass) + (1.0f / bodyB.mass);
-
-		vec3 frictionImpulse = frictionImpulseScalar * tangent;
-
-		//static friction check
-		float maxStaticFriction = staticFriction * length(frictionImpulse);
-		if (abs(frictionImpulseScalar) > maxStaticFriction)
-		{
-			frictionImpulse = dynamicFriction * frictionImpulse;
-		}
-
-		//clamp friction force to avoid cancelling small impulses
-		float maxFrictionForce = max(bodyA.mass, bodyB.mass);
-		if (length(frictionImpulse) > maxFrictionForce)
-		{
-			frictionImpulse = normalize(frictionImpulse) * maxFrictionForce;
-		}
-
-		bodyA.ApplyImpulse(-frictionImpulse);
-		bodyB.ApplyImpulse(frictionImpulse);
-
-		vec3 torqueA = cross(rA, -frictionImpulse);
-		vec3 torqueB = cross(rB, frictionImpulse);
-		bodyA.ApplyTorque(torqueA);
-		bodyB.ApplyTorque(torqueB);
-
-		if (length(bodyA.velocity) < 0.01f)
-		{
-			bodyA.angularVelocity *= world.GetLowAngularVelocityFactor();
-		}
-
-		if (length(bodyB.velocity) < 0.01f)
-		{
-			bodyB.angularVelocity *= world.GetLowAngularVelocityFactor();
-		}
-	}
-
 	bool StepSimulation::CanTilt(RigidBody& body)
 	{
 		//calculate the six candidate directions (in world space)
@@ -489,7 +357,7 @@ namespace KalaKit::Physics::Core
 		for (int i = 1; i < 6; i++)
 		{
 			if (abs(dot(possibleUps[i], vec3(0, 1, 0)))
-		> abs(dot(bestUp, vec3(0, 1, 0))))
+				> abs(dot(bestUp, vec3(0, 1, 0))))
 			{
 				bestUp = possibleUps[i];
 			}
