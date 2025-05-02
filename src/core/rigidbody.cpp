@@ -157,10 +157,12 @@ namespace KalaKit::Physics::Core
 		else centerOfGravity = vec3(0.0f);
 	}
 
-	void RigidBody::UpdateScale(const vec3& scale)
+	void RigidBody::SetScale(const vec3& newScale)
 	{
 		Collider* collider = this->collider;
 		if (collider == nullptr) return;
+
+		scale = newScale;
 
 		switch (collider->GetColliderType())
 		{
@@ -179,6 +181,8 @@ namespace KalaKit::Physics::Core
 			break;
 		}
 		}
+
+		UpdateCenterOfGravity();
 	}
 
 	void RigidBody::SetCollider(ColliderType type)
@@ -194,16 +198,15 @@ namespace KalaKit::Physics::Core
 		if (type == ColliderType::BOX)
 		{
 			collider = new BoxCollider(handle);
-			UpdateScale(scale);
 			colliderType = "box";
 		}
 		else if (type == ColliderType::SPHERE)
 		{
 			collider = new SphereCollider(handle);
-			UpdateScale(scale);
 			colliderType = "sphere";
 		}
 
+		SetScale(scale);
 		LOG_SUCCESS("Set size to '" + sizeString + "' and collider to " + colliderType + " for rigidbody(" + handleStr + ")!");
 	}
 

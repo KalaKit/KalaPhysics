@@ -91,10 +91,10 @@ namespace KalaKit::Physics::Core
 		/// </summary>
 		void UpdateCenterOfGravity();
 		/// <summary>
-		/// Update the collider scale.
+		/// Sets a new scale for the rigidbody, updating the collider's
+		/// half extents or radius, and recalculating the center of gravity.
 		/// </summary>
-		/// <param name="scale"></param>
-		void UpdateScale(const vec3& scale);
+		void SetScale(const vec3& scale);
 
 		/// <summary>
 		/// Assign a new collider or change the existing collider of the rigidbody
