@@ -38,37 +38,17 @@ namespace KalaKit::Physics::Shape
 		boundingRadius = radius;
 	}
 
-	SATResult SphereCollider::SATAgainst(
-		const RigidBody& self,
-		const RigidBody& other,
-		const Collider& otherCol) const
-	{
-		if (otherCol.GetColliderType() != ColliderType::SPHERE)
-		{
-			return {};
-		}
-
-		const auto& otherSphere = static_cast<const SphereCollider&>(otherCol);
-		return SAT::PerformSphereSAT(self, other, *this, otherSphere);
-	}
-
 	ContactManifold SphereCollider::GenerateContacts(
 		const RigidBody& self,
 		const RigidBody& other,
 		const Collider& otherCol) const
 	{
-		if (otherCol.GetColliderType() != ColliderType::SPHERE)
-		{
-			return {};
-		}
+		if (otherCol.GetColliderType() != ColliderType::SPHERE) return {};
 
 		const auto& otherSphere = static_cast<const SphereCollider&>(otherCol);
 		auto sat = SAT::PerformSphereSAT(self, other, *this, otherSphere);
 
-		if (!sat.colliding)
-		{
-			return {};
-		}
+		if (!sat.colliding) return {};
 
 		return ContactGenerator::GenerateSphereContacts(self, other, *this, otherSphere, sat);
 	}

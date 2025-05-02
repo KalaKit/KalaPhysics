@@ -33,7 +33,6 @@ namespace KalaKit::Physics::Shape
 	using glm::vec3;
 
 	using KalaKit::Physics::Core::GameObjectHandle;
-	using KalaKit::Physics::Collision::SATResult;
 	using KalaKit::Physics::Collision::ContactManifold;
 
 	class KALAPHYSICS_API SphereCollider : public Collider
@@ -48,11 +47,6 @@ namespace KalaKit::Physics::Shape
 
 		void UpdateScale(const vec3& newCombinedScale) override;
 		void CalculateBoundingRadius() override;
-
-		SATResult SATAgainst(
-			const RigidBody& self,
-			const RigidBody& other,
-			const Collider& otherCol) const override;
 
 		ContactManifold GenerateContacts(
 			const RigidBody& self,

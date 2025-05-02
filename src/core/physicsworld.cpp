@@ -22,11 +22,9 @@
 
 //physics
 #include "core/physicsworld.hpp"
-#include "collision/collisiondetection.hpp"
 
 using KalaKit::Physics::Shape::ColliderType;
 using KalaKit::Physics::Collision::ContactManifold;
-using KalaKit::Physics::Collision::CollisionDetection;
 
 using glm::normalize;
 using glm::length;
@@ -272,32 +270,15 @@ namespace KalaKit::Physics::Core
 
 				if (!IsValidCollision(bodyA, bodyB)) continue;
 
-				bodyA.centerOfGravity = vec3(0.0f);
+				auto& colA = *bodyA.collider;
+				auto& colB = *bodyB.collider;
 
-				bool useOBB = false;
+				auto manifold = colA.GenerateContacts(bodyA, bodyB, colB);
+				if (manifold.contacts.empty()) continue;
 
-				//check if either object has rotation (not identity quaternion)
-				if (bodyA.collider->type == ColliderType::BOX
-					&& bodyB.collider->type == ColliderType::BOX)
+				for (const auto& contact : manifold.contacts)
 				{
-					if (acos(clamp(dot(bodyA.combinedRotation, quat(1, 0, 0, 0)), -1.0f, 1.0f)) > 0.01f
-						|| acos(clamp(dot(bodyB.combinedRotation, quat(1, 0, 0, 0)), -1.0f, 1.0f)) > 0.01f)
-					{
-						useOBB = true;
-					}
-				}
-				
-				if (useOBB)
-				{
-					ContactManifold manifold = CollisionDetection::GenerateOBBContactManifold(bodyA, bodyB);
-					if (manifold.colliding
-						&& !manifold.contacts.empty())
-					{
-						for (const auto& contact : manifold.contacts)
-						{
-							ResolveCollision(bodyA, bodyB, contact.normal, contact.point, contact.penetration);
-						}
-					}
+					ResolveCollision(bodyA, bodyB, contact.normal, contact.point, contact.penetration);
 				}
 			}
 		}
@@ -418,9 +399,11 @@ namespace KalaKit::Physics::Core
 				RigidBody tempBody = body;
 				tempBody.combinedPosition = probePos;
 
-				auto manifold = CollisionDetection::GenerateOBBContactManifold(tempBody, otherBody);
-				if (manifold.colliding
-					&& !manifold.contacts.empty())
+				auto& colA = *tempBody.collider;
+				auto& colB = *otherBody.collider;
+				auto manifold = colA.GenerateContacts(tempBody, otherBody, colB);
+
+				if (!manifold.contacts.empty())
 				{
 					float smallestAngle = FLT_MAX;
 
@@ -459,9 +442,11 @@ namespace KalaKit::Physics::Core
 				RigidBody tempBody = body;
 				tempBody.combinedPosition = testPos;
 
-				auto manifold = CollisionDetection::GenerateOBBContactManifold(tempBody, otherBody);
-				if (manifold.colliding
-					&& !manifold.contacts.empty())
+				auto& colA = *tempBody.collider;
+				auto& colB = *otherBody.collider;
+				auto manifold = colA.GenerateContacts(tempBody, otherBody, colB);
+
+				if (!manifold.contacts.empty())
 				{
 					float smallestAngle = FLT_MAX;
 
@@ -628,7 +613,7 @@ namespace KalaKit::Physics::Core
 		}
 
 		//clamp friction force to avoid cancelling small impulses
-		float maxFrictionForce = bodyA.mass * 1.0f;
+		float maxFrictionForce = max(bodyA.mass, bodyB.mass);
 		if (length(frictionImpulse) > maxFrictionForce)
 		{
 			frictionImpulse = normalize(frictionImpulse) * maxFrictionForce;

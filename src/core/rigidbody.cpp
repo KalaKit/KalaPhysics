@@ -19,6 +19,8 @@
 
 //physics
 #include "core/rigidbody.hpp"
+#include "shape/boxcollider.hpp"
+#include "shape/spherecollider.hpp"
 
 using std::string;
 using std::to_string;

@@ -40,37 +40,17 @@ namespace KalaKit::Physics::Shape
 		boundingRadius = length(halfExtents);
 	}
 
-	SATResult BoxCollider::SATAgainst(
-		const RigidBody& self,
-		const RigidBody& other,
-		const Collider& otherCol) const
-	{
-		if (otherCol.GetColliderType() != ColliderType::BOX)
-		{
-			return{};
-		}
-
-		const auto& otherBox = static_cast<const BoxCollider&>(otherCol);
-		return SAT::PerformBoxSAT(self, other, *this, otherBox);
-	}
-
 	ContactManifold BoxCollider::GenerateContacts(
 		const RigidBody& self,
 		const RigidBody& other,
 		const Collider& otherCol) const
 	{
-		if (otherCol.GetColliderType() != ColliderType::BOX)
-		{
-			return{};
-		}
+		if (otherCol.GetColliderType() != ColliderType::BOX) return{};
 
 		const auto& otherBox = static_cast<const BoxCollider&>(otherCol);
-		SATResult sat = SAT::PerformBoxSAT(self, other, *this, otherBox);
+		auto sat = SAT::PerformBoxSAT(self, other, *this, otherBox);
 
-		if (!sat.colliding)
-		{
-			return {};
-		}
+		if (!sat.colliding) return {};
 
 		return ContactGenerator::GenerateBoxContacts(self, other, *this, otherBox, sat);
 	}

@@ -49,7 +49,6 @@ namespace KalaKit::Physics::Shape
 
 	using KalaKit::Physics::Core::GameObjectHandle;
 	using KalaKit::Physics::Core::RigidBody;
-	using KalaKit::Physics::Collision::SATResult;
 	using KalaKit::Physics::Collision::ContactManifold;
 
 	enum class ColliderType
@@ -80,11 +79,6 @@ namespace KalaKit::Physics::Shape
 		virtual ~Collider() = default;
 
 		virtual ColliderType GetColliderType() const { return type; }
-
-		virtual SATResult SATAgainst(
-			const RigidBody& self,
-			const RigidBody& other,
-			const Collider& otherCol) const = 0;
 
 		virtual ContactManifold GenerateContacts(
 			const RigidBody& self,
