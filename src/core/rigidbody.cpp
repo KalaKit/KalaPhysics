@@ -98,7 +98,7 @@ namespace KalaKit::Physics::Core
 		if (collider->type == ColliderType::BOX)
 		{
 			BoxCollider* box = static_cast<BoxCollider*>(collider);
-			vec3 halfExtents = box->halfExtents;
+			vec3 halfExtents = box->GetSize();
 
 			float I_x = (1.0f / 12.0f) * mass * (halfExtents.y * halfExtents.y + halfExtents.z * halfExtents.z);
 			float I_y = (1.0f / 12.0f) * mass * (halfExtents.x * halfExtents.x + halfExtents.z * halfExtents.z);
@@ -127,7 +127,7 @@ namespace KalaKit::Physics::Core
 		else if (collider->type == ColliderType::SPHERE)
 		{
 			SphereCollider* sphere = static_cast<SphereCollider*>(collider);
-			float inertia = (2.0f / 5.0f) * mass * (sphere->radius * sphere->radius);
+			float inertia = (2.0f / 5.0f) * mass * (sphere->GetSize().x * sphere->GetSize().x);
 			inertiaTensor = vec3(inertia);
 		}
 	}
@@ -142,7 +142,7 @@ namespace KalaKit::Physics::Core
 		}
 
 		const BoxCollider* box = static_cast<const BoxCollider*>(collider);
-		vec3 halfExtents = box->halfExtents;
+		vec3 halfExtents = box->GetSize();
 
 		//find the largest axis
 		float maxExtent = 
@@ -184,14 +184,14 @@ namespace KalaKit::Physics::Core
 		case ColliderType::BOX:
 		{
 			BoxCollider* box = static_cast<BoxCollider*>(collider);
-			box->halfExtents = scale * 0.5f;
+			box->SetSize(scale * 0.5f);
 			box->CalculateBoundingRadius();
 			break;
 		}
 		case ColliderType::SPHERE:
 		{
 			SphereCollider* sphere = static_cast<SphereCollider*>(collider);
-			sphere->radius = scale.x * 0.5f;
+			sphere->SetSize(vec3(scale.x * 0.5f, 0.0f, 0.0f));
 			sphere->CalculateBoundingRadius();
 			break;
 		}

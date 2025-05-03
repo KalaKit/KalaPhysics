@@ -29,8 +29,8 @@ namespace KalaKit::Physics::Collision
 	{
 		const vec3& centerA = bodyA.position;
 		const vec3& centerB = bodyB.position;
-		const vec3& extentsA = boxA.halfExtents;
-		const vec3& extentsB = boxB.halfExtents;
+		const vec3& extentsA = boxA.GetSize();
+		const vec3& extentsB = boxB.GetSize();
 
 		const mat3 rotA = mat3_cast(bodyA.rotation);
 		const mat3 rotB = mat3_cast(bodyB.rotation);
@@ -168,7 +168,7 @@ namespace KalaKit::Physics::Collision
 		//compare how far apart they are to how big they are combined
 
 		float distSq = dot(delta, delta);
-		float combinedRadius = sphereA.radius + sphereB.radius;
+		float combinedRadius = sphereA.GetSize().x + sphereB.GetSize().x;
 		float combinedRadiusSq = combinedRadius * combinedRadius;
 
 		//if they are too far apart. they aren't colliding

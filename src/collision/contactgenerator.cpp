@@ -46,8 +46,8 @@ namespace KalaKit::Physics::Collision
 
 		vec3 centerA = bodyA.position;
 		vec3 centerB = bodyB.position;
-		vec3 extentsA = boxA.halfExtents;
-		vec3 extentsB = boxB.halfExtents;
+		vec3 extentsA = boxA.GetSize();
+		vec3 extentsB = boxB.GetSize();
 
 		//determine which box is the "preference" and which is the "incident",
 		//this affects which face gets used for clipping
@@ -211,7 +211,7 @@ namespace KalaKit::Physics::Collision
 
 		vec3 delta = posB - posA;
 		float distSq = dot(delta, delta);
-		float combinedRadius = sphereA.radius + sphereB.radius;
+		float combinedRadius = sphereA.GetSize().x + sphereB.GetSize().x;
 
 		//spheres are not touching
 		if (distSq > combinedRadius * combinedRadius) return {};
@@ -222,7 +222,7 @@ namespace KalaKit::Physics::Collision
 		vec3 normal = (distance > 1e-5f) ? (delta / distance) : vec3(0, 1, 0);
 
 		//point of the surface of sphere A in the direction of collision
-		vec3 contactPoint = posA + normal * sphereA.radius;
+		vec3 contactPoint = posA + normal * sphereA.GetSize().x;
 
 		Contact contact{};
 		contact.point = contactPoint;
@@ -255,8 +255,8 @@ namespace KalaKit::Physics::Collision
 
 		vec3 localClosestPoint = clamp(
 			localSphereCenter,
-			-boxA.halfExtents,
-			boxA.halfExtents);
+			-boxA.GetSize(),
+			boxA.GetSize());
 
 		//convert closest point back to world space
 
@@ -266,7 +266,7 @@ namespace KalaKit::Physics::Collision
 
 		vec3 normal = sphereCenter - worldClosestPoint;
 		float distSq = dot(normal, normal);
-		float radius = sphereB.radius;
+		float radius = sphereB.GetSize().x;
 
 		//no contact
 		if (distSq > (radius + 0.01f) * (radius + 0.01f)) return {};

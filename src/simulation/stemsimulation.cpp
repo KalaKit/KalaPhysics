@@ -24,6 +24,7 @@
 #include "simulation/frictionsolver.hpp"
 #include "simulation/handlemotion.hpp"
 
+using glm::degrees;
 using glm::radians;
 using glm::clamp;
 using glm::min;
@@ -95,6 +96,16 @@ namespace KalaKit::Physics::Simulation
 		auto& bodies = world.GetBodies();
 		if (bodies.size() == 0) return;
 
+		for (RigidBody* body : world.GetBodies())
+		{
+			if (body 
+				&& body->collider)
+			{
+				body->collider->SetGroundedState(false);
+				body->collider->SetGroundNormal(vec3(0.0f, 1.0f, 0.0f));
+			}
+		}
+
 		for (size_t i = 0; i < bodies.size(); i++)
 		{
 			RigidBody& bodyA = *bodies[i];
@@ -130,6 +141,38 @@ namespace KalaKit::Physics::Simulation
 						bodyA.staticFriction,
 						bodyA.dynamicFriction,
 						&contactSolv);
+
+					const float angleToUp = 
+						degrees(acos(clamp(
+						dot(contact.normal, vec3(0, 1, 0)), 
+						-1.0f, 1.0f)));
+
+					if (angleToUp <= world.GetAngleLimit()
+						&& bodyA.isDynamic)
+					{
+						if (bodyA.collider)
+						{
+							bodyA.collider->SetGroundedState(true);
+							bodyA.collider->SetGroundNormal(contact.normal);
+						}
+					}
+					else
+					{
+						const float reverseAngle = 
+							degrees(acos(clamp(
+							dot(-contact.normal, vec3(0, 1, 0)), 
+							-1.0f, 1.0f)));
+
+						if (reverseAngle <= world.GetAngleLimit()
+							&& bodyB.isDynamic)
+						{
+							if (bodyB.collider)
+							{
+								bodyB.collider->SetGroundedState(true);
+								bodyB.collider->SetGroundNormal(-contact.normal);
+							}
+						}
+					}
 				}
 			}
 		}
