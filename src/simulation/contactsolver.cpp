@@ -3,6 +3,20 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
+//main log macro
+#define WRITE_LOG(type, msg) std::cout << "[KALAKIT_PHYSICS | " << type << "] " << msg << "\n"
+
+//log types
+#if KALAPHYSICS_DEBUG
+	#define LOG_DEBUG(msg) WRITE_LOG("DEBUG", msg)
+#else
+	#define LOG_DEBUG(msg)
+#endif
+#define LOG_SUCCESS(msg) WRITE_LOG("SUCCESS", msg)
+#define LOG_ERROR(msg) WRITE_LOG("ERROR", msg)
+
+#include <sstream>
+
 //external
 #include "gtc/quaternion.hpp"
 
@@ -11,6 +25,9 @@
 
 using glm::mat3_cast;
 using glm::max;
+using glm::min;
+using glm::clamp;
+using std::ostringstream;
 
 namespace KalaKit::Physics::Simulation
 {
@@ -33,7 +50,9 @@ namespace KalaKit::Physics::Simulation
 		//gently pushes bodies apart when they're penetrating, without adding bounce
 
 		float penetrationBias = max(0.0f, penetration - world.GetBaumgarteSlop());
+		penetrationBias = min(penetrationBias, 0.1f); //cap raw bias contribution
 		contact.bias = (world.GetBaumgarteFactor() / deltaTime) * penetrationBias;
+		contact.bias = clamp(contact.bias, 0.0f, 10.0f); //cap final bias value
 
 		//local lever arms
 
@@ -84,6 +103,18 @@ namespace KalaKit::Physics::Simulation
 
 				float normalVel = dot(relVel, c.normal);
 				float lambda = -(normalVel + c.bias) * c.effectiveMass;
+				lambda = clamp(lambda, -100.0f, 100.0f); //prevent orbit-worthy impulses
+
+				if (abs(lambda) > 50.0f 
+					|| abs(c.bias) > 10.0f)
+				{
+					ostringstream oss{};
+					oss << "[Impulse Debug] Bias: "
+						<< c.bias
+						<< ", Lambda: "
+						<< lambda;
+					LOG_DEBUG(oss.str());
+				}
 
 				//accumulate impulse (clamp to avoid pulling)
 
