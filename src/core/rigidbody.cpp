@@ -3,59 +3,44 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
-//main log macro
-#define WRITE_LOG(type, msg) std::cout << "[KALAKIT_PHYSICS | " << type << "] " << msg << "\n"
-
-//log types
-#if KALAPHYSICS_DEBUG
-	#define LOG_DEBUG(msg) WRITE_LOG("DEBUG", msg)
-#else
-	#define LOG_DEBUG(msg)
-#endif
-#define LOG_SUCCESS(msg) WRITE_LOG("SUCCESS", msg)
-#define LOG_ERROR(msg) WRITE_LOG("ERROR", msg)
-
 #include <string>
 
 //physics
-#include "rigidbody.hpp"
+#include "core/rigidbody.hpp"
+#include "collision/collider.hpp"
 
 using std::string;
 using std::to_string;
 using glm::max;
 
-namespace KalaKit
+using KalaKit::Physics::Collision::BoxCollider;
+using KalaKit::Physics::Collision::SphereCollider;
+
+namespace KalaKit::Physics::Core
 {
 	RigidBody::RigidBody(
 		GameObjectHandle h,
-		const vec3& offsetPosition,
-		const vec3& combinedPosition,
-		const quat& offsetRotation,
-		const quat& combinedRotation,
+		const vec3& position,
+		const quat& rotation,
+		const vec3& scale,
+		bool isDynamic,
+		bool useGravity,
 		float m,
 		float rest,
 		float staticFrict,
 		float dynamicFrict,
 		float gFactor) :
 		handle(h),
-		offsetPosition(offsetPosition),
-		combinedPosition(combinedPosition),
-		offsetRotation(offsetRotation),
-		combinedRotation(combinedRotation),
-		velocity(0.0f),
-		angularVelocity(0.0f),
+		position(position),
+		rotation(rotation),
+		scale(scale),
+		isDynamic(isDynamic),
+		useGravity(useGravity),
 		mass(m),
-		isDynamic(false),
-		collider(nullptr),
 		restitution(rest),
 		staticFriction(staticFrict),
 		dynamicFriction(dynamicFrict),
-		gravityFactor(gFactor),
-		useGravity(false),
-		inertiaTensor(vec3(1.0f))
-	{
-		ComputeInertiaTensor();
-	}
+		gravityFactor(gFactor) {}
 
 	void RigidBody::ApplyForce(const vec3& force)
 	{
@@ -92,7 +77,7 @@ namespace KalaKit
 		angularVelocity += torque / inertiaTensor;
 	}
 
-	void RigidBody::ComputeInertiaTensor(const vec3& scale)
+	void RigidBody::ComputeInertiaTensor()
 	{
 		if (!collider) return;
 
@@ -155,37 +140,55 @@ namespace KalaKit
 		else centerOfGravity = vec3(0.0f);
 	}
 
-	void RigidBody::SetCollider(
-		const vec3& offsetScale,
-		const vec3& combinedScale,
-		ColliderType type)
+	void RigidBody::SetScale(const vec3& newScale)
+	{
+		scale = newScale;
+
+		BoxCollider* box = static_cast<BoxCollider*>(collider);
+		SphereCollider* sphere = static_cast<SphereCollider*>(collider);
+
+		if (box != nullptr)
+		{
+			box->halfExtents = vec3(scale * 0.5f);
+			box->boundingRadius = length(box->halfExtents) * 2.0f * 0.5f;
+		}
+		else if (sphere != nullptr)
+		{
+			sphere->radius = scale.x;
+			sphere->boundingRadius = sphere->radius;
+		}
+
+		UpdateCenterOfGravity();
+		ComputeInertiaTensor();
+	}
+
+	void RigidBody::SetCollider(ColliderType type)
 	{
 		if (collider) delete collider;
 
+		uint32_t index = handle.index;
+		uint32_t gen = handle.generation;
+		string sizeString{};
+		string colliderType{};
+
 		if (type == ColliderType::BOX)
 		{
-			collider = new BoxCollider(
-				offsetPosition,
-				combinedPosition,
-				handle);
+			collider = new BoxCollider(handle);
 
-			uint32_t index = handle.index;
-			uint32_t gen = handle.generation;
-			string sizeString = to_string(combinedScale.x) + ", " + to_string(combinedScale.y) + ", " + to_string(combinedScale.z);
-			LOG_SUCCESS("Set size to '" + sizeString + "' and collider to box for rigidbody(" + to_string(index) + ", " + to_string(gen) + ")!");
+			sizeString = to_string(scale.x) + ", " + to_string(scale.y) + ", " + to_string(scale.z);
+			colliderType = "box";
 		}
 		else if (type == ColliderType::SPHERE)
 		{
-			collider = new SphereCollider(
-				offsetPosition,
-				combinedPosition,
-				handle);
+			collider = new SphereCollider(handle);
 
-			uint32_t index = handle.index;
-			uint32_t gen = handle.generation;
-			string radius = to_string(combinedScale.x);
-			LOG_SUCCESS("Set radius to '" + radius + "' and collider to sphere for rigidbody(" + to_string(index) + ", " + to_string(gen) + ")!");
+			sizeString = to_string(scale.x);
+			colliderType = "sphere";
 		}
+
+		LOG_SUCCESS("Set size to '" + sizeString 
+			+ "' and collider to " + colliderType 
+			+ " for rigidbody(" + to_string(index) + ", " + to_string(gen) + ")!");
 	}
 
 	void RigidBody::WakeUp()

@@ -6,15 +6,17 @@
 #include <cmath>
 
 //physics
-#include "collisiondetection.hpp"
+#include "collision/collisiondetection.hpp"
 
 using glm::dot;
 using glm::mat3;
 using glm::mat3_cast;
 using std::abs;
 using glm::max;
+using glm::normalize;
+using glm::quat;
 
-namespace KalaKit
+namespace KalaKit::Physics::Collision
 {
 	ContactManifold CollisionDetection::GenerateOBBContactManifold(const RigidBody& a, const RigidBody& b)
 	{
@@ -28,14 +30,14 @@ namespace KalaKit
 		}
 		manifold.colliding = true;
 
-		mat3 rotA = mat3_cast(a.combinedRotation);
-		mat3 rotB = mat3_cast(b.combinedRotation);
+		mat3 rotA = mat3_cast(a.rotation);
+		mat3 rotB = mat3_cast(b.rotation);
 
 		vec3 extentsA = static_cast<const BoxCollider*>(a.collider)->halfExtents;
 		vec3 extentsB = static_cast<const BoxCollider*>(b.collider)->halfExtents;
 
 		//relative delta
-		vec3 delta = b.combinedPosition - a.combinedPosition;
+		vec3 delta = b.position - a.position;
 
 		//find the best penetration axis
 		float minPenetration = FLT_MAX;
@@ -86,7 +88,7 @@ namespace KalaKit
 		int contactCount = 0;
 
 		//generate potential contact points
-		vec3 incidentFaceCenter = b.combinedPosition - collisionNormal * extentsB;
+		vec3 incidentFaceCenter = b.position - collisionNormal * extentsB;
 		for (int i = 0; i < 8; i++)
 		{
 			vec3 corner = incidentFaceCenter;
@@ -132,12 +134,12 @@ namespace KalaKit
 		const BoxCollider* boxA = static_cast<BoxCollider*>(a.collider);
 		const BoxCollider* boxB = static_cast<BoxCollider*>(b.collider);
 
-		const vec3& centerA = a.combinedPosition;
-		const vec3& centerB = b.combinedPosition;
+		const vec3& centerA = a.position;
+		const vec3& centerB = b.position;
 		const vec3& extentsA = boxA->halfExtents;
 		const vec3& extentsB = boxB->halfExtents;
-		const mat3& rotationA = mat3_cast(a.combinedRotation);;
-		const mat3& rotationB = mat3_cast(b.combinedRotation);;
+		const mat3& rotationA = mat3_cast(a.rotation);
+		const mat3& rotationB = mat3_cast(b.rotation);
 
 		//combute the rotation matrix expressing B in A's coordinate frame
 		mat3 R{}, AbsR{};
@@ -223,10 +225,10 @@ namespace KalaKit
 		RigidBody tempBody = movingBody;
 
 		//update its position to the future position.
-		tempBody.combinedPosition = futurePosition;
+		tempBody.position = futurePosition;
 
 		vec3 futureAngularVelocity = movingBody.angularVelocity * deltaTime;
-		tempBody.combinedRotation = normalize(movingBody.combinedRotation + quat(
+		tempBody.rotation = normalize(movingBody.rotation + quat(
 			0,
 			futureAngularVelocity.x,
 			futureAngularVelocity.y,

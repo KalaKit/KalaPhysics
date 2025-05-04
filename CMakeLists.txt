@@ -36,26 +36,25 @@ get_filename_component(PARENT_DIR "${CMAKE_SOURCE_DIR}" DIRECTORY)
 set(PARENT_DIR_PATH "${PARENT_DIR}")
 
 # KALA files
-set(KALA_SRC_DIR "${CMAKE_SOURCE_DIR}/src")
-set(KALA_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
+set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
+set(INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
 
 # External files
 set(EXT_GLM_DIR "${CMAKE_SOURCE_DIR}/_external_shared/GLM")
 
 # Add source files
-file(GLOB_RECURSE KALA_SOURCE_FILES CONFIGURE_DEPENDS
-    ${KALA_SRC_DIR}/*.cpp
-    ${KALA_SRC_DIR}/*/*.cpp
+file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
+    ${SRC_DIR}/*/*.cpp
 )
 
 # Shared library
-add_library(KalaPhysics SHARED ${KALA_SOURCE_FILES})
+add_library(KalaPhysics SHARED ${SOURCE_FILES})
 set_target_properties(KalaPhysics PROPERTIES OUTPUT_NAME "KalaPhysics$<$<CONFIG:Debug>:D>")
 target_compile_features(KalaPhysics PRIVATE cxx_std_20)
 
 # Static library
 if (NOT WIN32)
-	add_library(KalaPhysicsStatic STATIC  ${KALA_SOURCE_FILES})
+	add_library(KalaPhysicsStatic STATIC  ${SOURCE_FILES})
 	set_target_properties(KalaPhysicsStatic PROPERTIES OUTPUT_NAME "KalaPhysics$<$<CONFIG:Debug>:D>")
 	target_compile_features(KalaPhysicsStatic PRIVATE cxx_std_20)
 endif()
@@ -64,7 +63,7 @@ endif()
 function(set_kalaphysics_includes target)
 	target_include_directories(${target} PRIVATE
         # Library files
-        ${KALA_INCLUDE_DIR}
+        ${INCLUDE_DIR}
 
         # External libraries
         ${EXT_GLM_DIR}
@@ -149,6 +148,6 @@ add_custom_command(TARGET KalaPhysics POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/include"
 
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${KALA_INCLUDE_DIR}/"
+        "${INCLUDE_DIR}/"
         "${CMAKE_BINARY_DIR}/include"
 )

@@ -5,20 +5,13 @@
 
 #pragma once
 
-#ifdef _WIN32
-	#ifdef KALAPHYSICS_DLL_EXPORT
-		#define KALAPHYSICS_API __declspec(dllexport)
-	#else
-		#define KALAPHYSICS_API __declspec(dllimport)
-	#endif
-#else
-	#define KALAPHYSICS_API
-#endif
-
 #include <cstdint>
 #include <functional>
 
-namespace KalaKit
+//physics
+#include "core/utils.hpp"
+
+namespace KalaKit::Physics::Core
 {
 	class KALAPHYSICS_API GameObjectHandle
 	{
@@ -37,12 +30,16 @@ namespace KalaKit
 	};
 }
 
+#include "gameobjecthandle.hpp"
+
 namespace std
 {
+	using KalaKit::Physics::Core::GameObjectHandle;
+
 	template <>
-	struct hash<KalaKit::GameObjectHandle>
+	struct hash<GameObjectHandle>
 	{
-		size_t operator()(const KalaKit::GameObjectHandle& handle) const
+		size_t operator()(const GameObjectHandle& handle) const
 		{
 			size_t h1 = hash<uint32_t>()(handle.index);
 			size_t h2 = hash<uint32_t>()(handle.generation);

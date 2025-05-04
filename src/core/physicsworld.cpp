@@ -3,42 +3,31 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
-//main log macro
-#define WRITE_LOG(type, msg) std::cout << "[KALAKIT_PHYSICS | " << type << "] " << msg << "\n"
-
-//log types
-#if KALAPHYSICS_DEBUG
-	#define LOG_DEBUG(msg) WRITE_LOG("DEBUG", msg)
-#else
-	#define LOG_DEBUG(msg)
-#endif
-#define LOG_SUCCESS(msg) WRITE_LOG("SUCCESS", msg)
-#define LOG_ERROR(msg) WRITE_LOG("ERROR", msg)
-
 #include <string>
 
 //external
 #include "gtc/quaternion.hpp"
 
 //physics
-#include "physicsworld.hpp"
-#include "collisiondetection.hpp"
+#include "core/physicsworld.hpp"
+#include "collision/collisiondetection.hpp"
 
 using glm::normalize;
 using glm::length;
 using std::min;
 using std::max;
 using glm::clamp;
-using std::string;
 using std::to_string;
 using std::swap;
 using glm::acos;
-using glm::quat;
 using glm::cross;
 using std::fabs;
 using glm::radians;
 
-namespace KalaKit
+using KalaKit::Physics::Collision::CollisionDetection;
+using KalaKit::Physics::Collision::ContactManifold;
+
+namespace KalaKit::Physics::Core
 {
 	PhysicsWorld& PhysicsWorld::GetInstance()
 	{
@@ -53,7 +42,7 @@ namespace KalaKit
 	{
 		if (!isInitialized)
 		{
-			LOG_ERROR("Cannot shut down Elypso Physics because it has not yet been initialized!");
+			LOG_ERROR("Cannot shut down KalaPhysics because it has not yet been initialized!");
 			return;
 		}
 
@@ -78,7 +67,7 @@ namespace KalaKit
 	{
 		if (isInitialized)
 		{
-			LOG_ERROR("Elypso Physics is already initialized!");
+			LOG_ERROR("KalaPhysics is already initialized!");
 			return;
 		}
 
@@ -94,22 +83,21 @@ namespace KalaKit
 	}
 
 	GameObjectHandle PhysicsWorld::CreateRigidBody(
-		const vec3& offsetPosition,
-		const vec3& combinedPosition,
-		const quat& offsetRotation,
-		const quat& combinedRotation,
+		const vec3& position,
+		const quat& rotation,
+		const vec3& scale,
 		ColliderType colliderType,
-		const vec3& colliderSizeOrRadius,
+		bool isDynamic,
+		bool useGravity,
 		float mass,
 		float restitution,
 		float staticFriction,
 		float dynamicFriction,
-		float gravityFactor,
-		bool useGravity)
+		float gravityFactor)
 	{
 		if (!isInitialized)
 		{
-			LOG_ERROR("Cannot create a RigidBody if Elypso Physics isnt initialized!");
+			LOG_ERROR("Cannot create a RigidBody if KalaPhysics isnt initialized!");
 			return GameObjectHandle(UINT32_MAX, UINT32_MAX);
 		}
 
@@ -121,10 +109,11 @@ namespace KalaKit
 		//create the rigidbody
 		RigidBody* rb = new RigidBody(
 			handle,
-			offsetPosition,
-			combinedPosition,
-			offsetRotation,
-			combinedRotation,
+			position,
+			rotation,
+			scale,
+			isDynamic,
+			useGravity,
 			mass,
 			restitution,
 			staticFriction,
@@ -132,10 +121,8 @@ namespace KalaKit
 			gravityFactor);
 
 		//assign collider based on collider type
-		rb->SetCollider(
-			vec3(0.0f),
-			vec3(1.0f),
-			colliderType);
+		rb->SetCollider(colliderType);
+		rb->SetScale(scale);
 
 		bodies.push_back(rb);
 		bodyMap[handle] = index;
@@ -235,16 +222,16 @@ namespace KalaKit
 
 		//bounding sphere distance culling
 
-		vec3 posA = bodyA.combinedPosition;
-		vec3 posB = bodyB.combinedPosition;
+		vec3 posA = bodyA.position;
+		vec3 posB = bodyB.position;
 
 		float radiusA = (bodyA.collider->boundingRadius > 0.0f)
 			? bodyA.collider->boundingRadius
-			: length(bodyA.collider->combinedScale) * 0.5f;
+			: length(bodyA.scale) * 0.5f;
 
 		float radiusB = (bodyB.collider->boundingRadius > 0.0f)
 			? bodyB.collider->boundingRadius
-			: length(bodyB.collider->combinedScale) * 0.5f;
+			: length(bodyB.scale) * 0.5f;
 
 		if (length(posA - posB) > (radiusA + radiusB))
 		{
@@ -276,8 +263,8 @@ namespace KalaKit
 				if (bodyA.collider->type == ColliderType::BOX
 					&& bodyB.collider->type == ColliderType::BOX)
 				{
-					if (acos(clamp(dot(bodyA.combinedRotation, quat(1, 0, 0, 0)), -1.0f, 1.0f)) > 0.01f
-						|| acos(clamp(dot(bodyB.combinedRotation, quat(1, 0, 0, 0)), -1.0f, 1.0f)) > 0.01f)
+					if (acos(clamp(dot(bodyA.rotation, quat(1, 0, 0, 0)), -1.0f, 1.0f)) > 0.01f
+						|| acos(clamp(dot(bodyB.rotation, quat(1, 0, 0, 0)), -1.0f, 1.0f)) > 0.01f)
 					{
 						useOBB = true;
 					}
@@ -331,19 +318,19 @@ namespace KalaKit
 				* 0.5f * deltaTime;
 
 			quat futureRotation = normalize(
-				body.combinedRotation 
+				body.rotation 
 				+ angularRotation 
-				* body.combinedRotation);
+				* body.rotation);
 
 			PredictCollision(bodyPtr, body, deltaTime);
 
 			//apply simple Euler integration
-			body.combinedPosition += body.velocity * deltaTime;
+			body.position += body.velocity * deltaTime;
 
 			//apply angular velocity
 			if (length(body.angularVelocity) > 0.001f)
 			{
-				body.combinedRotation = futureRotation;
+				body.rotation = futureRotation;
 			}
 
 			body.tiltTimer += deltaTime;
@@ -404,7 +391,7 @@ namespace KalaKit
 			vec3 axisVelocity(0.0f);
 			axisVelocity[axis] = originalVelocity[axis];
 
-			vec3 testPos = body.combinedPosition + axisVelocity * deltaTime;
+			vec3 testPos = body.position + axisVelocity * deltaTime;
 
 			bool cancelAxis = false;
 
@@ -428,7 +415,7 @@ namespace KalaKit
 				}
 
 				RigidBody tempBody = body;
-				tempBody.combinedPosition = testPos;
+				tempBody.position = testPos;
 
 				auto manifold = CollisionDetection::GenerateOBBContactManifold(tempBody, otherBody);
 				if (manifold.colliding
@@ -471,12 +458,12 @@ namespace KalaKit
 
 		//world space center of gravity
 		vec3 worldCoGA =
-			bodyA.combinedPosition
-			+ mat3_cast(bodyA.combinedRotation)
+			bodyA.position
+			+ mat3_cast(bodyA.rotation)
 			* bodyA.centerOfGravity;
 		vec3 worldCoGB =
-			bodyB.combinedPosition
-			+ mat3_cast(bodyB.combinedRotation)
+			bodyB.position
+			+ mat3_cast(bodyB.rotation)
 			* bodyB.centerOfGravity;
 
 		//constant offsets based on world cog
@@ -535,8 +522,8 @@ namespace KalaKit
 
 				vec3 correctionVec = collisionNormal * (corrected * correctionFactor);
 
-				bodyA.combinedPosition -= correctionVec * ratioA;
-				bodyB.combinedPosition += correctionVec * ratioB;
+				bodyA.position -= correctionVec * ratioA;
+				bodyB.position += correctionVec * ratioB;
 			}
 		}
 	}
@@ -548,8 +535,8 @@ namespace KalaKit
 		const vec3& contactPoint) const
 	{
 		//compute relative velocity at the contact point
-		vec3 rA = contactPoint - bodyA.combinedPosition;
-		vec3 rB = contactPoint - bodyB.combinedPosition;
+		vec3 rA = contactPoint - bodyA.position;
+		vec3 rB = contactPoint - bodyB.position;
 
 		vec3 vA = bodyA.velocity + cross(bodyA.angularVelocity, rA);
 		vec3 vB = bodyB.velocity + cross(bodyB.angularVelocity, rB);
@@ -606,12 +593,12 @@ namespace KalaKit
 		//calculate the six candidate directions (in world space)
 		vec3 possibleUps[6] = 
 		{
-			body.combinedRotation * vec3(0, 1, 0),
-			body.combinedRotation * vec3(0, -1, 0),
-			body.combinedRotation * vec3(1, 0, 0),
-			body.combinedRotation * vec3(-1, 0, 0),
-			body.combinedRotation * vec3(0, 0, 1),
-			body.combinedRotation * vec3(0, 0, -1)
+			body.rotation * vec3(0, 1, 0),
+			body.rotation * vec3(0, -1, 0),
+			body.rotation * vec3(1, 0, 0),
+			body.rotation * vec3(-1, 0, 0),
+			body.rotation * vec3(0, 0, 1),
+			body.rotation * vec3(0, 0, -1)
 		};
 
 		vec3 bestUp = possibleUps[0];
@@ -671,7 +658,7 @@ namespace KalaKit
 			     && length(body.angularVelocity) < 0.1f)
 		{
 			body.angularVelocity = vec3(0.0f);
-			body.combinedRotation = normalize(body.combinedRotation);
+			body.rotation = normalize(body.rotation);
 			LOG_DEBUG("tilt snap");
 		}
 	}

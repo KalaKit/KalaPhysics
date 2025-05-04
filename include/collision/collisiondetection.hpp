@@ -21,13 +21,15 @@
 #include "glm.hpp"
 
 //physics
-#include "rigidbody.hpp"
-#include "collider.hpp"
+#include "core/rigidbody.hpp"
+#include "collision/collider.hpp"
 
-namespace KalaKit
+namespace KalaKit::Physics::Collision
 {
 	using glm::vec3;
 	using std::vector;
+
+	using KalaKit::Physics::Core::RigidBody;
 
 	//Single contact point
 	struct Contact

@@ -5,16 +5,6 @@
 
 #pragma once
 
-#ifdef _WIN32
-	#ifdef KALAPHYSICS_DLL_EXPORT
-		#define KALAPHYSICS_API __declspec(dllexport)
-	#else
-		#define KALAPHYSICS_API __declspec(dllimport)
-	#endif
-#else
-	#define KALAPHYSICS_API
-#endif
-
 #include <vector>
 #include <unordered_map>
 #include <cstdint>
@@ -23,9 +13,10 @@
 #include "glm.hpp"
 
 //physics
-#include "rigidbody.hpp"
+#include "core/utils.hpp"
+#include "core/rigidbody.hpp"
 
-namespace KalaKit
+namespace KalaKit::Physics::Core
 {
 	using std::vector;
 	using std::unordered_map;
@@ -47,18 +38,17 @@ namespace KalaKit
 		/// Create a RigidBody and return its handle
 		/// </summary>
 		GameObjectHandle CreateRigidBody(
-			const vec3& offsetPosition,
-			const vec3& combinedPosition,
-			const quat& offsetRotation,
-			const quat& combinedRotation,
+			const vec3& position,
+			const quat& rotation,
+			const vec3& scale,
 			ColliderType colliderType,
-			const vec3& colliderSizeOrRadius,
+			bool isDynamic = false,
+			bool useGravity = false,
 			float mass = 1.0f,
 			float restitution = 0.5f,
 			float staticFriction = 0.5f,
 			float dynamicFriction = 0.3f,
-			float gravityFactor = 1.0f,
-			bool useGravity = true);
+			float gravityFactor = 1.0f);
 
 		/// <summary>
 		/// Get a RigidBody by handle
