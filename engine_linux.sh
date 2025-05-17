@@ -70,7 +70,7 @@ if [[ ! -f "$DEBUG_LIB" ]]; then
 fi
 
 # Set target folder
-TARGET_DIR="${ROOT_DIR}/../Elypso-engine/_external_shared/KalaPhysics"
+TARGET_DIR="${ROOT_DIR}/../elypso-engine/_external_shared/KalaPhysics"
 
 if [[ ! -d "$TARGET_DIR" ]]; then
     echo "[ERROR] Target directory does not exist: $TARGET_DIR"
