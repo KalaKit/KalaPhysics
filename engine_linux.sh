@@ -3,6 +3,11 @@
 # Set root folder
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+CLEAN_ARG=""
+if [[ "$1" == "clean" ]]; then
+    CLEAN_ARG="clean"
+fi
+
 # Set shell script paths
 RELEASE_SH="${ROOT_DIR}/build_linux_release.sh"
 DEBUG_SH="${ROOT_DIR}/build_linux_debug.sh"
@@ -20,12 +25,12 @@ if [[ ! -f "$DEBUG_SH" ]]; then
 fi
 
 # Compile in release and debug mode
-if ! bash "${RELEASE_SH}"; then
+if ! bash "${RELEASE_SH}" $CLEAN_ARG; then
     echo "[FATAL] Release build failed!"
     read -r -p "Press enter to exit..."
     exit 1
 fi
-if ! bash "${DEBUG_SH}"; then
+if ! bash "${DEBUG_SH}" $CLEAN_ARG; then
     echo "[FATAL] Debug build failed!"
     read -r -p "Press enter to exit..."
     exit 1
