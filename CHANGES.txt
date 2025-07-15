@@ -16,3 +16,4 @@
 0.2:
 
 - replaced AABB collision with OBBvOBB
+- reorganized bat files into a unified system for windows/linux
