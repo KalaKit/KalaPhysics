@@ -6,6 +6,8 @@
 
 ![Logo](logo.png)
 
+## THIS PROJECT IS DEPRECATED AND ITS CORE CONCEPTS WILL BE MERGED WITH KALAWINDOW IN A FUTURE UPDATE
+
 **KalaPhysics** is a lightweight **C++ 20** physics library that utilizes **GLM** for core mathematical operations while maintaining compatibility with any graphics API, not just **OpenGL**.
 
 Designed to be **platform-agnostic**, the library aims for full compatibility with **Windows**, **Linux**, and **macOS**, though it has only been tested on **Windows** and **Ubuntu** distributions. Relying solely on standard **C++ 20** libraries and **GLM**, it ensures seamless **cross-platform support**.
