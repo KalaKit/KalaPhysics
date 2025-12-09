@@ -15,7 +15,6 @@ namespace KalaPhysics::Core
 {
 	using std::function;
 	using std::string;
-	using std::abort;
 	
 	using u32 = uint32_t;
 	
@@ -25,20 +24,20 @@ namespace KalaPhysics::Core
 	class LIB_API KalaPhysicsCore
 	{
 	public:
-		//The ID that is bumped by every object in KalaWindow when it needs a new ID
+		//The ID that is bumped by every object when it needs a new ID
 		static inline u32 globalID{};
 		
-		//Run when you want all KalaPhysics resources freed relative to a window ID,
-		//fonts, shaders and textures are not related to one window, they are shared across all windows
+		//Run when you want all KalaPhysics resources freed relative to a window ID
 		static void CleanAllWindowResources(u32 windowID);
 		
 		//Run when you want all KalaPhysics resources to be freed
 		static void CleanAllResources();
 		
 		//Calls the force close callback which handles what happens at runtime,
-		//always calls __debugbreak in debug, calls abort if no force close callback is assigned
+		//always calls __debugbreak in debug, calls quick_exit if no force close callback is assigned
 		static inline void SetForceCloseCallback(
-			function<void(const string& target, const string& reason)> newCallback)
+			function<void(const string& target,
+			const string& reason)> newCallback)
 		{
 			if (!newCallback) return;
 			
@@ -64,6 +63,9 @@ namespace KalaPhysics::Core
 #endif
 		}
 	private:
-		static inline function<void(const string& target, const string& reason)> forceCloseCallback{};
+		static inline function<void(
+			const string& target, 
+			const string& reason)>
+			forceCloseCallback{};
 	};
 }
