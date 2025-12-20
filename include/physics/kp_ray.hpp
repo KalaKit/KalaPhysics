@@ -10,7 +10,6 @@
 
 #include "KalaHeaders/core_utils.hpp"
 
-#include "core/kp_registry.hpp"
 #include "core/kp_physics_world.hpp"
 
 namespace KalaPhysics::Physics
@@ -22,16 +21,17 @@ namespace KalaPhysics::Physics
 	using u64 = uint64_t;
 	using f32 = float;
 	
-	using KalaPhysics::Core::KalaPhysicsRegistry;
 	using KalaPhysics::Core::PhysicsWorld;
 	using KalaPhysics::Core::MAX_LAYERS;
 	
+	constexpr f32 MAX_DISTANCE = 10000.0f;
+	
 	class LIB_API Ray
 	{
+		class Collider; //forward declare collider so Ray can return Collider
+		
 		friend class PhysicsWorld;
 	public:
-		static inline KalaPhysicsRegistry<Ray> registry{};
-		
 		//Create a new mask from multiple layers
 		static inline u64 MakeMaskFromLayers(initializer_list<u8> layers)
 		{
@@ -44,7 +44,19 @@ namespace KalaPhysics::Physics
 			return m;
 		}
 		
-		static Ray* Initialize();
+		//Returns true if this ray hit any collider with the valid layer,
+		//a maxDistance of 0.0f means ray max distance is 10000 units
+		static bool Hit(
+			const vec3& origin,
+			const vec3& direction,
+			f32 maxDistance = 0.0f);
+			
+		//Returns the collider non-owning pointer this ray hit,
+		//a maxDistance of 0.0f means ray max distance is 10000 units
+		static Collider* Hit(
+			const vec3& origin,
+			const vec3& direction,
+			f32 maxDistance = 0.0f);
 		
 		//Set mask directly
 		inline void SetMask(u64 m) { mask = m; }
@@ -84,8 +96,6 @@ namespace KalaPhysics::Physics
 		}
 		
 		inline u64 GetMask() const { return mask; }
-		
-		~Ray();
 	private:
 		void Update(f32 deltaTime);
 	
