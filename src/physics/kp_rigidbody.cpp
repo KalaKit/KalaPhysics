@@ -4,12 +4,66 @@
 //Read LICENSE.md for more information.
 
 #include "physics/kp_rigidbody.hpp"
+#include "physics/kp_collider.hpp"
 
 namespace KalaPhysics::Physics
 {
 	RigidBody* RigidBody::Initialize()
 	{
 		return nullptr;
+	}
+
+	void RigidBody::AddCollider(u32 colliderID)
+	{
+		//skip if max collider count was reached
+		if (colliderCount >= MAX_COLLIDERS)
+		{
+			Log::Print(
+				"Cannot add a new collider because the max layer count of '" + to_string(MAX_COLLIDERS) + "' colliders has been reached!",
+				"COLLIDER",
+				LogType::LOG_ERROR,
+				2);
+
+			return;
+		}
+
+		//cannot add what already exists
+		for (u8 i = 0; i < colliderCount; i++)
+		{
+			if (colliders[i] == colliderID)
+			{
+				Log::Print(
+					"Cannot add a new collider with the ID '" + to_string(colliderID) + "' because it has already been added!",
+					"COLLIDER",
+					LogType::LOG_ERROR,
+					2);
+
+				return;
+			}
+		}
+
+		colliders[colliderCount++] = colliderID;
+	}
+	void RigidBody::RemoveCollider(u32 colliderID)
+	{
+		for (u8 i = 0; i < colliderCount; i++)
+		{
+			if (colliders[i] == colliderID)
+			{
+				colliders[i] = colliders[--colliderCount];
+				return;
+			}
+		}
+
+		Log::Print(
+			"Cannot remove an existing collider with the ID '" + to_string(colliderID) + "' because that ID doesn't exist!",
+			"COLLIDER",
+			LogType::LOG_ERROR,
+			2);
+	}
+	void RigidBody::RemoveAllColliders()
+	{
+		colliderCount = 0;
 	}
 	
 	RigidBody::~RigidBody()

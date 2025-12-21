@@ -6,6 +6,8 @@
 #include "physics/kp_ray.hpp"
 #include "physics/kp_collider.hpp"
 
+using KalaPhysics::Core::PhysicsWorld;
+
 namespace KalaPhysics::Physics
 {
 	bool Ray::HitAny(
@@ -22,5 +24,40 @@ namespace KalaPhysics::Physics
 		f32 maxDistance)
 	{
 		return nullptr;
+	}
+
+	void Ray::AddLayerToMask(const string& layer)
+	{
+		u8 foundLayer = PhysicsWorld::GetLayer(layer);
+
+		if (foundLayer == 255)
+		{
+			Log::Print(
+				"Cannot add layer with name '" + layer + "' because it does not exist!",
+				"RAY",
+				LogType::LOG_ERROR,
+				2);
+
+			return;
+		}
+
+		mask |= (1ULL << foundLayer);
+	}
+	void Ray::RemoveLayerFromMask(const string& layer)
+	{
+		u8 foundLayer = PhysicsWorld::GetLayer(layer);
+
+		if (foundLayer == 255)
+		{
+			Log::Print(
+				"Cannot remove layer with name '" + layer + "' because it does not exist!",
+				"RAY",
+				LogType::LOG_ERROR,
+				2);
+
+			return;
+		}
+
+		mask &= ~(1ULL << foundLayer);
 	}
 }

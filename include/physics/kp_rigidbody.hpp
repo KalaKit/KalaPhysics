@@ -6,58 +6,47 @@
 #pragma once
 
 #include <array>
+#include <string>
 
 #include "KalaHeaders/core_utils.hpp"
+#include "KalaHeaders/log_utils.hpp"
 
 #include "core/kp_registry.hpp"
+
+namespace KalaPhysics::Core
+{
+	class PhysicsWorld;
+}
 
 namespace KalaPhysics::Physics
 {
 	using std::array;
+	using std::to_string;
 	
 	using u8 = uint8_t;
 	using u32 = uint32_t;
 	
+	using KalaHeaders::KalaLog::Log;
+	using KalaHeaders::KalaLog::LogType;
+
 	using KalaPhysics::Core::KalaPhysicsRegistry;
 	
 	constexpr u8 MAX_COLLIDERS = 50;
 	
 	class LIB_API RigidBody
 	{
-		friend class PhysicsWorld;
+		friend class KalaPhysics::Core::PhysicsWorld;
 	public:
 		static inline KalaPhysicsRegistry<RigidBody> registry{};
 		
 		static RigidBody* Initialize();
 		
 		//Add a new collider by its ID to this rigidbody
-		inline void AddCollider(u32 colliderID)
-		{
-			//skip if max collider count was reached
-			if (colliderCount >= MAX_COLLIDERS) return;
-			
-			//cannot add what already exists
-			for (u8 i = 0; i < colliderCount; i++)
-			{
-				if (colliders[i] == colliderID) return;
-			}
-			
-			colliders[colliderCount++] = colliderID;
-		}
+		void AddCollider(u32 colliderID);
 		//Remove an existing collider by ID from this rigidbody
-		inline void RemoveCollider(u32 colliderID)
-		{
-			for (u8 i = 0; i < colliderCount; i++)
-			{
-				if (colliders[i] == colliderID)
-				{
-					colliders[i] = colliders[--colliderCount];
-					return;
-				}
-			}
-		}
+		void RemoveCollider(u32 colliderID);
 		//Reset colliders count, doesn't waste time removing actual values
-		inline void RemoveAllColliders() { colliderCount = 0; }
+		void RemoveAllColliders();
 		
 		~RigidBody();
 	private:

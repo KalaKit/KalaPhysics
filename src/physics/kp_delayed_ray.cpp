@@ -5,6 +5,8 @@
 
 #include "physics/kp_delayed_ray.hpp"
 
+using KalaPhysics::Core::PhysicsWorld;
+
 namespace KalaPhysics::Physics
 {
 	DelayedRay* DelayedRay::Initialize()
@@ -12,13 +14,48 @@ namespace KalaPhysics::Physics
 		return nullptr;
 	}
 
-	void DelayedRay::Update(f32 deltaTime)
+	void DelayedRay::AddLayerToMask(const string& layer)
 	{
+		u8 foundLayer = PhysicsWorld::GetLayer(layer);
 
+		if (foundLayer == 255)
+		{
+			Log::Print(
+				"Cannot add layer with name '" + layer + "' because it does not exist!",
+				"DELAYED_RAY",
+				LogType::LOG_ERROR,
+				2);
+
+			return;
+		}
+
+		mask |= (1ULL << foundLayer);
 	}
-	
+	void DelayedRay::RemoveLayerFromMask(const string& layer)
+	{
+		u8 foundLayer = PhysicsWorld::GetLayer(layer);
+
+		if (foundLayer == 255)
+		{
+			Log::Print(
+				"Cannot remove layer with name '" + layer + "' because it does not exist!",
+				"DELAYED_RAY",
+				LogType::LOG_ERROR,
+				2);
+
+			return;
+		}
+
+		mask &= ~(1ULL << foundLayer);
+	}
+
 	DelayedRay::~DelayedRay()
 	{
 		
+	}
+
+	void DelayedRay::Update(f32 deltaTime)
+	{
+
 	}
 }

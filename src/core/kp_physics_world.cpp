@@ -7,5 +7,8 @@
 
 namespace KalaPhysics::Core
 {
-	
+	void PhysicsWorld::Update(f32 deltaTime)
+	{
+
+	}
 }

@@ -11,26 +11,32 @@
 
 #include "KalaHeaders/core_utils.hpp"
 #include "KalaHeaders/math_utils.hpp"
+#include "KalaHeaders/log_utils.hpp"
 
 #include "core/kp_registry.hpp"
-#include "core/kp_physics_world.hpp"
+
+namespace KalaPhysics::Core
+{
+	class PhysicsWorld;
+}
 
 namespace KalaPhysics::Physics
 {
 	using std::vector;
 	using std::string;
 	using std::function;
-	
-	using KalaPhysics::Core::KalaPhysicsRegistry;
-	using KalaPhysics::Core::PhysicsWorld;
-	
+
 	using KalaHeaders::KalaMath::vec3;
 	using KalaHeaders::KalaMath::quat;
 	using KalaHeaders::KalaMath::Transform3D;
+	using KalaHeaders::KalaLog::Log;
+	using KalaHeaders::KalaLog::LogType;
 	
+	using KalaPhysics::Core::KalaPhysicsRegistry;
+
 	class LIB_API Collider
 	{	
-		friend class PhysicsWorld;
+		friend class KalaPhysics::Core::PhysicsWorld;
 	public:
 		static inline KalaPhysicsRegistry<Collider> registry{};
 		
@@ -70,25 +76,27 @@ namespace KalaPhysics::Physics
 		inline void SetTriggerState(bool newValue) { isTrigger = newValue; }
 		inline bool IsTrigger() const { return isTrigger; }
 			
-		//Assign a layer to this collider by index
-		inline void SetLayer(u8 newLayer)
-		{
-			if (PhysicsWorld::GetLayer(newLayer) == "NONE") return;
-			
-			layer = newLayer;
-		}
 		//Assign a layer to this collider by name
-		inline void SetLayer(const string& newLayer)
-		{
-			u8 foundLayer = PhysicsWorld::GetLayer(newLayer);
-			if (foundLayer == 255) return;
-			
-			layer = foundLayer;
-		}
+		void SetLayer(const string& newLayer);
 		//Reset existing layer to default - no collisions accepted
-		inline void ClearLayer() { layer = 0; }
-		
+		void ClearLayer();
+
+		inline u32 GetParentRigidBody() const { return parentRigidBody; }
+
 		inline u8 GetLayer() const { return layer; }
+
+		inline ColliderShape GetColliderShape() const { return shape; }
+		inline ColliderType GetColliderType() const { return type; }
+
+		//Returns a reference to the external mesh vertices
+		inline const vector<vec3>& GetExternalVertices() const { return externalVertices; }
+		//Returns a reference to the external mesh transform
+		inline const Transform3D& GetExternalTransform() const { return externalTransform; }
+
+		//Returns a reference to this collider vertices
+		inline const vector<vec3>& GetVertices() const { return vertices; }
+		//Returns a reference to this collider transform
+		inline const Transform3D& GetTransform() const { return transform; }
 		
 		inline void SetOnTriggerEnter(const function<void()>& func) { onTriggerEnter = func; }
 		inline void SetOnTriggerExit(const function<void()>& func) { onTriggerExit = func; }
@@ -103,9 +111,20 @@ namespace KalaPhysics::Physics
 		void Update(f32 deltaTime);
 	
 		bool isTrigger{};
-	
+
+		u32 parentRigidBody{};
+
 		u8 layer{};
-		
+	
+		ColliderShape shape{};
+		ColliderType type{};
+
+		vector<vec3>& externalVertices;
+		Transform3D& externalTransform;
+
+		vector<vec3> vertices;
+		Transform3D transform;
+
 		function<void()> onTriggerEnter{};
 		function<void()> onTriggerExit{};
 		function<void()> onTriggerStay{};

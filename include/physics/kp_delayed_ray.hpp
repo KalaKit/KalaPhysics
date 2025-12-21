@@ -9,26 +9,35 @@
 #include <string>
 
 #include "KalaHeaders/core_utils.hpp"
+#include "KalaHeaders/log_utils.hpp"
 
 #include "core/kp_registry.hpp"
 #include "core/kp_physics_world.hpp"
+
+namespace KalaPhysics::Core
+{
+	class PhysicsWorld;
+}
 
 namespace KalaPhysics::Physics
 {
 	using std::initializer_list;
 	using std::string;
+	using std::to_string;
 	
 	using u8 = uint8_t;
 	using u64 = uint64_t;
 	using f32 = float;
+
+	using KalaHeaders::KalaLog::Log;
+	using KalaHeaders::KalaLog::LogType;
 	
 	using KalaPhysics::Core::KalaPhysicsRegistry;
-	using KalaPhysics::Core::PhysicsWorld;
 	using KalaPhysics::Core::MAX_LAYERS;
 	
 	class LIB_API DelayedRay
 	{
-		friend class PhysicsWorld;
+		friend class KalaPhysics::Core::PhysicsWorld;
 	public:
 		static inline KalaPhysicsRegistry<DelayedRay> registry{};
 		
@@ -51,37 +60,10 @@ namespace KalaPhysics::Physics
 		//Reset mask (no collisions)
 		inline void ClearMask() { mask = 0ULL; }
 		
-		//Include layer by index
-		inline void AddLayerToMask(u8 layer)
-		{
-			if (PhysicsWorld::GetLayer(layer) == "NONE") return;
-			
-			mask |= (1ULL << layer);
-		}
-		//Exclude layer by index
-		inline void RemoveLayerFromMask(u8 layer)
-		{
-			if (PhysicsWorld::GetLayer(layer) == "NONE") return;
-			
-			mask &= ~(1ULL << layer);
-		}
-		
 		//Include layer by name
-		inline void AddLayerToMask(const string& layer)
-		{
-			u8 foundLayer = PhysicsWorld::GetLayer(layer);
-			if (foundLayer == 255) return;
-			
-			mask |= (1ULL << foundLayer);
-		}
+		void AddLayerToMask(const string& layer);
 		//Exclude layer by name
-		inline void RemoveLayerFromMask(const string& layer)
-		{
-			u8 foundLayer = PhysicsWorld::GetLayer(layer);
-			if (foundLayer == 255) return;
-			
-			mask &= ~(1ULL << foundLayer);
-		}
+		void RemoveLayerFromMask(const string& layer);
 		
 		inline u64 GetMask() const { return mask; }
 		
