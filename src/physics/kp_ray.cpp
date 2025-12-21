@@ -4,16 +4,23 @@
 //Read LICENSE.md for more information.
 
 #include "physics/kp_ray.hpp"
+#include "physics/kp_collider.hpp"
 
 namespace KalaPhysics::Physics
 {
-	Ray* Ray::Initialize()
+	bool Ray::HitAny(
+		const vec3& origin,
+		const vec3& direction,
+		f32 maxDistance)
+	{
+		return false;
+	}
+
+	Collider* Ray::HitCollider(
+		const vec3& origin,
+		const vec3& direction,
+		f32 maxDistance)
 	{
 		return nullptr;
-	}
-	
-	Ray::~Ray()
-	{
-		
 	}
 }

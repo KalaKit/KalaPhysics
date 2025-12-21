@@ -11,6 +11,11 @@ namespace KalaPhysics::Physics
 	{
 		return nullptr;
 	}
+
+	void DelayedRay::Update(f32 deltaTime)
+	{
+
+	}
 	
 	DelayedRay::~DelayedRay()
 	{

@@ -22,13 +22,13 @@ namespace KalaPhysics::Physics
 	
 	constexpr u8 MAX_COLLIDERS = 50;
 	
-	class LIB_API Rigidbody
+	class LIB_API RigidBody
 	{
 		friend class PhysicsWorld;
 	public:
-		static inline KalaPhysicsRegistry<Rigidbody> registry{};
+		static inline KalaPhysicsRegistry<RigidBody> registry{};
 		
-		static Rigidbody* Initialize();
+		static RigidBody* Initialize();
 		
 		//Add a new collider by its ID to this rigidbody
 		inline void AddCollider(u32 colliderID)
@@ -59,7 +59,7 @@ namespace KalaPhysics::Physics
 		//Reset colliders count, doesn't waste time removing actual values
 		inline void RemoveAllColliders() { colliderCount = 0; }
 		
-		~Rigidbody();
+		~RigidBody();
 	private:
 		array<u32, MAX_COLLIDERS> colliders{};
 		u8 colliderCount{};

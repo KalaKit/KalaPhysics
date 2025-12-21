@@ -7,19 +7,13 @@
 
 namespace KalaPhysics::Physics
 {
-	bool Ray::Hit(
-		const vec3& origin,
-		const vec3& direction,
-		f32 maxDistance)
+	RigidBody* RigidBody::Initialize()
 	{
-		
+		return nullptr;
 	}
 	
-	Collider* Ray::Hit(
-		const vec3& origin,
-		const vec3& direction,
-		f32 maxDistance)
+	RigidBody::~RigidBody()
 	{
-			
+
 	}
 }

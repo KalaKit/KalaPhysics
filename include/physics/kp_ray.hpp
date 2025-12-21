@@ -9,6 +9,7 @@
 #include <string>
 
 #include "KalaHeaders/core_utils.hpp"
+#include "KalaHeaders/math_utils.hpp"
 
 #include "core/kp_physics_world.hpp"
 
@@ -16,20 +17,18 @@ namespace KalaPhysics::Physics
 {
 	using std::initializer_list;
 	using std::string;
-	
-	using u8 = uint8_t;
-	using u64 = uint64_t;
-	using f32 = float;
+
+	using KalaHeaders::KalaMath::vec3;
 	
 	using KalaPhysics::Core::PhysicsWorld;
 	using KalaPhysics::Core::MAX_LAYERS;
 	
 	constexpr f32 MAX_DISTANCE = 10000.0f;
+
+	class Collider; //forward declare collider so Ray can return Collider
 	
 	class LIB_API Ray
 	{
-		class Collider; //forward declare collider so Ray can return Collider
-		
 		friend class PhysicsWorld;
 	public:
 		//Create a new mask from multiple layers
@@ -46,14 +45,14 @@ namespace KalaPhysics::Physics
 		
 		//Returns true if this ray hit any collider with the valid layer,
 		//a maxDistance of 0.0f means ray max distance is 10000 units
-		static bool Hit(
+		static bool HitAny(
 			const vec3& origin,
 			const vec3& direction,
 			f32 maxDistance = 0.0f);
 			
 		//Returns the collider non-owning pointer this ray hit,
 		//a maxDistance of 0.0f means ray max distance is 10000 units
-		static Collider* Hit(
+		static Collider* HitCollider(
 			const vec3& origin,
 			const vec3& direction,
 			f32 maxDistance = 0.0f);
@@ -97,8 +96,6 @@ namespace KalaPhysics::Physics
 		
 		inline u64 GetMask() const { return mask; }
 	private:
-		void Update(f32 deltaTime);
-	
 		u64 mask = ~0ULL; //default - collide with everything
 	};
 }

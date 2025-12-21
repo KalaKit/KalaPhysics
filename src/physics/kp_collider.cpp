@@ -16,6 +16,11 @@ namespace KalaPhysics::Physics
 	{
 		return nullptr;
 	}
+
+	void Collider::Update(f32 deltaTime)
+	{
+
+	}
 	
 	Collider::~Collider()
 	{
