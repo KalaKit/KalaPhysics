@@ -7,6 +7,8 @@
 
 using KalaPhysics::Core::PhysicsWorld;
 
+using std::to_string;
+
 namespace KalaPhysics::Physics
 {
 	DelayedRay* DelayedRay::Initialize()
@@ -21,7 +23,7 @@ namespace KalaPhysics::Physics
 		if (foundLayer == 255)
 		{
 			Log::Print(
-				"Cannot add layer with name '" + layer + "' because it does not exist!",
+				"Cannot add layer with name '" + layer + "' for delayed ray '" + to_string(ID) + "' because the layer does not exist!",
 				"DELAYED_RAY",
 				LogType::LOG_ERROR,
 				2);
@@ -38,7 +40,7 @@ namespace KalaPhysics::Physics
 		if (foundLayer == 255)
 		{
 			Log::Print(
-				"Cannot remove layer with name '" + layer + "' because it does not exist!",
+				"Cannot remove layer with name '" + layer + "' for delayed ray '" + to_string(ID) + "' because the layer does not exist!",
 				"DELAYED_RAY",
 				LogType::LOG_ERROR,
 				2);

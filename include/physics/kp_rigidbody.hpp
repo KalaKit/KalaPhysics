@@ -6,7 +6,6 @@
 #pragma once
 
 #include <array>
-#include <string>
 
 #include "KalaHeaders/core_utils.hpp"
 #include "KalaHeaders/log_utils.hpp"
@@ -21,7 +20,6 @@ namespace KalaPhysics::Core
 namespace KalaPhysics::Physics
 {
 	using std::array;
-	using std::to_string;
 	
 	using u8 = uint8_t;
 	using u32 = uint32_t;
@@ -40,6 +38,10 @@ namespace KalaPhysics::Physics
 		static inline KalaPhysicsRegistry<RigidBody> registry{};
 		
 		static RigidBody* Initialize();
+
+		inline bool IsInitialized() const { return isInitialized; }
+
+		inline u32 GetID() const { return ID; }
 		
 		//Add a new collider by its ID to this rigidbody
 		void AddCollider(u32 colliderID);
@@ -47,9 +49,16 @@ namespace KalaPhysics::Physics
 		void RemoveCollider(u32 colliderID);
 		//Reset colliders count, doesn't waste time removing actual values
 		void RemoveAllColliders();
+
+		inline const array<u32, MAX_COLLIDERS>& GetAllColliders() const { return colliders; }
+		inline u8 GetColliderCount() const { return colliderCount; }
 		
 		~RigidBody();
 	private:
+		bool isInitialized{};
+
+		u32 ID{};
+
 		array<u32, MAX_COLLIDERS> colliders{};
 		u8 colliderCount{};
 	};

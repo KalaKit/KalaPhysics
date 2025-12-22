@@ -3,8 +3,12 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
+#include <string>
+
 #include "physics/kp_rigidbody.hpp"
 #include "physics/kp_collider.hpp"
+
+using std::to_string;
 
 namespace KalaPhysics::Physics
 {
@@ -19,7 +23,7 @@ namespace KalaPhysics::Physics
 		if (colliderCount >= MAX_COLLIDERS)
 		{
 			Log::Print(
-				"Cannot add a new collider because the max layer count of '" + to_string(MAX_COLLIDERS) + "' colliders has been reached!",
+				"Cannot add a new collider '" + to_string(colliderID) + "' for rigidbody '" + to_string(ID) + "' because the max layer count of '" + to_string(MAX_COLLIDERS) + "' colliders has been reached!",
 				"COLLIDER",
 				LogType::LOG_ERROR,
 				2);
@@ -33,7 +37,7 @@ namespace KalaPhysics::Physics
 			if (colliders[i] == colliderID)
 			{
 				Log::Print(
-					"Cannot add a new collider with the ID '" + to_string(colliderID) + "' because it has already been added!",
+					"Cannot add a new collider '" + to_string(colliderID) + "' for rigidbody '" + to_string(ID) + "' because the collider has already been added!",
 					"COLLIDER",
 					LogType::LOG_ERROR,
 					2);
@@ -56,7 +60,7 @@ namespace KalaPhysics::Physics
 		}
 
 		Log::Print(
-			"Cannot remove an existing collider with the ID '" + to_string(colliderID) + "' because that ID doesn't exist!",
+			"Cannot remove an existing collider '" + to_string(colliderID) + "' from rigidbody '" + to_string(ID) + "' because that collider ID doesn't exist!",
 			"COLLIDER",
 			LogType::LOG_ERROR,
 			2);

@@ -23,7 +23,6 @@ namespace KalaPhysics::Physics
 {
 	using std::initializer_list;
 	using std::string;
-	using std::to_string;
 	
 	using u8 = uint8_t;
 	using u64 = uint64_t;
@@ -54,6 +53,10 @@ namespace KalaPhysics::Physics
 		}
 		
 		static DelayedRay* Initialize();
+
+		inline bool IsInitialized() const { return isInitialized; }
+
+		inline u32 GetID() const { return ID; }
 		
 		//Set mask directly
 		inline void SetMask(u64 m) { mask = m; }
@@ -70,6 +73,10 @@ namespace KalaPhysics::Physics
 		~DelayedRay();
 	private:
 		void Update(f32 deltaTime);
+
+		bool isInitialized{};
+
+		u32 ID{};
 	
 		u64 mask = ~0ULL; //default - collide with everything
 	};

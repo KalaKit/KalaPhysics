@@ -72,18 +72,28 @@ namespace KalaPhysics::Physics
 			u32 parentRigidbody,
 			const vector<vec3>& vertices,
 			const Transform3D& transform);
+
+		inline bool IsInitialized() const { return isInitialized; }
+
+		inline u32 GetID() const { return ID; }
+
+		//If true, then this collider wont be affected by its parent rigidbody,
+		//a collider without a parent rigidbody is always treated as static, regardless of the static state
+		inline void SetStaticState(bool newValue) { isStatic = newValue; }
+		inline bool IsStatic() const { return isStatic; }
 			
+		//If true, then this collider allows other colliders to pass through it
+		//and it will register all trigger events provided by the end user
 		inline void SetTriggerState(bool newValue) { isTrigger = newValue; }
 		inline bool IsTrigger() const { return isTrigger; }
-			
-		//Assign a layer to this collider by name
-		void SetLayer(const string& newLayer);
-		//Reset existing layer to default - no collisions accepted
-		void ClearLayer();
 
+		//Assign a new parent rigidbody to this collider, or 0 if no parent
+		inline void SetParentRigidBody(u32 newValue) { parentRigidBody = newValue; }
 		inline u32 GetParentRigidBody() const { return parentRigidBody; }
 
-		inline u8 GetLayer() const { return layer; }
+		//Set collider layer by name, use "NONE" to remove the layer completely
+		void SetLayer(const string& layer);
+		string GetLayer();
 
 		inline ColliderShape GetColliderShape() const { return shape; }
 		inline ColliderType GetColliderType() const { return type; }
@@ -109,12 +119,17 @@ namespace KalaPhysics::Physics
 		~Collider();
 	private:
 		void Update(f32 deltaTime);
+
+		bool isInitialized{};
+
+		u32 ID{};
 	
+		bool isStatic{};
 		bool isTrigger{};
 
 		u32 parentRigidBody{};
 
-		u8 layer{};
+		u8 layer = 255;
 	
 		ColliderShape shape{};
 		ColliderType type{};

@@ -8,6 +8,8 @@
 
 using KalaPhysics::Core::PhysicsWorld;
 
+using std::to_string;
+
 namespace KalaPhysics::Physics
 {
 	Collider* Collider::Initialize(
@@ -26,7 +28,7 @@ namespace KalaPhysics::Physics
 		if (foundLayer == 255)
 		{
 			Log::Print(
-				"Cannot set layer with name '" + newLayer + "' because it does not exist!",
+				"Cannot set layer with name '" + newLayer + "' for collider '" + to_string(ID) + "' because the layer does not exist!",
 				"COLLIDER",
 				LogType::LOG_ERROR,
 				2);
@@ -36,9 +38,21 @@ namespace KalaPhysics::Physics
 
 		layer = foundLayer;
 	}
-	void Collider::ClearLayer()
-	{ 
-		layer = 0;
+	string Collider::GetLayer()
+	{
+		if (layer == 255) return "NONE";
+
+		string foundLayer = PhysicsWorld::GetLayer(layer);
+		if (foundLayer == "NONE")
+		{
+			Log::Print(
+				"Cannot get layer for collider '" + to_string(ID) + "' because the layer does not exist!",
+				"COLLIDER",
+				LogType::LOG_ERROR,
+				2);
+		}
+
+		return foundLayer;
 	}
 
 	void Collider::Update(f32 deltaTime)
