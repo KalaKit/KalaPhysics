@@ -3,25 +3,15 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.'
 
-#include "physics/kp_collider.hpp"
+#include "physics/collision/kp_collider.hpp"
 #include "core/kp_physics_world.hpp"
 
 using KalaPhysics::Core::PhysicsWorld;
 
 using std::to_string;
 
-namespace KalaPhysics::Physics
+namespace KalaPhysics::Physics::Collision
 {
-	Collider* Collider::Initialize(
-		ColliderShape shape,
-		ColliderType type,
-		u32 parentRigidbody,
-		const vector<vec3>& vertices,
-		const Transform3D& transform)
-	{
-		return nullptr;
-	}
-
 	void Collider::SetLayer(const string& newLayer)
 	{
 		u8 foundLayer = PhysicsWorld::GetLayer(newLayer);
@@ -53,15 +43,5 @@ namespace KalaPhysics::Physics
 		}
 
 		return foundLayer;
-	}
-
-	void Collider::Update(f32 deltaTime)
-	{
-
-	}
-	
-	Collider::~Collider()
-	{
-		
 	}
 }

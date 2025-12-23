@@ -4,7 +4,7 @@
 //Read LICENSE.md for more information.
 
 #include "physics/kp_ray.hpp"
-#include "physics/kp_collider.hpp"
+#include "physics/collision/kp_collider.hpp"
 
 using KalaPhysics::Core::PhysicsWorld;
 

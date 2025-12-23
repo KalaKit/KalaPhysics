@@ -20,7 +20,7 @@ namespace KalaPhysics::Core
 	class PhysicsWorld;
 }
 
-namespace KalaPhysics::Physics
+namespace KalaPhysics::Physics::Collision
 {
 	using std::vector;
 	using std::string;
@@ -65,13 +65,6 @@ namespace KalaPhysics::Physics
 			COLLIDER_TYPE_BP = 1, //broadphase
 			COLLIDER_TYPE_NP = 2  //narrowphase
 		};
-		
-		static Collider* Initialize(
-			ColliderShape shape,
-			ColliderType type,
-			u32 parentRigidbody,
-			const vector<vec3>& vertices,
-			const Transform3D& transform);
 
 		inline bool IsInitialized() const { return isInitialized; }
 
@@ -98,11 +91,6 @@ namespace KalaPhysics::Physics
 		inline ColliderShape GetColliderShape() const { return shape; }
 		inline ColliderType GetColliderType() const { return type; }
 
-		//Returns a reference to the external mesh vertices
-		inline const vector<vec3>& GetExternalVertices() const { return externalVertices; }
-		//Returns a reference to the external mesh transform
-		inline const Transform3D& GetExternalTransform() const { return externalTransform; }
-
 		//Returns a reference to this collider vertices
 		inline const vector<vec3>& GetVertices() const { return vertices; }
 		//Returns a reference to this collider transform
@@ -116,10 +104,8 @@ namespace KalaPhysics::Physics
 		inline void ClearOnTriggerExit() { onTriggerExit = nullptr; }
 		inline void ClearOnTriggerStay() { onTriggerStay = nullptr; }
 		
-		~Collider();
+		virtual ~Collider() = default;
 	private:
-		void Update(f32 deltaTime);
-
 		bool isInitialized{};
 
 		u32 ID{};
@@ -133,9 +119,6 @@ namespace KalaPhysics::Physics
 	
 		ColliderShape shape{};
 		ColliderType type{};
-
-		vector<vec3>& externalVertices;
-		Transform3D& externalTransform;
 
 		vector<vec3> vertices;
 		Transform3D transform;

@@ -6,7 +6,7 @@
 #include <string>
 
 #include "physics/kp_rigidbody.hpp"
-#include "physics/kp_collider.hpp"
+#include "physics/collision/kp_collider.hpp"
 
 using std::to_string;
 

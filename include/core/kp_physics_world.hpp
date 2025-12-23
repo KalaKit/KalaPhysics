@@ -28,7 +28,7 @@ namespace KalaPhysics::Core
 	constexpr u8 MAX_LAYERS = 64;
 	constexpr u8 MAX_LAYER_NAME_LENGTH = 50;
 	
-	const vec3 GRAVITY = vec3(0.0f, -9.81f, 0.0f);
+	inline const vec3 GRAVITY = vec3(0.0f, -9.81f, 0.0f);
 	
 	class LIB_API PhysicsWorld
 	{
