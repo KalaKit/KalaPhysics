@@ -34,37 +34,37 @@ namespace KalaPhysics::Physics::Collision
 	
 	using KalaPhysics::Core::KalaPhysicsRegistry;
 
+	enum class ColliderShape : u8
+	{
+		COLLIDER_NONE = 0, //default state of all colliders, no collision will occur
+
+		COLLIDER_BSP = 1,  //bounding sphere
+		COLLIDER_AABB = 2, //axis-aligned bounding box
+		COLLIDER_OBB = 3,  //oriented bounding box
+		COLLIDER_BCP = 4,  //bounding capsule
+
+		COLLIDER_KDOP_10_X = 5, //10-face Z-axis discrete oriented polytope
+		COLLIDER_KDOP_10_Y = 6, //10-face Y-axis discrete oriented polytope
+		COLLIDER_KDOP_10_Z = 7, //10-face Z-axis discrete oriented polytope
+		COLLIDER_KDOP_18 = 8,   //18-face discrete oriented polytope
+		COLLIDER_KDOP_26 = 9,   //26-face discrete oriented polytope
+
+		COLLIDER_BCH = 10 //bounding convex hull
+	};
+
+	enum class ColliderType : u8
+	{
+		COLLIDER_TYPE_NONE = 0, //default unassigned target type
+
+		COLLIDER_TYPE_BP = 1, //broadphase
+		COLLIDER_TYPE_NP = 2  //narrowphase
+	};
+
 	class LIB_API Collider
 	{	
 		friend class KalaPhysics::Core::PhysicsWorld;
 	public:
 		static inline KalaPhysicsRegistry<Collider> registry{};
-		
-		enum class ColliderShape : u8
-		{
-			COLLIDER_NONE = 0, //default state of all colliders, no collision will occur
-			
-			COLLIDER_BSP = 1,  //bounding sphere
-			COLLIDER_AABB = 2, //axis-aligned bounding box
-			COLLIDER_OBB = 3,  //oriented bounding box
-			COLLIDER_BCP = 4,  //bounding capsule
-			
-			COLLIDER_KDOP_10_X = 5, //10-face Z-axis discrete oriented polytope
-			COLLIDER_KDOP_10_Y = 6, //10-face Y-axis discrete oriented polytope
-			COLLIDER_KDOP_10_Z = 7, //10-face Z-axis discrete oriented polytope
-			COLLIDER_KDOP_18 = 8,   //18-face discrete oriented polytope
-			COLLIDER_KDOP_26 = 9,   //26-face discrete oriented polytope
-			
-			COLLIDER_BCH = 10 //bounding convex hull
-		};
-		
-		enum class ColliderType : u8
-		{
-			COLLIDER_TYPE_NONE = 0, //default unassigned target type
-			
-			COLLIDER_TYPE_BP = 1, //broadphase
-			COLLIDER_TYPE_NP = 2  //narrowphase
-		};
 
 		inline bool IsInitialized() const { return isInitialized; }
 
@@ -96,9 +96,9 @@ namespace KalaPhysics::Physics::Collision
 		//Returns a reference to this collider transform
 		inline const Transform3D& GetTransform() const { return transform; }
 		
-		inline void SetOnTriggerEnter(const function<void()>& func) { onTriggerEnter = func; }
-		inline void SetOnTriggerExit(const function<void()>& func) { onTriggerExit = func; }
-		inline void SetOnTriggerStay(const function<void()>& func) { onTriggerStay = func; }
+		inline void SetOnTriggerEnter(const function<void()>& func) { if (func) onTriggerEnter = func; }
+		inline void SetOnTriggerExit(const function<void()>& func) { if (func) onTriggerExit = func; }
+		inline void SetOnTriggerStay(const function<void()>& func) { if (func) onTriggerStay = func; }
 		
 		inline void ClearOnTriggerEnter() { onTriggerEnter = nullptr; }
 		inline void ClearOnTriggerExit() { onTriggerExit = nullptr; }

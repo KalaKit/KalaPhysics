@@ -27,16 +27,18 @@ namespace KalaPhysics::Core
 	//64 layers fit in a 64-bit bitmask for uint64_t for bitmasking collisions and colliders
 	constexpr u8 MAX_LAYERS = 64;
 	constexpr u8 MAX_LAYER_NAME_LENGTH = 50;
-	
-	inline const vec3 GRAVITY = vec3(0.0f, -9.81f, 0.0f);
+
+	inline const vec3 MAX_GRAVITY = 100.0f;
 	
 	class LIB_API PhysicsWorld
 	{
 	public:
-		//The main physics update function,
-		//call this every time you want to update physics by one step,
-		//pass the latest deltaTime value as a parameter
-		static void Update(f32 deltaTime);
+		//The main physics update function that handles a
+		//single simulation step per call based off of the passed deltaTime variable.
+		//Increase substeps above 0 to break a larger simulation step into smaller substeps
+		static void Update(
+			f32 deltaTime,
+			u8 substeps = 0);
 
 		//Returns count of currently used layers
 		static inline u64 GetLayerCount() { return layerCount; }
@@ -185,10 +187,15 @@ namespace KalaPhysics::Core
 			
 			return collisionMatrix[a][b];
 		}
+
+		static inline const vec3& GetGravity() { return gravity; }
+		static inline void SetGravity(const vec3& newValue) { gravity = clamp(newValue, vec3(0.0f), MAX_GRAVITY); }
 	private:
 		static inline array<string, MAX_LAYERS> layers{};
 		static inline u8 layerCount{};
 		
 		static inline bool collisionMatrix[MAX_LAYERS][MAX_LAYERS]{};
+
+		static inline vec3 gravity = vec3(0.0f, -9.81f, 0.0f);
 	};
 }
