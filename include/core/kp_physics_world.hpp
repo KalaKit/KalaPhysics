@@ -23,6 +23,13 @@ namespace KalaPhysics::Core
 	using KalaHeaders::KalaMath::vec3;
 	using KalaHeaders::KalaLog::Log;
 	using KalaHeaders::KalaLog::LogType;
+
+	//total max allowed substeps
+	constexpr u8 MAX_SUBSTEPS = 12;
+	//how fast substeps grow exponentially
+	constexpr f32 SUBSTEP_GROWTH_FACTOR = 1.25f;
+	//at how many registered collisions do we start increasing substeps
+	constexpr u8 COLLISION_THRESHOLD = 10;
 	
 	//64 layers fit in a 64-bit bitmask for uint64_t for bitmasking collisions and colliders
 	constexpr u8 MAX_LAYERS = 64;
@@ -35,10 +42,9 @@ namespace KalaPhysics::Core
 	public:
 		//The main physics update function that handles a
 		//single simulation step per call based off of the passed deltaTime variable.
-		//Increase substeps above 0 to break a larger simulation step into smaller substeps
-		static void Update(
-			f32 deltaTime,
-			u8 substeps = 0);
+		//Substeps are adjusted internally dynamically based off of registered collisions per update call,
+		//modify MAX_SUBSTEPS, SUBSTEP_GROWTH_FACTOR and COLLISION_THRESHOLD to adjust substep growth
+		static void Update(f32 deltaTime);
 
 		//Returns count of currently used layers
 		static inline u64 GetLayerCount() { return layerCount; }

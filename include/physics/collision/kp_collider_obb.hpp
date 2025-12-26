@@ -19,11 +19,11 @@ namespace KalaPhysics::Physics::Collision
 	using KalaHeaders::KalaMath::kclamp;
 	using KalaHeaders::KalaMath::normalize_q;
 
-	inline const vec3 MIN_POS = vec3(-10000.0f);
-	inline const vec3 MAX_POS = vec3(10000.0f);
+	inline const vec3 MIN_OBB_POS = vec3(-10000.0f);
+	inline const vec3 MAX_OBB_POS = vec3(10000.0f);
 
-	inline const vec3 MIN_HALF_EXTENTS = vec3(epsilon);
-	inline const vec3 MAX_HALF_EXTENTS = vec3(10000.0f);
+	inline const vec3 MIN_OBB_HALF_EXTENTS = vec3(epsilon);
+	inline const vec3 MAX_OBB_HALF_EXTENTS = vec3(10000.0f);
 
 	class LIB_API Collider_OBB : public Collider
 	{
@@ -40,7 +40,7 @@ namespace KalaPhysics::Physics::Collision
 		inline const vec3& GetPos() const { return pos; }
 		inline void SetPos(const vec3& newValue)
 		{
-			pos = kclamp(newValue, MIN_POS, MAX_POS);
+			pos = kclamp(newValue, MIN_OBB_POS, MAX_OBB_POS);
 		}
 
 		inline const quat& GetRot() const { return rot; }
@@ -52,12 +52,12 @@ namespace KalaPhysics::Physics::Collision
 		inline const vec3& GetHalfExtents() const { return halfExtents; }
 		inline void SetHalfExtents(const vec3& newValue)
 		{
-			halfExtents = kclamp(newValue, MIN_HALF_EXTENTS, MAX_HALF_EXTENTS);
+			halfExtents = kclamp(newValue, MIN_OBB_HALF_EXTENTS, MAX_OBB_HALF_EXTENTS);
 		}
 
 		~Collider_OBB() override;
 	private:
-		void Update(f32 deltaTime);
+		void Update(Collider* c, f32 deltaTime) override;
 
 		vec3 pos{};
 		quat rot{};

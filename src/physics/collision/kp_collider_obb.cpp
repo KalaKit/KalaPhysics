@@ -17,7 +17,7 @@ namespace KalaPhysics::Physics::Collision
 		return nullptr;
 	}
 
-	void Collider_OBB::Update(f32 deltaTime)
+	void Collider_OBB::Update(Collider* c, f32 deltaTime)
 	{
 
 	}

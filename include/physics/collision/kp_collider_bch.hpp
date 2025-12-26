@@ -19,8 +19,8 @@ namespace KalaPhysics::Physics::Collision
 	using KalaHeaders::KalaMath::kclamp;
 	using KalaHeaders::KalaMath::normalize_q;
 
-	inline const vec3 MIN_POS = vec3(-10000.0f);
-	inline const vec3 MAX_POS = vec3(10000.0f);
+	inline const vec3 MIN_BCH_POS = vec3(-10000.0f);
+	inline const vec3 MAX_BCH_POS = vec3(10000.0f);
 
 	class LIB_API Collider_BCH : public Collider
 	{
@@ -36,7 +36,7 @@ namespace KalaPhysics::Physics::Collision
 		inline const vec3& GetPos() const { return pos; }
 		inline void SetPos(const vec3& newValue)
 		{
-			pos = kclamp(newValue, MIN_POS, MAX_POS);
+			pos = kclamp(newValue, MIN_BCH_POS, MAX_BCH_POS);
 		}
 
 		inline const quat& GetRot() const { return rot; }
@@ -49,7 +49,7 @@ namespace KalaPhysics::Physics::Collision
 
 		~Collider_BCH() override;
 	private:
-		void Update(f32 deltaTime);
+		void Update(Collider* c, f32 deltaTime) override;
 
 		vec3 pos{};
 		quat rot{};

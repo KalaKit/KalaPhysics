@@ -18,8 +18,8 @@ namespace KalaPhysics::Physics::Collision
 {
 	using KalaHeaders::KalaMath::kclamp;
 
-	inline const vec3 MIN_POS = vec3(-10000.0f);
-	inline const vec3 MAX_POS = vec3(10000.0f);
+	inline const vec3 MIN_KDOP_POS = vec3(-10000.0f);
+	inline const vec3 MAX_KDOP_POS = vec3(10000.0f);
 
 	enum class KDOPShape : u8
 	{
@@ -45,7 +45,7 @@ namespace KalaPhysics::Physics::Collision
 		inline const vec3& GetPos() const { return pos; }
 		inline void SetPos(const vec3& newValue)
 		{
-			pos = kclamp(newValue, MIN_POS, MAX_POS);
+			pos = kclamp(newValue, MIN_KDOP_POS, MAX_KDOP_POS);
 		}
 
 		inline const quat& GetRot() const { return rot; }
@@ -60,7 +60,7 @@ namespace KalaPhysics::Physics::Collision
 
 		~Collider_KDOP() override;
 	private:
-		void Update(f32 deltaTime);
+		void Update(Collider* c, f32 deltaTime) override;
 
 		vec3 pos{};
 		quat rot{};

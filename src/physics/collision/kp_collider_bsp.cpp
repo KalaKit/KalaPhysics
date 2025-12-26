@@ -15,7 +15,7 @@ namespace KalaPhysics::Physics::Collision
 		return nullptr;
 	}
 
-	void Collider_BSP::Update(f32 deltaTime)
+	void Collider_BSP::Update(Collider* c, f32 deltaTime)
 	{
 
 	}

@@ -36,28 +36,24 @@ namespace KalaPhysics::Physics::Collision
 
 	enum class ColliderShape : u8
 	{
-		COLLIDER_NONE = 0, //default state of all colliders, no collision will occur
+		COLLIDER_BSP = 0,  //bounding sphere
+		COLLIDER_AABB = 1, //axis-aligned bounding box
+		COLLIDER_OBB = 2,  //oriented bounding box
+		COLLIDER_BCP = 3,  //bounding capsule
 
-		COLLIDER_BSP = 1,  //bounding sphere
-		COLLIDER_AABB = 2, //axis-aligned bounding box
-		COLLIDER_OBB = 3,  //oriented bounding box
-		COLLIDER_BCP = 4,  //bounding capsule
+		COLLIDER_KDOP_10_X = 4, //10-face Z-axis discrete oriented polytope
+		COLLIDER_KDOP_10_Y = 5, //10-face Y-axis discrete oriented polytope
+		COLLIDER_KDOP_10_Z = 6, //10-face Z-axis discrete oriented polytope
+		COLLIDER_KDOP_18 = 7,   //18-face discrete oriented polytope
+		COLLIDER_KDOP_26 = 8,   //26-face discrete oriented polytope
 
-		COLLIDER_KDOP_10_X = 5, //10-face Z-axis discrete oriented polytope
-		COLLIDER_KDOP_10_Y = 6, //10-face Y-axis discrete oriented polytope
-		COLLIDER_KDOP_10_Z = 7, //10-face Z-axis discrete oriented polytope
-		COLLIDER_KDOP_18 = 8,   //18-face discrete oriented polytope
-		COLLIDER_KDOP_26 = 9,   //26-face discrete oriented polytope
-
-		COLLIDER_BCH = 10 //bounding convex hull
+		COLLIDER_BCH = 9 //bounding convex hull
 	};
 
 	enum class ColliderType : u8
 	{
-		COLLIDER_TYPE_NONE = 0, //default unassigned target type
-
-		COLLIDER_TYPE_BP = 1, //broadphase
-		COLLIDER_TYPE_NP = 2  //narrowphase
+		COLLIDER_TYPE_BP = 0, //broadphase
+		COLLIDER_TYPE_NP = 1  //narrowphase
 	};
 
 	class LIB_API Collider
@@ -106,6 +102,8 @@ namespace KalaPhysics::Physics::Collision
 		
 		virtual ~Collider() = default;
 	private:
+		virtual void Update(Collider* c, f32 deltaTime) {};
+
 		bool isInitialized{};
 
 		u32 ID{};
