@@ -18,8 +18,6 @@ namespace KalaPhysics::Core
 	using std::string;
 	using std::to_string;
 	
-	using u8 = uint8_t;
-	
 	using KalaHeaders::KalaMath::vec3;
 	using KalaHeaders::KalaLog::Log;
 	using KalaHeaders::KalaLog::LogType;
@@ -31,8 +29,8 @@ namespace KalaPhysics::Core
 	//at how many registered collisions do we start increasing substeps
 	constexpr u8 COLLISION_THRESHOLD = 10;
 	
-	//64 layers fit in a 64-bit bitmask for uint64_t for bitmasking collisions and colliders
-	constexpr u8 MAX_LAYERS = 64;
+	//32 layers fit in a 32-bit bitmask for uint32_t for bitmasking collisions and colliders
+	constexpr u8 MAX_LAYERS = 32;
 	constexpr u8 MAX_LAYER_NAME_LENGTH = 50;
 
 	inline const vec3 MAX_GRAVITY = 100.0f;

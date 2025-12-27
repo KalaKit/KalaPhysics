@@ -25,7 +25,7 @@ namespace KalaPhysics::Physics
 	using std::string;
 	
 	using u8 = uint8_t;
-	using u64 = uint64_t;
+	using u32 = uint32_t;
 	using f32 = float;
 
 	using KalaHeaders::KalaLog::Log;
@@ -41,9 +41,9 @@ namespace KalaPhysics::Physics
 		static inline KalaPhysicsRegistry<DelayedRay> registry{};
 		
 		//Create a new mask from multiple layers
-		static inline u64 MakeMaskFromLayers(initializer_list<u8> layers)
+		static inline u32 MakeMaskFromLayers(initializer_list<u8> layers)
 		{
-			u64 m = 0ULL;
+			u32 m = 0ULL;
 			for (u8 l : layers)
 			{
 				if (l < MAX_LAYERS) m |= (1ULL << l);
@@ -59,7 +59,7 @@ namespace KalaPhysics::Physics
 		inline u32 GetID() const { return ID; }
 		
 		//Set mask directly
-		inline void SetMask(u64 m) { mask = m; }
+		inline void SetMask(u32 m) { mask = m; }
 		//Reset mask (no collisions)
 		inline void ClearMask() { mask = 0ULL; }
 		
@@ -68,7 +68,7 @@ namespace KalaPhysics::Physics
 		//Exclude layer by name
 		void RemoveLayerFromMask(const string& layer);
 		
-		inline u64 GetMask() const { return mask; }
+		inline u32 GetMask() const { return mask; }
 		
 		~DelayedRay();
 	private:
@@ -78,6 +78,6 @@ namespace KalaPhysics::Physics
 
 		u32 ID{};
 	
-		u64 mask = ~0ULL; //default - collide with everything
+		u32 mask = ~0ULL; //default - collide with everything
 	};
 }
