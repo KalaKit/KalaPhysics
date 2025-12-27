@@ -33,7 +33,7 @@ namespace KalaPhysics::Physics::Collision
 	public:
 		//Initializes a broadphase or narrowphase BCP collider
 		static Collider_BCP* Initialize(
-			u32 parentRigidbody,
+			u32 parentRigidBody,
 			const vec3& pos,
 			f32 height,
 			f32 radius,

@@ -18,6 +18,11 @@ namespace KalaPhysics::Physics::Collision
 {
 	using KalaHeaders::KalaMath::kclamp;
 
+	//Represents the detail level of the sphere,
+	//the higher the number, the more complex the sphere and its calculations will be.
+	//Allowed values: 8, 12, 16, 24, 32, 48, 64
+	constexpr u8 SPHERE_QUALITY = 24;
+
 	inline const vec3 MIN_BSP_CENTER = vec3(-10000.0f);
 	inline const vec3 MAX_BSP_CENTER = vec3(10000.0f);
 
@@ -30,7 +35,7 @@ namespace KalaPhysics::Physics::Collision
 	public:
 		//Initializes a broadphase-only BSP collider
 		static Collider_BSP* Initialize(
-			u32 parentRigidbody,
+			u32 parentRigidBody,
 			const vec3& center,
 			f32 radius);
 

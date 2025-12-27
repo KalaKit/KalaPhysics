@@ -101,7 +101,7 @@ namespace KalaPhysics::Physics::Collision
 		inline void ClearOnTriggerStay() { onTriggerStay = nullptr; }
 		
 		virtual ~Collider() = default;
-	private:
+	protected:
 		virtual void Update(Collider* c, f32 deltaTime) {};
 
 		bool isInitialized{};

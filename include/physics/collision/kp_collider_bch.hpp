@@ -28,7 +28,7 @@ namespace KalaPhysics::Physics::Collision
 	public:
 		//Initializes a narrowphase-only BCH collider
 		static Collider_BCH* Initialize(
-			u32 parentRigidbody,
+			u32 parentRigidBody,
 			const vec3& pos,
 			const quat& rot,
 			const vector<vec3>& vertices);

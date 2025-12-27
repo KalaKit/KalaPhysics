@@ -36,7 +36,7 @@ namespace KalaPhysics::Physics::Collision
 	public:
 		//Initializes a broadphase-only KDOP collider
 		static Collider_KDOP* Initialize(
-			u32 parentRigidbody,
+			u32 parentRigidBody,
 			const vec3& pos,
 			const quat& rot,
 			const vector<vec3>& vertices,

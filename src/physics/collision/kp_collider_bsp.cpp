@@ -3,16 +3,96 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
+#include <vector>
+#include <memory>
+
+#include "KalaHeaders/math_utils.hpp"
+
 #include "physics/collision/kp_collider_bsp.hpp"
+#include "physics/kp_rigidbody.hpp"
+#include "core/kp_core.hpp"
+
+using KalaHeaders::KalaMath::vec3;
+
+using KalaPhysics::Physics::Collision::SPHERE_QUALITY;
+using KalaPhysics::Physics::RigidBody;
+using KalaPhysics::Physics::MAX_COLLIDERS;
+using KalaPhysics::Core::KalaPhysicsCore;
+
+using std::vector;
+using std::to_string;
+using std::make_unique;
+using std::unique_ptr;
+
+static vector<vec3> GenerateSphere(f32 radius);
 
 namespace KalaPhysics::Physics::Collision
 {
 	Collider_BSP* Collider_BSP::Initialize(
-		u32 parentRigidbody,
+		u32 parentRigidBody,
 		const vec3& center,
 		f32 radius)
 	{
-		return nullptr;
+		u32 newID = ++KalaPhysicsCore::globalID;
+		unique_ptr<Collider_BSP> newCol = make_unique<Collider_BSP>();
+		Collider_BSP* colPtr = newCol.get();
+
+		Log::Print(
+			"Creating new bounding sphere collider with ID '" + to_string(newID) + "'.",
+			"BOUNDING_SPHERE",
+			LogType::LOG_DEBUG);
+
+		colPtr->ID = newID;
+
+		if (parentRigidBody != 0)
+		{
+			RigidBody* rb = RigidBody::registry.GetContent(parentRigidBody);
+
+			if (rb == nullptr)
+			{
+				Log::Print(
+					"Cannot add parent rigidbody for bounding sphere collider with ID '" + to_string(newID) + "' because that rigidbody does not exist!",
+					"BOUNDING_SPHERE",
+					LogType::LOG_ERROR,
+					2);
+			}
+			else
+			{
+				if (rb->GetColliderCount() >= MAX_COLLIDERS)
+				{
+					Log::Print(
+						"Cannot add parent rigidbody for bounding sphere collider with ID '" + to_string(newID) + "' because that rigidbody already has a max number of colliders!",
+						"BOUNDING_SPHERE",
+						LogType::LOG_ERROR,
+						2);
+				}
+				else
+				{
+					colPtr->parentRigidBody = parentRigidBody;
+					rb->AddCollider(newID);
+
+					Log::Print(
+						"Added bounding sphere collider with ID '" + to_string(newID) + "' to rigidbody with ID '" + to_string(parentRigidBody) + "'!",
+						"BOUNDING_SPHERE",
+						LogType::LOG_SUCCESS);
+				}
+			}
+		}
+
+		colPtr->SetCenter(center);
+		colPtr->SetRadius(radius);
+		colPtr->vertices = move(GenerateSphere(colPtr->radius));
+
+		registry.AddContent(newID, move(newCol));
+
+		colPtr->isInitialized = true;
+
+		Log::Print(
+			"Created new bounding sphere collider with ID '" + to_string(newID) + "'!",
+			"BOUNDING_SPHERE",
+			LogType::LOG_SUCCESS);
+
+		return colPtr;
 	}
 
 	void Collider_BSP::Update(Collider* c, f32 deltaTime)
@@ -24,4 +104,25 @@ namespace KalaPhysics::Physics::Collision
 	{
 
 	}
+}
+
+vector<vec3> GenerateSphere(f32 radius)
+{
+	vector<vec3> vertices{};
+
+	for (int i = 0; i < SPHERE_QUALITY; ++i)
+	{
+		//vertex angle
+		f32 theta = scast<f32>(i) / SPHERE_QUALITY * 2.0f * PI;
+
+		//x, y and z coordinates
+
+		f32 x = radius * sinf(theta) * cosf(0.0f);
+		f32 y = radius * sinf(theta) * sinf(0.0f);
+		f32 z = radius * cosf(theta);
+
+		vertices.push_back({x, y, z});
+	}
+
+	return vertices;
 }

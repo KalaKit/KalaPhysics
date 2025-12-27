@@ -28,7 +28,7 @@ namespace KalaPhysics::Physics::Collision
 	public:
 		//Initializes a broadphase-only AABB collider
 		static Collider_AABB* Initialize(
-			u32 parentRigidbody,
+			u32 parentRigidBody,
 			const vec3& minCorner,
 			const vec3& maxCorner);
 

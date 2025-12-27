@@ -31,7 +31,7 @@ namespace KalaPhysics::Physics::Collision
 	public:
 		//Initializes a broadphase or narrowphase OBB collider
 		static Collider_OBB* Initialize(
-			u32 parentRigidbody,
+			u32 parentRigidBody,
 			const vec3& pos,
 			const quat& rot,
 			const vec3& halfExtents,
