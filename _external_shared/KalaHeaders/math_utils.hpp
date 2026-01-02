@@ -883,21 +883,19 @@ namespace KalaHeaders::KalaMath
 	using vec2 = vec<2>; //Vector: x, y
 	using vec3 = vec<3>; //Vector: x, y, z
 	using vec4 = vec<4>; //Vector: x, y, z, w
-	
-	const vec3 GRAVITY = { 0.0f, -9.81f, 0.0f };
 
 	//right-handed, +Y up
 
-	const vec3 DIR_RIGHT = { 1, 0,  0 };
-	const vec3 DIR_UP    = { 0, 1,  0 };
-	const vec3 DIR_FRONT = { 0, 0, -1 }; //forward is -Z
+	inline const vec3 DIR_RIGHT = { 1, 0,  0 };
+	inline const vec3 DIR_UP    = { 0, 1,  0 };
+	inline const vec3 DIR_FRONT = { 0, 0, -1 }; //forward is -Z
 
 	//tilt up/down (rotate around X)
-	const vec3 ROT_PITCH = { 1, 0, 0 };
+	inline const vec3 ROT_PITCH = { 1, 0, 0 };
 	//turn left/right (rotate around Y)
-	const vec3 ROT_YAW   = { 0, 1, 0 };
+	inline const vec3 ROT_YAW   = { 0, 1, 0 };
 	//bank left/right (rotate around Z)
-	const vec3 ROT_ROLL  = { 0, 0, 1 };
+	inline const vec3 ROT_ROLL  = { 0, 0, 1 };
 
 	//============================================================================
 	//

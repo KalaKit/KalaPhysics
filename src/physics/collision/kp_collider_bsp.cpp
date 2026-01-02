@@ -38,8 +38,8 @@ namespace KalaPhysics::Physics::Collision
 		Collider_BSP* colPtr = newCol.get();
 
 		Log::Print(
-			"Creating new bounding sphere collider with ID '" + to_string(newID) + "'.",
-			"BOUNDING_SPHERE",
+			"Creating new BSP collider with ID '" + to_string(newID) + "'.",
+			"BSP_COLLIDER",
 			LogType::LOG_DEBUG);
 
 		colPtr->ID = newID;
@@ -51,8 +51,8 @@ namespace KalaPhysics::Physics::Collision
 			if (rb == nullptr)
 			{
 				Log::Print(
-					"Cannot add parent rigidbody for bounding sphere collider with ID '" + to_string(newID) + "' because that rigidbody does not exist!",
-					"BOUNDING_SPHERE",
+					"Cannot add parent rigidbody for BSP collider with ID '" + to_string(newID) + "' because that rigidbody does not exist!",
+					"BSP_COLLIDER",
 					LogType::LOG_ERROR,
 					2);
 			}
@@ -61,8 +61,8 @@ namespace KalaPhysics::Physics::Collision
 				if (rb->GetColliderCount() >= MAX_COLLIDERS)
 				{
 					Log::Print(
-						"Cannot add parent rigidbody for bounding sphere collider with ID '" + to_string(newID) + "' because that rigidbody already has a max number of colliders!",
-						"BOUNDING_SPHERE",
+						"Cannot add parent rigidbody for BSP collider with ID '" + to_string(newID) + "' because that rigidbody already has a max number of colliders!",
+						"BSP_COLLIDER",
 						LogType::LOG_ERROR,
 						2);
 				}
@@ -72,8 +72,8 @@ namespace KalaPhysics::Physics::Collision
 					rb->AddCollider(newID);
 
 					Log::Print(
-						"Added bounding sphere collider with ID '" + to_string(newID) + "' to rigidbody with ID '" + to_string(parentRigidBody) + "'!",
-						"BOUNDING_SPHERE",
+						"Added BSP collider with ID '" + to_string(newID) + "' to rigidbody with ID '" + to_string(parentRigidBody) + "'!",
+						"BSP_COLLIDER",
 						LogType::LOG_SUCCESS);
 				}
 			}
@@ -88,8 +88,8 @@ namespace KalaPhysics::Physics::Collision
 		colPtr->isInitialized = true;
 
 		Log::Print(
-			"Created new bounding sphere collider with ID '" + to_string(newID) + "'!",
-			"BOUNDING_SPHERE",
+			"Created new BSP collider with ID '" + to_string(newID) + "'!",
+			"BSP_COLLIDER",
 			LogType::LOG_SUCCESS);
 
 		return colPtr;
