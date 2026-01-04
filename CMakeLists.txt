@@ -76,9 +76,12 @@ target_include_directories(KalaPhysics PRIVATE
 
 # Preprocessor Defines
 target_compile_definitions(KalaPhysics PRIVATE 
-	LIB_EXPORT
-	WIN32_LEAN_AND_MEAN
-	NOMINMAX)
+	LIB_EXPORT          # dll import/export
+	WIN32_LEAN_AND_MEAN # cleaner windows.h
+	NOMINMAX            # skips min/max windows macros in favor of the std variants
+	UNICODE             # selects wide api variants over ansi for UTF16 windows functions
+	_UNICODE            # uses wide text types in the C runtime layer
+)
 	
 # Expose version string
 add_compile_definitions(
