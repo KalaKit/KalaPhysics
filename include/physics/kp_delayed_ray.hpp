@@ -38,37 +38,28 @@ namespace KalaPhysics::Physics
 	{
 		friend class KalaPhysics::Core::PhysicsWorld;
 	public:
-		static inline KalaPhysicsRegistry<DelayedRay> registry{};
+		static KalaPhysicsRegistry<DelayedRay>& GetRegistry();
 		
 		//Create a new mask from multiple layers
-		static inline u32 MakeMaskFromLayers(initializer_list<u8> layers)
-		{
-			u32 m = 0ULL;
-			for (u8 l : layers)
-			{
-				if (l < MAX_LAYERS) m |= (1ULL << l);
-			}
-			
-			return m;
-		}
+		static u32 MakeMaskFromLayers(initializer_list<u8> layers);
 		
 		static DelayedRay* Initialize();
 
-		inline bool IsInitialized() const { return isInitialized; }
+		bool IsInitialized() const;
 
-		inline u32 GetID() const { return ID; }
+		u32 GetID() const;
 		
 		//Set mask directly
-		inline void SetMask(u32 m) { mask = m; }
+		void SetMask(u32 m);
 		//Reset mask (no collisions)
-		inline void ClearMask() { mask = 0ULL; }
+		void ClearMask();
 		
 		//Include layer by name
 		void AddLayerToMask(const string& layer);
 		//Exclude layer by name
 		void RemoveLayerFromMask(const string& layer);
 		
-		inline u32 GetMask() const { return mask; }
+		u32 GetMask() const;
 		
 		~DelayedRay();
 	private:

@@ -11,10 +11,32 @@ using std::to_string;
 
 namespace KalaPhysics::Physics
 {
+	static KalaPhysicsRegistry<DelayedRay> registry{};
+
+	KalaPhysicsRegistry<DelayedRay>& GetRegistry() { return registry; }
+
+	u32 DelayedRay::MakeMaskFromLayers(initializer_list<u8> layers)
+	{
+		u32 m = 0ULL;
+		for (u8 l : layers)
+		{
+			if (l < MAX_LAYERS) m |= (1ULL << l);
+		}
+
+		return m;
+	}
+
 	DelayedRay* DelayedRay::Initialize()
 	{
 		return nullptr;
 	}
+
+	bool DelayedRay::IsInitialized() const { return isInitialized; }
+
+	u32 DelayedRay::GetID() const { return ID; }
+
+	void DelayedRay::SetMask(u32 m) { mask = m; }
+	void DelayedRay::ClearMask() { mask = 0ULL; }
 
 	void DelayedRay::AddLayerToMask(const string& layer)
 	{
@@ -50,6 +72,8 @@ namespace KalaPhysics::Physics
 
 		mask &= ~(1ULL << foundLayer);
 	}
+
+	u32 DelayedRay::GetMask() const { return mask; }
 
 	DelayedRay::~DelayedRay()
 	{

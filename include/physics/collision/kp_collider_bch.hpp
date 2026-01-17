@@ -1,4 +1,4 @@
-//Copyright(C) 2025 Lost Empire Entertainment
+//Copyright(C) 2026 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -33,19 +33,13 @@ namespace KalaPhysics::Physics::Collision
 			const quat& rot,
 			const vector<vec3>& vertices);
 
-		inline const vec3& GetPos() const { return pos; }
-		inline void SetPos(const vec3& newValue)
-		{
-			pos = kclamp(newValue, MIN_BCH_POS, MAX_BCH_POS);
-		}
+		const vec3& GetPos() const;
+		void SetPos(const vec3& newValue);
 
-		inline const quat& GetRot() const { return rot; }
-		inline void SetRot(const quat& newValue)
-		{
-			rot = normalize_q(newValue);
-		}
+		const quat& GetRot() const;
+		void SetRot(const quat& newValue);
 
-		inline const vector<vec3>& GetVertices() const { return vertices; }
+		const vector<vec3>& GetVertices() const;
 
 		~Collider_BCH() override;
 	private:

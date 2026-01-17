@@ -10,6 +10,17 @@ using KalaPhysics::Core::PhysicsWorld;
 
 namespace KalaPhysics::Physics
 {
+	u32 Ray::MakeMaskFromLayers(initializer_list<u8> layers)
+	{
+		u32 m = 0ULL;
+		for (u8 l : layers)
+		{
+			if (l < MAX_LAYERS) m |= (1ULL << l);
+		}
+
+		return m;
+	}
+
 	bool Ray::HitAny(
 		const vec3& origin,
 		const vec3& direction,
@@ -25,6 +36,9 @@ namespace KalaPhysics::Physics
 	{
 		return nullptr;
 	}
+
+	void Ray::SetMask(u32 m) { mask = m; }
+	void Ray::ClearMask() { mask = 0ULL; }
 
 	void Ray::AddLayerToMask(const string& layer)
 	{
@@ -60,4 +74,6 @@ namespace KalaPhysics::Physics
 
 		mask &= ~(1ULL << foundLayer);
 	}
+
+	u32 Ray::GetMask() const { return mask; }
 }

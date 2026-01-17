@@ -45,161 +45,31 @@ namespace KalaPhysics::Core
 		static void Update(f32 deltaTime);
 
 		//Returns count of currently used layers
-		static inline u64 GetLayerCount() { return layerCount; }
+		static u64 GetLayerCount();
 
 		//Add a new layer
-		static inline void AddLayer(const string& layer)
-		{
-			if (layerCount >= MAX_LAYERS)
-			{
-				Log::Print(
-					"Cannot add a new layer because max layer count '" + to_string(MAX_LAYERS) + "' has been reached!",
-					"PHYSICS_WORLD",
-					LogType::LOG_ERROR,
-					2);
-
-				return;
-			}
-
-			if (layer == "NONE")
-			{
-				Log::Print(
-					"Cannot add a new layer with the name '" + layer + "' because that name is restricted!",
-					"PHYSICS_WORLD",
-					LogType::LOG_ERROR,
-					2);
-
-				return;
-			}
-
-			string clamped = layer;
-			if (clamped.size() > MAX_LAYER_NAME_LENGTH) clamped.resize(MAX_LAYER_NAME_LENGTH);
-
-			if (GetLayer(clamped) != 255)
-			{
-				Log::Print(
-					"Cannot add a new layer with the name '" + clamped + "' because that name is already in use!",
-					"PHYSICS_WORLD",
-					LogType::LOG_ERROR,
-					2);
-
-				return;
-			}
-
-			layers[layerCount++] = clamped;
-		}
+		static void AddLayer(const string& layer);
 		//Remove an existing layer
-		static inline void RemoveLayer(const string& layer)
-		{
-			u8 layerIndex = GetLayer(layer);
-
-			if (layerIndex == 255)
-			{
-				Log::Print(
-					"Cannot remove an existing layer with the name '" + layer + "' because that name doesn't exist!",
-					"PHYSICS_WORLD",
-					LogType::LOG_ERROR,
-					2);
-
-				return;
-			}
-
-			layers[layerIndex] = layers[--layerCount];
-		}
+		static void RemoveLayer(const string& layer);
 		//Reset layers
-		static inline void RemoveAllLayers()
-		{ 
-			for (auto& l : layers) l.clear();
-			layerCount = 0;
-		}
+		static void RemoveAllLayers();
 		
 		//Get layer name (or "NONE" if not found)
-		static inline const string& GetLayer(u8 layer)
-		{
-			static string none = "NONE";
-			
-			if (layer >= layerCount) return none;
-			
-			return layers[layer];
-		}
+		static const string& GetLayer(u8 layer);
 		//Get layer index (or 255 if not found)
-		static inline u8 GetLayer(const string& layer)
-		{
-			for (u8 i = 0; i < layerCount; i++)
-			{
-				if (layers[i] == layer) return i;
-			}
-			
-			return 255;
-		}
+		static u8 GetLayer(const string& layer);
 		
 		//Enable/disable collision between layers
-		static inline void SetCollisionRule(
+		static void SetCollisionRule(
 			u8 a,
 			u8 b,
-			bool value)
-		{
-			if (GetLayer(a) == "NONE")
-			{
-				Log::Print(
-					"Cannot set collision rule because the first layer does not exist!",
-					"PHYSICS_WORLD",
-					LogType::LOG_ERROR,
-					2);
-
-				return;
-			}
-			if (GetLayer(b) == "NONE")
-			{
-				Log::Print(
-					"Cannot set collision rule because the second layer does not exist!",
-					"PHYSICS_WORLD",
-					LogType::LOG_ERROR,
-					2);
-
-				return;
-			}
-			
-			collisionMatrix[a][b] = value;
-			collisionMatrix[b][a] = value;
-		}
+			bool value);
 		//Check if both layers can collide
-		static inline bool CanCollide(
+		static bool CanCollide(
 			u8 a,
-			u8 b)
-		{
-			if (GetLayer(a) == "NONE")
-			{
-				Log::Print(
-					"Cannot check collision state because the first layer does not exist!",
-					"PHYSICS_WORLD",
-					LogType::LOG_ERROR,
-					2);
+			u8 b);
 
-				return false;
-			}
-			if (GetLayer(b) == "NONE")
-			{
-				Log::Print(
-					"Cannot check collision state because the second layer does not exist!",
-					"PHYSICS_WORLD",
-					LogType::LOG_ERROR,
-					2);
-
-				return false;
-			}
-			
-			return collisionMatrix[a][b];
-		}
-
-		static inline const vec3& GetGravity() { return gravity; }
-		static inline void SetGravity(const vec3& newValue) { gravity = clamp(newValue, vec3(0.0f), MAX_GRAVITY); }
-	private:
-		static inline array<string, MAX_LAYERS> layers{};
-		static inline u8 layerCount{};
-		
-		static inline bool collisionMatrix[MAX_LAYERS][MAX_LAYERS]{};
-
-		static inline vec3 gravity = vec3(0.0f, -9.81f, 0.0f);
+		static const vec3& GetGravity();
+		static void SetGravity(const vec3& newValue);
 	};
 }

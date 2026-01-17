@@ -22,6 +22,22 @@ namespace KalaPhysics::Physics::Collision
 
 	}
 
+	const vec3& Collider_KDOP::GetPos() const { return pos; }
+	void Collider_KDOP::SetPos(const vec3& newValue)
+	{
+		pos = kclamp(newValue, MIN_KDOP_POS, MAX_KDOP_POS);
+	}
+
+	const quat& Collider_KDOP::GetRot() const { return rot; }
+	void Collider_KDOP::SetRot(const quat& newValue)
+	{
+		rot = normalize_q(newValue);
+	}
+
+	const vector<vec3>& Collider_KDOP::GetVertices() const { return vertices; }
+
+	KDOPShape Collider_KDOP::GetKDOPShape() const { return kdopShape; }
+
 	Collider_KDOP::~Collider_KDOP()
 	{
 

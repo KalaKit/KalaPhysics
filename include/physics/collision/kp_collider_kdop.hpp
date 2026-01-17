@@ -42,21 +42,15 @@ namespace KalaPhysics::Physics::Collision
 			const vector<vec3>& vertices,
 			KDOPShape shape);
 
-		inline const vec3& GetPos() const { return pos; }
-		inline void SetPos(const vec3& newValue)
-		{
-			pos = kclamp(newValue, MIN_KDOP_POS, MAX_KDOP_POS);
-		}
+		const vec3& GetPos() const;
+		void SetPos(const vec3& newValue);
 
-		inline const quat& GetRot() const { return rot; }
-		inline void SetRot(const quat& newValue)
-		{
-			rot = normalize_q(newValue);
-		}
+		const quat& GetRot() const;
+		void SetRot(const quat& newValue);
 
-		inline const vector<vec3>& GetVertices() const { return vertices; }
+		const vector<vec3>& GetVertices() const;
 
-		inline KDOPShape GetKDOPShape() const { return kdopShape; }
+		KDOPShape GetKDOPShape() const;
 
 		~Collider_KDOP() override;
 	private:

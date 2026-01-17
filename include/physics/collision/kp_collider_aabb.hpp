@@ -20,7 +20,7 @@ namespace KalaPhysics::Physics::Collision
 
 	inline const vec3 MIN_AABB_CORNER = vec3(-10000.0f);
 	inline const vec3 MAX_AABB_CORNER = vec3(10000.0f);
-	inline const vec3 MIN_AABB_CORNER_DISTANCE = vec3(epsilon);
+	inline const vec3 MIN_AABB_CORNER_DISTANCE = vec3(1e-6f);
 
 	class LIB_API Collider_AABB : public Collider
 	{
@@ -32,19 +32,11 @@ namespace KalaPhysics::Physics::Collision
 			const vec3& minCorner,
 			const vec3& maxCorner);
 
-		inline const vec3& GetMinCorner() const { return minCorner; }
-		inline void SetMinCorner(const vec3& newValue)
-		{
-			minCorner = kclamp(newValue, MIN_AABB_CORNER, MAX_AABB_CORNER);
-			maxCorner = kclamp(maxCorner, minCorner + MIN_AABB_CORNER_DISTANCE, MAX_AABB_CORNER);
-		}
+		const vec3& GetMinCorner() const;
+		void SetMinCorner(const vec3& newValue);
 
-		inline const vec3& GetMaxCorner() const { return maxCorner; }
-		inline void SetMaxCorner(const vec3& newValue)
-		{
-			maxCorner = kclamp(newValue, MIN_AABB_CORNER, MAX_AABB_CORNER);
-			minCorner = kclamp(minCorner, MIN_AABB_CORNER, maxCorner - MIN_AABB_CORNER_DISTANCE);
-		}
+		const vec3& GetMaxCorner() const;
+		void SetMaxCorner(const vec3& newValue);
 
 		~Collider_AABB() override;
 	private:

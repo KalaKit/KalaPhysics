@@ -26,7 +26,7 @@ namespace KalaPhysics::Physics::Collision
 	inline const vec3 MIN_BSP_CENTER = vec3(-10000.0f);
 	inline const vec3 MAX_BSP_CENTER = vec3(10000.0f);
 
-	constexpr f32 MIN_BSP_RADIUS = epsilon;
+	constexpr f32 MIN_BSP_RADIUS = 1e-6f;
 	constexpr f32 MAX_BSP_RADIUS = 10000.0f;
 
 	class LIB_API Collider_BSP : public Collider
@@ -39,17 +39,11 @@ namespace KalaPhysics::Physics::Collision
 			const vec3& center,
 			f32 radius);
 
-		inline const vec3& GetCenter() const { return center; }
-		inline void SetCenter(const vec3& newValue)
-		{
-			center = kclamp(newValue, MIN_BSP_CENTER, MAX_BSP_CENTER);
-		}
+		const vec3& GetCenter() const;
+		void SetCenter(const vec3& newValue);
 
-		inline f32 GetRadius() const { return radius; }
-		inline void SetRadius(f32 newValue)
-		{
-			radius = clamp(newValue, MIN_BSP_RADIUS, MAX_BSP_RADIUS);
-		}
+		f32 GetRadius() const;
+		void SetRadius(f32 newValue);
 
 		~Collider_BSP() override;
 	private:

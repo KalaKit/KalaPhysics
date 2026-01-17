@@ -21,10 +21,10 @@ namespace KalaPhysics::Physics::Collision
 	inline const vec3 MIN_BCP_POS = vec3(-10000.0f);
 	inline const vec3 MAX_BCP_POS = vec3(10000.0f);
 
-	constexpr f32 MIN_BCP_HEIGHT = epsilon;
+	constexpr f32 MIN_BCP_HEIGHT = 1e-6f;
 	constexpr f32 MAX_BCP_HEIGHT = 10000.0f;
 
-	constexpr f32 MIN_BCP_RADIUS = epsilon;
+	constexpr f32 MIN_BCP_RADIUS = 1e-6f;
 	constexpr f32 MAX_BCP_RADIUS = 10000.0f;
 
 	class LIB_API Collider_BCP : public Collider
@@ -39,25 +39,14 @@ namespace KalaPhysics::Physics::Collision
 			f32 radius,
 			ColliderType type);
 
-		inline const vec3& GetPos() const { return pos; }
-		inline void SetPos(const vec3& newValue)
-		{
-			pos = kclamp(newValue, MIN_BCP_POS, MAX_BCP_POS);
-		}
+		const vec3& GetPos() const;
+		void SetPos(const vec3& newValue);
 
-		inline f32 GetHeight() const { return height; }
-		inline void SetHeight(f32 newValue)
-		{
-			height = clamp(newValue, MIN_BCP_HEIGHT, MAX_BCP_HEIGHT);
-			radius = min(radius, height * 0.5f);
-		}
+		f32 GetHeight() const;
+		void SetHeight(f32 newValue);
 
-		inline f32 GetRadius() const { return radius; }
-		inline void SetRadius(f32 newValue)
-		{
-			radius = clamp(newValue, MIN_BCP_RADIUS, MAX_BCP_RADIUS);
-			height = max(height, 2 * radius);
-		}
+		f32 GetRadius() const;
+		void SetRadius(f32 newValue);
 
 		~Collider_BCP() override;
 	private:

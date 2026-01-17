@@ -22,7 +22,7 @@ namespace KalaPhysics::Physics::Collision
 	inline const vec3 MIN_OBB_POS = vec3(-10000.0f);
 	inline const vec3 MAX_OBB_POS = vec3(10000.0f);
 
-	inline const vec3 MIN_OBB_HALF_EXTENTS = vec3(epsilon);
+	inline const vec3 MIN_OBB_HALF_EXTENTS = vec3(1e-6f);
 	inline const vec3 MAX_OBB_HALF_EXTENTS = vec3(10000.0f);
 
 	class LIB_API Collider_OBB : public Collider
@@ -37,23 +37,14 @@ namespace KalaPhysics::Physics::Collision
 			const vec3& halfExtents,
 			ColliderType type);
 
-		inline const vec3& GetPos() const { return pos; }
-		inline void SetPos(const vec3& newValue)
-		{
-			pos = kclamp(newValue, MIN_OBB_POS, MAX_OBB_POS);
-		}
+		const vec3& GetPos() const;
+		void SetPos(const vec3& newValue);
 
-		inline const quat& GetRot() const { return rot; }
-		inline void SetRot(const quat& newValue)
-		{ 
-			rot = normalize_q(newValue);
-		}
+		const quat& GetRot() const;
+		void SetRot(const quat& newValue);
 
-		inline const vec3& GetHalfExtents() const { return halfExtents; }
-		inline void SetHalfExtents(const vec3& newValue)
-		{
-			halfExtents = kclamp(newValue, MIN_OBB_HALF_EXTENTS, MAX_OBB_HALF_EXTENTS);
-		}
+		const vec3& GetHalfExtents() const;
+		void SetHalfExtents(const vec3& newValue);
 
 		~Collider_OBB() override;
 	private:

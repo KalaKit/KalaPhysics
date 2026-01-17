@@ -39,16 +39,7 @@ namespace KalaPhysics::Physics
 		friend class KalaPhysics::Core::PhysicsWorld;
 	public:
 		//Create a new mask from multiple layers
-		static inline u32 MakeMaskFromLayers(initializer_list<u8> layers)
-		{
-			u32 m = 0ULL;
-			for (u8 l : layers)
-			{
-				if (l < MAX_LAYERS) m |= (1ULL << l);
-			}
-			
-			return m;
-		}
+		static u32 MakeMaskFromLayers(initializer_list<u8> layers);
 		
 		//Returns true if this ray hit any collider with the valid layer,
 		//a maxDistance of 0.0f means ray max distance is 10000 units
@@ -65,16 +56,16 @@ namespace KalaPhysics::Physics
 			f32 maxDistance = 0.0f);
 		
 		//Set mask directly
-		inline void SetMask(u32 m) { mask = m; }
+		void SetMask(u32 m);
 		//Reset mask (no collisions)
-		inline void ClearMask() { mask = 0ULL; }
+		void ClearMask();
 		
 		//Include layer by name
 		void AddLayerToMask(const string& layer);
 		//Exclude layer by name
 		void RemoveLayerFromMask(const string& layer);
 		
-		inline u32 GetMask() const { return mask; }
+		u32 GetMask() const;
 	private:
 		u32 mask = ~0ULL; //default - collide with everything
 	};

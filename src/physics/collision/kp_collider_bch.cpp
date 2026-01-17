@@ -21,6 +21,20 @@ namespace KalaPhysics::Physics::Collision
 
 	}
 
+	const vec3& Collider_BCH::GetPos() const { return pos; }
+	void Collider_BCH::SetPos(const vec3& newValue)
+	{
+		pos = kclamp(newValue, MIN_BCH_POS, MAX_BCH_POS);
+	}
+
+	const quat& Collider_BCH::GetRot() const { return rot; }
+	void Collider_BCH::SetRot(const quat& newValue)
+	{
+		rot = normalize_q(newValue);
+	}
+
+	const vector<vec3>& Collider_BCH::GetVertices() const { return vertices; }
+
 	Collider_BCH::~Collider_BCH()
 	{
 

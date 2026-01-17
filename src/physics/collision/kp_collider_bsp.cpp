@@ -13,6 +13,7 @@
 #include "core/kp_core.hpp"
 
 using KalaHeaders::KalaMath::vec3;
+using KalaHeaders::KalaMath::PI;
 
 using KalaPhysics::Physics::Collision::SPHERE_QUALITY;
 using KalaPhysics::Physics::RigidBody;
@@ -33,7 +34,9 @@ namespace KalaPhysics::Physics::Collision
 		const vec3& center,
 		f32 radius)
 	{
-		u32 newID = ++KalaPhysicsCore::globalID;
+		u32 newID = KalaPhysicsCore::GetGlobalID() + 1;
+		KalaPhysicsCore::SetGlobalID(newID);
+
 		unique_ptr<Collider_BSP> newCol = make_unique<Collider_BSP>();
 		Collider_BSP* colPtr = newCol.get();
 
@@ -46,7 +49,7 @@ namespace KalaPhysics::Physics::Collision
 
 		if (parentRigidBody != 0)
 		{
-			RigidBody* rb = RigidBody::registry.GetContent(parentRigidBody);
+			RigidBody* rb = RigidBody::GetRegistry().GetContent(parentRigidBody);
 
 			if (rb == nullptr)
 			{
@@ -83,7 +86,7 @@ namespace KalaPhysics::Physics::Collision
 		colPtr->SetRadius(radius);
 		colPtr->vertices = move(GenerateSphere(colPtr->radius));
 
-		registry.AddContent(newID, move(newCol));
+		GetRegistry().AddContent(newID, move(newCol));
 
 		colPtr->isInitialized = true;
 
@@ -98,6 +101,18 @@ namespace KalaPhysics::Physics::Collision
 	void Collider_BSP::Update(Collider* c, f32 deltaTime)
 	{
 
+	}
+
+	const vec3& Collider_BSP::GetCenter() const { return center; }
+	void Collider_BSP::SetCenter(const vec3& newValue)
+	{
+		center = kclamp(newValue, MIN_BSP_CENTER, MAX_BSP_CENTER);
+	}
+
+	f32 Collider_BSP::GetRadius() const { return radius; }
+	void Collider_BSP::SetRadius(f32 newValue)
+	{
+		radius = clamp(newValue, MIN_BSP_RADIUS, MAX_BSP_RADIUS);
 	}
 
 	Collider_BSP::~Collider_BSP()

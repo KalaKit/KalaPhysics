@@ -22,6 +22,24 @@ namespace KalaPhysics::Physics::Collision
 
 	}
 
+	const vec3& Collider_OBB::GetPos() const { return pos; }
+	void Collider_OBB::SetPos(const vec3& newValue)
+	{
+		pos = kclamp(newValue, MIN_OBB_POS, MAX_OBB_POS);
+	}
+
+	const quat& Collider_OBB::GetRot() const { return rot; }
+	void Collider_OBB::SetRot(const quat& newValue)
+	{
+		rot = normalize_q(newValue);
+	}
+
+	const vec3& Collider_OBB::GetHalfExtents() const { return halfExtents; }
+	void Collider_OBB::SetHalfExtents(const vec3& newValue)
+	{
+		halfExtents = kclamp(newValue, MIN_OBB_HALF_EXTENTS, MAX_OBB_HALF_EXTENTS);
+	}
+
 	Collider_OBB::~Collider_OBB()
 	{
 

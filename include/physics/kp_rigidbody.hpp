@@ -61,13 +61,13 @@ namespace KalaPhysics::Physics
 	{
 		friend class KalaPhysics::Core::PhysicsWorld;
 	public:
-		static inline KalaPhysicsRegistry<RigidBody> registry{};
+		static KalaPhysicsRegistry<RigidBody>& GetRegistry();
 		
 		static RigidBody* Initialize();
 
-		inline bool IsInitialized() const { return isInitialized; }
+		bool IsInitialized() const;
 
-		inline u32 GetID() const { return ID; }
+		u32 GetID() const;
 		
 		//Add a new collider by its ID to this rigidbody
 		void AddCollider(u32 colliderID);
@@ -76,80 +76,38 @@ namespace KalaPhysics::Physics
 		//Reset colliders count, doesn't waste time removing actual values
 		void RemoveAllColliders();
 
-		inline const array<u32, MAX_COLLIDERS>& GetAllColliders() const { return colliders; }
-		inline u8 GetColliderCount() const { return colliderCount; }
+		const array<u32, MAX_COLLIDERS>& GetAllColliders() const;
+		u8 GetColliderCount() const;
 
-		inline bool IsSleeping() const { return vars.isSleeping; }
-		inline bool IsCCD() const { return vars.ccd; }
+		bool IsSleeping() const;
+		bool IsCCD() const;
 
-		inline f32 GetMass() const { return vars.mass; }
-		inline void SetMass(f32 newValue)
-		{
-			vars.mass = clamp(
-				newValue,
-				0.0f,
-				MAX_MASS);
-		}
+		f32 GetMass() const;
+		void SetMass(f32 newValue);
 
-		inline f32 GetRestitution() const { return vars.restitution; }
-		inline void SetRestitution(f32 newValue)
-		{
-			vars.restitution = clamp(
-				newValue,
-				0.0f,
-				1.0f);
-		}
+		f32 GetRestitution() const;
+		void SetRestitution(f32 newValue);
 
-		inline f32 GetLinearDamp() const { return vars.linearDamp; }
-		inline void SetLinearDamp(f32 newValue)
-		{
-			vars.linearDamp = clamp(
-				newValue,
-				0.0f,
-				1.0f);
-		}
+		f32 GetLinearDamp() const;
+		void SetLinearDamp(f32 newValue);
 
-		inline f32 GetAngularDamp() const { return vars.angularDamp; }
-		inline void SetAngularDamp(f32 newValue)
-		{ 
-			vars.angularDamp = clamp(
-				newValue,
-				0.0f,
-				1.0f);
-		}
+		f32 GetAngularDamp() const;
+		void SetAngularDamp(f32 newValue);
 
-		inline const vec3& GetGravityScale() const { return vars.gravityScale; }
-		inline void SetGravityScale(const vec3& newValue)
-		{ 
-			vars.gravityScale = clamp(
-				newValue,
-				vec3(0.0f),
-				MAX_GRAVITY_SCALE);
-		}
+		const vec3& GetGravityScale() const;
+		void SetGravityScale(const vec3& newValue);
 
-		inline const vec3& GetVelocity() const { return vars.velocity; }
-		inline void SetVelocity(const vec3& newValue)
-		{
-			vars.velocity = clamp(
-				newValue,
-				vec3(0.0f),
-				MAX_VELOCITY);
-		}
+		const vec3& GetVelocity() const;
+		void SetVelocity(const vec3& newValue);
 
-		inline const vec3& GetAngularVelocity() const { return vars.angularVelocity; }
-		inline void SetAngularVelocity(const vec3& newValue)
-		{
-			vars.angularVelocity = clamp(
-				newValue,
-				vec3(0.0f),
-				MAX_ANGULAR_VELOCITY);
-		}
+		const vec3& GetAngularVelocity() const;
+		void SetAngularVelocity(const vec3& newValue);
 
-		inline const mat3& GetInertiaTensor() const { return vars.inertiaTensor; }
+		const mat3& GetInertiaTensor() const;
 
-		inline f32 GetAccumulatedForce() const { return vars.accumForce; }
+		f32 GetAccumulatedForce() const;
 
-		inline f32 GetAccumulatedTorque() const { return vars.accumTorque; }
+		f32 GetAccumulatedTorque() const;
 		
 		~RigidBody();
 	private:

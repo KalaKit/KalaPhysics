@@ -4,6 +4,7 @@
 //Read LICENSE.md for more information.
 
 #include <string>
+#include <csignal>
 
 #include "KalaHeaders/log_utils.hpp"
 
@@ -11,11 +12,20 @@
 
 using KalaHeaders::KalaLog::Log;
 using KalaHeaders::KalaLog::LogType;
+using KalaHeaders::KalaLog::TimeFormat;
+using KalaHeaders::KalaLog::DateFormat;
 
 using std::to_string;
+using std::raise;
 
 namespace KalaPhysics::Core
 {
+	//The ID that is bumped by every object when it needs a new ID
+	static u32 globalID{};
+
+	void KalaPhysicsCore::SetGlobalID(u32 newID) { globalID = newID; }
+	u32 KalaPhysicsCore::GetGlobalID() { return globalID; }
+
 	void KalaPhysicsCore::CleanAllWindowResources(u32 windowID)
 	{
 		Log::Print(
@@ -30,5 +40,31 @@ namespace KalaPhysics::Core
 			"Cleaning all KalaPhysics resources.",
 			"KALAPHYSICS",
 			LogType::LOG_INFO);
+	}
+
+	void KalaPhysicsCore::ForceClose(
+		const string& target,
+		const string& reason)
+	{
+		Log::Print(
+			"\n================"
+			"\nFORCE CLOSE"
+			"\n================\n",
+			true);
+
+		Log::Print(
+			reason,
+			target,
+			LogType::LOG_ERROR,
+			2,
+			true,
+			TimeFormat::TIME_NONE,
+			DateFormat::DATE_NONE);
+
+#ifdef _WIN32
+		__debugbreak();
+#else
+		raise(SIGTRAP);
+#endif
 	}
 }

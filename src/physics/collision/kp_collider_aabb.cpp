@@ -34,7 +34,9 @@ namespace KalaPhysics::Physics::Collision
 		const vec3& minCorner,
 		const vec3& maxCorner)
 	{
-		u32 newID = ++KalaPhysicsCore::globalID;
+		u32 newID = KalaPhysicsCore::GetGlobalID() + 1;
+		KalaPhysicsCore::SetGlobalID(newID);
+
 		unique_ptr<Collider_AABB> newCol = make_unique<Collider_AABB>();
 		Collider_AABB* colPtr = newCol.get();
 
@@ -47,7 +49,7 @@ namespace KalaPhysics::Physics::Collision
 
 		if (parentRigidBody != 0)
 		{
-			RigidBody* rb = RigidBody::registry.GetContent(parentRigidBody);
+			RigidBody* rb = RigidBody::GetRegistry().GetContent(parentRigidBody);
 
 			if (rb == nullptr)
 			{
@@ -84,7 +86,7 @@ namespace KalaPhysics::Physics::Collision
 		colPtr->SetMaxCorner(maxCorner);
 		colPtr->vertices = move(GenerateCube(colPtr->minCorner, colPtr->maxCorner));
 
-		registry.AddContent(newID, move(newCol));
+		GetRegistry().AddContent(newID, move(newCol));
 
 		colPtr->isInitialized = true;
 
@@ -99,6 +101,20 @@ namespace KalaPhysics::Physics::Collision
 	void Collider_AABB::Update(Collider* c, f32 deltaTime)
 	{
 
+	}
+
+	const vec3& Collider_AABB::GetMinCorner() const { return minCorner; }
+	void Collider_AABB::SetMinCorner(const vec3& newValue)
+	{
+		minCorner = kclamp(newValue, MIN_AABB_CORNER, MAX_AABB_CORNER);
+		maxCorner = kclamp(maxCorner, minCorner + MIN_AABB_CORNER_DISTANCE, MAX_AABB_CORNER);
+	}
+
+	const vec3& Collider_AABB::GetMaxCorner() const { return maxCorner; }
+	void Collider_AABB::SetMaxCorner(const vec3& newValue)
+	{
+		maxCorner = kclamp(newValue, MIN_AABB_CORNER, MAX_AABB_CORNER);
+		minCorner = kclamp(minCorner, MIN_AABB_CORNER, maxCorner - MIN_AABB_CORNER_DISTANCE);
 	}
 
 	Collider_AABB::~Collider_AABB()

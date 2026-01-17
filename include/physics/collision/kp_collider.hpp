@@ -60,45 +60,45 @@ namespace KalaPhysics::Physics::Collision
 	{	
 		friend class KalaPhysics::Core::PhysicsWorld;
 	public:
-		static inline KalaPhysicsRegistry<Collider> registry{};
+		static KalaPhysicsRegistry<Collider>& GetRegistry();
 
-		inline bool IsInitialized() const { return isInitialized; }
+		bool IsInitialized() const;
 
-		inline u32 GetID() const { return ID; }
+		u32 GetID() const;
 
 		//If true, then this collider wont be affected by its parent rigidbody,
 		//a collider without a parent rigidbody is always treated as static, regardless of the static state
-		inline void SetStaticState(bool newValue) { isStatic = newValue; }
-		inline bool IsStatic() const { return isStatic; }
+		void SetStaticState(bool newValue);
+		bool IsStatic() const;
 			
 		//If true, then this collider allows other colliders to pass through it
 		//and it will register all trigger events provided by the end user
-		inline void SetTriggerState(bool newValue) { isTrigger = newValue; }
-		inline bool IsTrigger() const { return isTrigger; }
+		void SetTriggerState(bool newValue);
+		bool IsTrigger() const;
 
 		//Assign a new parent rigidbody to this collider, or 0 if no parent
-		inline void SetParentRigidBody(u32 newValue) { parentRigidBody = newValue; }
-		inline u32 GetParentRigidBody() const { return parentRigidBody; }
+		void SetParentRigidBody(u32 newValue);
+		u32 GetParentRigidBody() const;
 
 		//Set collider layer by name, use "NONE" to remove the layer completely
 		void SetLayer(const string& layer);
 		string GetLayer();
 
-		inline ColliderShape GetColliderShape() const { return shape; }
-		inline ColliderType GetColliderType() const { return type; }
+		ColliderShape GetColliderShape() const;
+		ColliderType GetColliderType() const;
 
 		//Returns a reference to this collider vertices
-		inline const vector<vec3>& GetVertices() const { return vertices; }
+		const vector<vec3>& GetVertices() const;
 		//Returns a reference to this collider transform
-		inline const Transform3D& GetTransform() const { return transform; }
+		const Transform3D& GetTransform() const;
 		
-		inline void SetOnTriggerEnter(const function<void()>& func) { if (func) onTriggerEnter = func; }
-		inline void SetOnTriggerExit(const function<void()>& func) { if (func) onTriggerExit = func; }
-		inline void SetOnTriggerStay(const function<void()>& func) { if (func) onTriggerStay = func; }
+		void SetOnTriggerEnter(const function<void()>& func);
+		void SetOnTriggerExit(const function<void()>& func);
+		void SetOnTriggerStay(const function<void()>& func);
 		
-		inline void ClearOnTriggerEnter() { onTriggerEnter = nullptr; }
-		inline void ClearOnTriggerExit() { onTriggerExit = nullptr; }
-		inline void ClearOnTriggerStay() { onTriggerStay = nullptr; }
+		void ClearOnTriggerEnter();
+		void ClearOnTriggerExit();
+		void ClearOnTriggerStay();
 		
 		virtual ~Collider() = default;
 	protected:

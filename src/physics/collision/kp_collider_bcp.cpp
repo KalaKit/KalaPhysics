@@ -22,6 +22,26 @@ namespace KalaPhysics::Physics::Collision
 
 	}
 
+	const vec3& Collider_BCP::GetPos() const { return pos; }
+	void Collider_BCP::SetPos(const vec3& newValue)
+	{
+		pos = kclamp(newValue, MIN_BCP_POS, MAX_BCP_POS);
+	}
+
+	f32 Collider_BCP::GetHeight() const { return height; }
+	void Collider_BCP::SetHeight(f32 newValue)
+	{
+		height = clamp(newValue, MIN_BCP_HEIGHT, MAX_BCP_HEIGHT);
+		radius = min(radius, height * 0.5f);
+	}
+
+	f32 Collider_BCP::GetRadius() const { return radius; }
+	void Collider_BCP::SetRadius(f32 newValue)
+	{
+		radius = clamp(newValue, MIN_BCP_RADIUS, MAX_BCP_RADIUS);
+		height = max(height, 2 * radius);
+	}
+
 	Collider_BCP::~Collider_BCP()
 	{
 

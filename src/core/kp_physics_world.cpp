@@ -31,6 +31,13 @@ static vector<Collider*> activeColliders{};
 
 namespace KalaPhysics::Core
 {
+	static array<string, MAX_LAYERS> layers{};
+	static u8 layerCount{};
+
+	static bool collisionMatrix[MAX_LAYERS][MAX_LAYERS]{};
+
+	static vec3 gravity = vec3(0.0f, -9.81f, 0.0f);
+
 	void PhysicsWorld::Update(f32 deltaTime)
 	{
 		//Can we even collide with this collider
@@ -51,7 +58,7 @@ namespace KalaPhysics::Core
 					return false;
 				}
 
-				RigidBody* rb = RigidBody::registry.GetContent(c->parentRigidBody);
+				RigidBody* rb = RigidBody::GetRegistry().GetContent(c->parentRigidBody);
 
 				if (!rb) return false;
 
@@ -75,7 +82,7 @@ namespace KalaPhysics::Core
 					return false;
 				}
 
-				RigidBody* rb = RigidBody::registry.GetContent(c->parentRigidBody);
+				RigidBody* rb = RigidBody::GetRegistry().GetContent(c->parentRigidBody);
 
 				if (isnear(rb->vars.inertiaTensor)) return false;
 
@@ -98,7 +105,7 @@ namespace KalaPhysics::Core
 			}), activeColliders.end());
 
 		//add new valid colliders to active colliders list
-		for (const auto& c : Collider::registry.runtimeContent)
+		for (const auto& c : Collider::GetRegistry().runtimeContent)
 		{
 			if (c
 				&& find(
@@ -210,4 +217,147 @@ namespace KalaPhysics::Core
 
 		_collide(substeps);
 	}
+
+	u64 PhysicsWorld::GetLayerCount() { return layerCount; }
+
+	void PhysicsWorld::AddLayer(const string& layer)
+	{
+		if (layerCount >= MAX_LAYERS)
+		{
+			Log::Print(
+				"Cannot add a new layer because max layer count '" + to_string(MAX_LAYERS) + "' has been reached!",
+				"PHYSICS_WORLD",
+				LogType::LOG_ERROR,
+				2);
+
+			return;
+		}
+
+		if (layer == "NONE")
+		{
+			Log::Print(
+				"Cannot add a new layer with the name '" + layer + "' because that name is restricted!",
+				"PHYSICS_WORLD",
+				LogType::LOG_ERROR,
+				2);
+
+			return;
+		}
+
+		string clamped = layer;
+		if (clamped.size() > MAX_LAYER_NAME_LENGTH) clamped.resize(MAX_LAYER_NAME_LENGTH);
+
+		if (GetLayer(clamped) != 255)
+		{
+			Log::Print(
+				"Cannot add a new layer with the name '" + clamped + "' because that name is already in use!",
+				"PHYSICS_WORLD",
+				LogType::LOG_ERROR,
+				2);
+
+			return;
+		}
+
+		layers[layerCount++] = clamped;
+	}
+	void PhysicsWorld::RemoveLayer(const string& layer)
+	{
+		u8 layerIndex = GetLayer(layer);
+
+		if (layerIndex == 255)
+		{
+			Log::Print(
+				"Cannot remove an existing layer with the name '" + layer + "' because that name doesn't exist!",
+				"PHYSICS_WORLD",
+				LogType::LOG_ERROR,
+				2);
+
+			return;
+		}
+
+		layers[layerIndex] = layers[--layerCount];
+	}
+	void PhysicsWorld::RemoveAllLayers()
+	{
+		for (auto& l : layers) l.clear();
+		layerCount = 0;
+	}
+
+	const string& PhysicsWorld::GetLayer(u8 layer)
+	{
+		static string none = "NONE";
+
+		if (layer >= layerCount) return none;
+
+		return layers[layer];
+	}
+	u8 PhysicsWorld::GetLayer(const string& layer)
+	{
+		for (u8 i = 0; i < layerCount; i++)
+		{
+			if (layers[i] == layer) return i;
+		}
+
+		return 255;
+	}
+
+	void PhysicsWorld::SetCollisionRule(
+		u8 a,
+		u8 b,
+		bool value)
+	{
+		if (GetLayer(a) == "NONE")
+		{
+			Log::Print(
+				"Cannot set collision rule because the first layer does not exist!",
+				"PHYSICS_WORLD",
+				LogType::LOG_ERROR,
+				2);
+
+			return;
+		}
+		if (GetLayer(b) == "NONE")
+		{
+			Log::Print(
+				"Cannot set collision rule because the second layer does not exist!",
+				"PHYSICS_WORLD",
+				LogType::LOG_ERROR,
+				2);
+
+			return;
+		}
+
+		collisionMatrix[a][b] = value;
+		collisionMatrix[b][a] = value;
+	}
+	bool PhysicsWorld::CanCollide(
+		u8 a,
+		u8 b)
+	{
+		if (GetLayer(a) == "NONE")
+		{
+			Log::Print(
+				"Cannot check collision state because the first layer does not exist!",
+				"PHYSICS_WORLD",
+				LogType::LOG_ERROR,
+				2);
+
+			return false;
+		}
+		if (GetLayer(b) == "NONE")
+		{
+			Log::Print(
+				"Cannot check collision state because the second layer does not exist!",
+				"PHYSICS_WORLD",
+				LogType::LOG_ERROR,
+				2);
+
+			return false;
+		}
+
+		return collisionMatrix[a][b];
+	}
+
+	const vec3& PhysicsWorld::GetGravity() { return gravity; }
+	void PhysicsWorld::SetGravity(const vec3& newValue) { gravity = kclamp(newValue, vec3(0.0f), MAX_GRAVITY); }
 }
