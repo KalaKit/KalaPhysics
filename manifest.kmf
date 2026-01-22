@@ -8,22 +8,22 @@
 
 //copy readme
 origin: readme.md
-target: ..@_games@Circuit-chan@_external_shared@KalaPhysics@readme.md, ..@_games@Shooter-game@_external_shared@KalaPhysics@readme.md, ..@Elypso-engine@_external_shared@KalaPhysics@readme.md
+target: ..@Elypso-engine@_external_shared@KalaPhysics@readme.md, ..@kalakit_test_projects@Game-test@_external_shared@KalaPhysics@readme.md
 action: forcecopy
 
 //copy license
 origin: LICENSE.md
-target: ..@_games@Circuit-chan@_external_shared@KalaPhysics@LICENSE.md, ..@_games@Shooter-game@_external_shared@KalaPhysics@LICENSE.md, ..@Elypso-engine@_external_shared@KalaPhysics@LICENSE.md
+target: ..@Elypso-engine@_external_shared@KalaPhysics@LICENSE.md, ..@kalakit_test_projects@Game-test@_external_shared@KalaPhysics@LICENSE.md
 action: forcecopy
 
 //copy include files
 origin: include
-target: ..@_games@Circuit-chan@_external_shared@KalaPhysics@include, ..@_games@Shooter-game@_external_shared@KalaPhysics@include, ..@Elypso-engine@_external_shared@KalaPhysics@include
+target: ..@Elypso-engine@_external_shared@KalaPhysics@include, ..@kalakit_test_projects@Game-test@_external_shared@KalaPhysics@include
 action: forcecopy
 
 //copy docs
 origin: docs
-target: ..@_games@Circuit-chan@_external_shared@KalaPhysics@docs, ..@_games@Shooter-game@_external_shared@KalaPhysics@docs, ..@Elypso-engine@_external_shared@KalaPhysics@docs
+target: ..@Elypso-engine@_external_shared@KalaPhysics@docs, ..@kalakit_test_projects@Game-test@_external_shared@KalaPhysics@docs
 action: forcecopy
 
 //
@@ -32,27 +32,27 @@ action: forcecopy
 
 //copy debug dll
 origin: debug@KalaPhysics1d.dll
-target: ..@_games@Circuit-chan@_external_shared@KalaPhysics@debug@KalaPhysics1d.dll, ..@_games@Shooter-game@_external_shared@KalaPhysics@debug@KalaPhysics1d.dll, ..@Elypso-engine@_external_shared@KalaPhysics@debug@KalaPhysics1d.dll
+target: ..@Elypso-engine@_external_shared@KalaPhysics@debug@KalaPhysics1d.dll, ..@kalakit_test_projects@Game-test@_external_shared@KalaPhysics@debug@KalaPhysics1d.dll
 action: forcecopy
 
 //copy debug lib
 origin: debug@KalaPhysics1d.lib
-target: ..@_games@Circuit-chan@_external_shared@KalaPhysics@debug@KalaPhysics1d.lib, ..@_games@Shooter-game@_external_shared@KalaPhysics@debug@KalaPhysics1d.lib, ..@Elypso-engine@_external_shared@KalaPhysics@debug@KalaPhysics1d.lib
+target: ..@Elypso-engine@_external_shared@KalaPhysics@debug@KalaPhysics1d.lib, ..@kalakit_test_projects@Game-test@_external_shared@KalaPhysics@debug@KalaPhysics1d.lib
 action: forcecopy
 
 //copy debug pdb
 origin: debug@KalaPhysics1d.pdb
-target: ..@_games@Circuit-chan@_external_shared@KalaPhysics@debug@KalaPhysics1d.pdb, ..@_games@Shooter-game@_external_shared@KalaPhysics@debug@KalaPhysics1d.pdb, ..@Elypso-engine@_external_shared@KalaPhysics@debug@KalaPhysics1d.pdb
+target: ..@Elypso-engine@_external_shared@KalaPhysics@debug@KalaPhysics1d.pdb, ..@kalakit_test_projects@Game-test@_external_shared@KalaPhysics@debug@KalaPhysics1d.pdb
 action: forcecopy
 
 //copy release dll
 origin: release@KalaPhysics1.dll
-target: ..@_games@Circuit-chan@_external_shared@KalaPhysics@release@KalaPhysics1.dll, ..@_games@Shooter-game@_external_shared@KalaPhysics@release@KalaPhysics1.dll, ..@Elypso-engine@_external_shared@KalaPhysics@release@KalaPhysics1.dll
+target: ..@Elypso-engine@_external_shared@KalaPhysics@release@KalaPhysics1.dll, ..@kalakit_test_projects@Game-test@_external_shared@KalaPhysics@release@KalaPhysics1.dll
 action: forcecopy
 
 //copy release lib
 origin: release@KalaPhysics1.lib
-target: ..@_games@Circuit-chan@_external_shared@KalaPhysics@release@KalaPhysics1.lib, ..@_games@Shooter-game@_external_shared@KalaPhysics@release@KalaPhysics1.lib, ..@Elypso-engine@_external_shared@KalaPhysics@release@KalaPhysics1.lib
+target: ..@Elypso-engine@_external_shared@KalaPhysics@release@KalaPhysics1.lib, ..@kalakit_test_projects@Game-test@_external_shared@KalaPhysics@release@KalaPhysics1.lib
 action: forcecopy
 
 //
@@ -61,5 +61,5 @@ action: forcecopy
 
 //KalaHeaders
 origin: _external_shared@KalaHeaders
-target: ..@_games@Circuit-chan@_external_shared@KalaHeaders, ..@_games@Shooter-game@_external_shared@KalaHeaders, ..@Elypso-engine@_external_shared@KalaHeaders
+target: ..@Elypso-engine@_external_shared@KalaHeaders, ..@kalakit_test_projects@Game-test@_external_shared@KalaHeaders
 action: copy
