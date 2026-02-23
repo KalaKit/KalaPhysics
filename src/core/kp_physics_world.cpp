@@ -26,6 +26,7 @@ using KalaPhysics::Physics::Collision::Collider_KDOP;
 using KalaPhysics::Physics::Collision::Collider_BCH;
 
 using std::vector;
+using std::min;
 
 static vector<Collider*> activeColliders{};
 

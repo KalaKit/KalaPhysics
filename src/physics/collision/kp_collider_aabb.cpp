@@ -15,7 +15,6 @@
 using KalaHeaders::KalaMath::vec3;
 
 using KalaPhysics::Physics::RigidBody;
-using KalaPhysics::Physics::MAX_COLLIDERS;
 using KalaPhysics::Core::KalaPhysicsCore;
 
 using std::vector;
@@ -84,9 +83,9 @@ namespace KalaPhysics::Physics::Collision
 
 		colPtr->SetMinCorner(minCorner);
 		colPtr->SetMaxCorner(maxCorner);
-		colPtr->vertices = move(GenerateCube(colPtr->minCorner, colPtr->maxCorner));
+		colPtr->vertices = std::move(GenerateCube(colPtr->minCorner, colPtr->maxCorner));
 
-		GetRegistry().AddContent(newID, move(newCol));
+		GetRegistry().AddContent(newID, std::move(newCol));
 
 		colPtr->isInitialized = true;
 

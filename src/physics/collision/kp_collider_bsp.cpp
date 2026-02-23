@@ -17,7 +17,6 @@ using KalaHeaders::KalaMath::PI;
 
 using KalaPhysics::Physics::Collision::SPHERE_QUALITY;
 using KalaPhysics::Physics::RigidBody;
-using KalaPhysics::Physics::MAX_COLLIDERS;
 using KalaPhysics::Core::KalaPhysicsCore;
 
 using std::vector;
@@ -84,9 +83,9 @@ namespace KalaPhysics::Physics::Collision
 
 		colPtr->SetCenter(center);
 		colPtr->SetRadius(radius);
-		colPtr->vertices = move(GenerateSphere(colPtr->radius));
+		colPtr->vertices = std::move(GenerateSphere(colPtr->radius));
 
-		GetRegistry().AddContent(newID, move(newCol));
+		GetRegistry().AddContent(newID, std::move(newCol));
 
 		colPtr->isInitialized = true;
 

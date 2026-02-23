@@ -3,8 +3,11 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
-#include <string>
+#ifdef __linux__
 #include <csignal>
+#endif
+
+#include <string>
 
 #include "KalaHeaders/log_utils.hpp"
 
@@ -15,8 +18,11 @@ using KalaHeaders::KalaLog::LogType;
 using KalaHeaders::KalaLog::TimeFormat;
 using KalaHeaders::KalaLog::DateFormat;
 
-using std::to_string;
+#ifdef __linux__
 using std::raise;
+#endif
+
+using std::to_string;
 
 namespace KalaPhysics::Core
 {
