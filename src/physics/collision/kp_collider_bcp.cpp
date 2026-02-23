@@ -3,7 +3,13 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
+#include <algorithm>
+
 #include "physics/collision/kp_collider_bcp.hpp"
+
+using std::clamp;
+using std::fmin;
+using std::fmax;
 
 namespace KalaPhysics::Physics::Collision
 {
@@ -32,14 +38,14 @@ namespace KalaPhysics::Physics::Collision
 	void Collider_BCP::SetHeight(f32 newValue)
 	{
 		height = clamp(newValue, MIN_BCP_HEIGHT, MAX_BCP_HEIGHT);
-		radius = min(radius, height * 0.5f);
+		radius = fmin(radius, height * 0.5f);
 	}
 
 	f32 Collider_BCP::GetRadius() const { return radius; }
 	void Collider_BCP::SetRadius(f32 newValue)
 	{
 		radius = clamp(newValue, MIN_BCP_RADIUS, MAX_BCP_RADIUS);
-		height = max(height, 2 * radius);
+		height = fmax(height, 2 * radius);
 	}
 
 	Collider_BCP::~Collider_BCP()
