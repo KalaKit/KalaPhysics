@@ -7,23 +7,23 @@
 //
 
 //copy readme
-origin: readme.md
-target: ..@Elypso-engine@_external_shared@KalaPhysics@readme.md, ..@kalakit_test_projects@_external_shared@KalaPhysics@readme.md
+origin: README.md
+target: ..@elypso-engine@_external_shared@KalaPhysics@README.md, ..@kalakit_test_projects@_external_shared@KalaPhysics@README.md
 action: forcecopy
 
 //copy license
 origin: LICENSE.md
-target: ..@Elypso-engine@_external_shared@KalaPhysics@LICENSE.md, ..@kalakit_test_projects@_external_shared@KalaPhysics@LICENSE.md
+target: ..@elypso-engine@_external_shared@KalaPhysics@LICENSE.md, ..@kalakit_test_projects@_external_shared@KalaPhysics@LICENSE.md
 action: forcecopy
 
 //copy include files
 origin: include
-target: ..@Elypso-engine@_external_shared@KalaPhysics@include, ..@kalakit_test_projects@_external_shared@KalaPhysics@include
+target: ..@elypso-engine@_external_shared@KalaPhysics@include, ..@kalakit_test_projects@_external_shared@KalaPhysics@include
 action: forcecopy
 
 //copy docs
 origin: docs
-target: ..@Elypso-engine@_external_shared@KalaPhysics@docs, ..@kalakit_test_projects@_external_shared@KalaPhysics@docs
+target: ..@elypso-engine@_external_shared@KalaPhysics@docs, ..@kalakit_test_projects@_external_shared@KalaPhysics@docs
 action: forcecopy
 
 //
@@ -32,27 +32,27 @@ action: forcecopy
 
 //copy debug dll
 origin: build@windows-debug@KalaPhysics1d.dll
-target: ..@Elypso-engine@_external_shared@KalaPhysics@debug@KalaPhysics1d.dll, ..@kalakit_test_projects@_external_shared@KalaPhysics@debug@KalaPhysics1d.dll
+target: ..@elypso-engine@_external_shared@KalaPhysics@debug@KalaPhysics1d.dll, ..@kalakit_test_projects@_external_shared@KalaPhysics@debug@KalaPhysics1d.dll
 action: forcecopy
 
 //copy debug lib
 origin: build@windows-debug@KalaPhysics1d.lib
-target: ..@Elypso-engine@_external_shared@KalaPhysics@debug@KalaPhysics1d.lib, ..@kalakit_test_projects@_external_shared@KalaPhysics@debug@KalaPhysics1d.lib
+target: ..@elypso-engine@_external_shared@KalaPhysics@debug@KalaPhysics1d.lib, ..@kalakit_test_projects@_external_shared@KalaPhysics@debug@KalaPhysics1d.lib
 action: forcecopy
 
 //copy debug pdb
 origin: build@windows-debug@KalaPhysics1d.pdb
-target: ..@Elypso-engine@_external_shared@KalaPhysics@debug@KalaPhysics1d.pdb, ..@kalakit_test_projects@_external_shared@KalaPhysics@debug@KalaPhysics1d.pdb
+target: ..@elypso-engine@_external_shared@KalaPhysics@debug@KalaPhysics1d.pdb, ..@kalakit_test_projects@_external_shared@KalaPhysics@debug@KalaPhysics1d.pdb
 action: forcecopy
 
 //copy release dll
 origin: build@windows-release@KalaPhysics1.dll
-target: ..@Elypso-engine@_external_shared@KalaPhysics@release@KalaPhysics1.dll, ..@kalakit_test_projects@_external_shared@KalaPhysics@release@KalaPhysics1.dll
+target: ..@elypso-engine@_external_shared@KalaPhysics@release@KalaPhysics1.dll, ..@kalakit_test_projects@_external_shared@KalaPhysics@release@KalaPhysics1.dll
 action: forcecopy
 
 //copy release lib
 origin: build@windows-release@KalaPhysics1.lib
-target: ..@Elypso-engine@_external_shared@KalaPhysics@release@KalaPhysics1.lib, ..@kalakit_test_projects@_external_shared@KalaPhysics@release@KalaPhysics1.lib
+target: ..@elypso-engine@_external_shared@KalaPhysics@release@KalaPhysics1.lib, ..@kalakit_test_projects@_external_shared@KalaPhysics@release@KalaPhysics1.lib
 action: forcecopy
 
 //
@@ -61,5 +61,5 @@ action: forcecopy
 
 //KalaHeaders
 origin: _external_shared@KalaHeaders
-target: ..@Elypso-engine@_external_shared@KalaHeaders, ..@kalakit_test_projects@_external_shared@KalaHeaders
+target: ..@elypso-engine@_external_shared@KalaHeaders, ..@kalakit_test_projects@_external_shared@KalaHeaders
 action: copy

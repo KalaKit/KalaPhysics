@@ -7,23 +7,23 @@
 //
 
 //copy readme
-origin: readme.md
-target: ..@Elypso-engine@_external_shared@KalaPhysics@readme.md, ..@kalakit_test_projects@_external_shared@KalaPhysics@readme.md
+origin: README.md
+target: ..@elypso-engine@_external_shared@KalaPhysics@README.md, ..@kalakit_test_projects@_external_shared@KalaPhysics@README.md
 action: forcecopy
 
 //copy license
 origin: LICENSE.md
-target: ..@Elypso-engine@_external_shared@KalaPhysics@LICENSE.md, ..@kalakit_test_projects@_external_shared@KalaPhysics@LICENSE.md
+target: ..@elypso-engine@_external_shared@KalaPhysics@LICENSE.md, ..@kalakit_test_projects@_external_shared@KalaPhysics@LICENSE.md
 action: forcecopy
 
 //copy include files
 origin: include
-target: ..@Elypso-engine@_external_shared@KalaPhysics@include, ..@kalakit_test_projects@_external_shared@KalaPhysics@include
+target: ..@elypso-engine@_external_shared@KalaPhysics@include, ..@kalakit_test_projects@_external_shared@KalaPhysics@include
 action: forcecopy
 
 //copy docs
 origin: docs
-target: ..@Elypso-engine@_external_shared@KalaPhysics@docs, ..@kalakit_test_projects@_external_shared@KalaPhysics@docs
+target: ..@elypso-engine@_external_shared@KalaPhysics@docs, ..@kalakit_test_projects@_external_shared@KalaPhysics@docs
 action: forcecopy
 
 //
@@ -32,12 +32,12 @@ action: forcecopy
 
 //copy debug so
 origin: build@linux-debug@libKalaPhysics1d.so
-target: ..@Elypso-engine@_external_shared@KalaPhysics@debug@libKalaPhysics1d.so, ..@kalakit_test_projects@_external_shared@KalaPhysics@debug@libKalaPhysics1d.so
+target: ..@elypso-engine@_external_shared@KalaPhysics@debug@libKalaPhysics1d.so, ..@kalakit_test_projects@_external_shared@KalaPhysics@debug@libKalaPhysics1d.so
 action: forcecopy
 
 //copy release so
-origin: build@linux-release@KalaPhysics1.so
-target: ..@Elypso-engine@_external_shared@KalaPhysics@release@libKalaPhysics1.so, ..@kalakit_test_projects@_external_shared@KalaPhysics@release@libKalaPhysics1.so
+origin: build@linux-release@libKalaPhysics1.so
+target: ..@elypso-engine@_external_shared@KalaPhysics@release@libKalaPhysics1.so, ..@kalakit_test_projects@_external_shared@KalaPhysics@release@libKalaPhysics1.so
 action: forcecopy
 
 //
@@ -46,5 +46,5 @@ action: forcecopy
 
 //KalaHeaders
 origin: _external_shared@KalaHeaders
-target: ..@Elypso-engine@_external_shared@KalaHeaders, ..@kalakit_test_projects@_external_shared@KalaHeaders
+target: ..@elypso-engine@_external_shared@KalaHeaders, ..@kalakit_test_projects@_external_shared@KalaHeaders
 action: copy
