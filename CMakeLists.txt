@@ -97,23 +97,43 @@ add_compile_definitions(
 #    endif()
 #endif()
 
+set(RUNTIME_DIR "${CMAKE_BINARY_DIR}/runtime")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${RUNTIME_DIR}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${RUNTIME_DIR}")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${RUNTIME_DIR}")
+set(BIN_TARGET_DIR "${RUNTIME_DIR}")
+
 # Copy important files
-set(COPY_TARGETS README.md LICENSE.md)
-foreach(FILE ${COPY_TARGETS})
-add_custom_command(TARGET KalaPhysics POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E rm -f 
-        "$<TARGET_FILE_DIR:KalaPhysics>/${FILE}"
-    COMMAND ${CMAKE_COMMAND} -E copy
-		"${CMAKE_SOURCE_DIR}/${FILE}"
-		"$<TARGET_FILE_DIR:KalaPhysics>/${FILE}"
+set(COPY_TARGETS
+    README.md
+    LICENSE.md
+    logo.png
 )
+
+foreach(FILE ${COPY_TARGETS})
+    if(EXISTS "${CMAKE_SOURCE_DIR}/${FILE}")
+        file(COPY
+            "${CMAKE_SOURCE_DIR}/${FILE}"
+            DESTINATION "${BIN_TARGET_DIR}"
+        )
+    endif()
 endforeach()
 
-# Copy entire docs folder
-add_custom_command(TARGET KalaPhysics POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E rm -rf
-        "$<TARGET_FILE_DIR:KalaPhysics>/docs"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${CMAKE_SOURCE_DIR}/docs"
-        "$<TARGET_FILE_DIR:KalaPhysics>/docs"
-)
+set(RESOURCE_DIRS docs files)
+
+foreach(DIR ${RESOURCE_DIRS})
+    if(EXISTS "${CMAKE_SOURCE_DIR}/${DIR}")
+        file(REMOVE_RECURSE "${BIN_TARGET_DIR}/${DIR}")
+        file(COPY
+            "${CMAKE_SOURCE_DIR}/${DIR}"
+            DESTINATION "${BIN_TARGET_DIR}"
+        )
+    endif()
+endforeach()
+
+if(EXISTS "${CMAKE_BINARY_DIR}/compile_commands.json")
+    file(COPY
+        "${CMAKE_BINARY_DIR}/compile_commands.json"
+        DESTINATION "${CMAKE_SOURCE_DIR}"
+    )
+endif()
