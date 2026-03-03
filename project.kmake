@@ -1,0 +1,37 @@
+//Build script for use with kalamake. Read more at https://github.com/kalakit/kalamake
+
+#version 1.0
+
+#include
+kh: "_external_shared"
+
+#global
+standard: c++20
+binarytype: shared
+sources: "src"
+headers: "include", #kh
+warninglevel: normal
+
+#profile debug-windows
+binaryname: KalaPhysics1d
+compiler: clang-cl
+buildtype: debug
+buildpath: "build/debug-windows"
+
+#profile release-windows
+binaryname: KalaPhysics1
+compiler: clang-cl
+buildtype: release
+buildpath: "build/release-windows"
+
+#profile debug-linux
+binaryname: libKalaPhysics1d
+compiler: clang++
+buildtype: debug
+buildpath: "build/debug-linux"
+
+#profile release-linux
+binaryname: libKalaPhysics1
+compiler: clang++
+buildtype: release
+buildpath: "build/release-linux"
