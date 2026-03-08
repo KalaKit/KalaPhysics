@@ -2,36 +2,40 @@
 
 #version 1.0
 
-#include
-kh: "_external_shared"
+#references
+name_bin: KalaPhysics1
+dir_release: build/release-
+dir_debug: build/debug-
 
 #global
+compilerlauncher: ccache
 standard: c++20
 binarytype: shared
 sources: "src"
-headers: "include", #kh
+headers: "include", "_external_shared"
 warninglevel: normal
+customflags: export-compile-commands
 
 #profile debug-windows
-binaryname: KalaPhysics1d
+binaryname: ${name_bin}d
 compiler: clang-cl
 buildtype: debug
-buildpath: "build/debug-windows"
+buildpath: "${dir_debug}windows"
 
 #profile release-windows
-binaryname: KalaPhysics1
+binaryname: ${name_bin}
 compiler: clang-cl
-buildtype: release
-buildpath: "build/release-windows"
+buildtype: minsizerel
+buildpath: "${dir_release}windows"
 
 #profile debug-linux
-binaryname: libKalaPhysics1d
+binaryname: lib${name_bin}d
 compiler: clang++
 buildtype: debug
-buildpath: "build/debug-linux"
+buildpath: "${dir_debug}linux"
 
 #profile release-linux
-binaryname: libKalaPhysics1
+binaryname: lib${name_bin}
 compiler: clang++
-buildtype: release
-buildpath: "build/release-linux"
+buildtype: minsizerel
+buildpath: "${dir_release}linux"
