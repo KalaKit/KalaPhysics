@@ -6,7 +6,7 @@
 #include <vector>
 #include <memory>
 
-#include "KalaHeaders/math_utils.hpp"
+#include "math_utils.hpp"
 
 #include "physics/collision/kp_collider_aabb.hpp"
 #include "physics/kp_rigidbody.hpp"
