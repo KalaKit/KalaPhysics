@@ -3,18 +3,19 @@
 #version 1.0
 
 #references
-name_bin: KalaPhysics1
+name_bin: kalaphysics
 dir_release: build/release-
 dir_debug: build/debug-
 
 #global
 compilerlauncher: ccache
 standard: c++20
-binarytype: shared
+binarytype: static
 sources: "src"
 headers: "include", "_external_shared/KalaHeaders"
+defines: LIB_STATIC
 warninglevel: normal
-customflags: export-compile-commands
+customflags: export-compile-commands, export-vscode-sln
 
 #profile debug-windows
 binaryname: ${name_bin}d
@@ -39,3 +40,4 @@ binaryname: lib${name_bin}
 compiler: clang++
 buildtype: minsizerel
 buildpath: "${dir_release}linux"
+postbuildaction: strip --strip-unneeded ${dir_release}linux/${name_bin}.a

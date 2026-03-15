@@ -83,7 +83,7 @@ namespace KalaPhysics::Physics::Collision
 
 		colPtr->SetMinCorner(minCorner);
 		colPtr->SetMaxCorner(maxCorner);
-		colPtr->vertices = std::move(GenerateCube(colPtr->minCorner, colPtr->maxCorner));
+		colPtr->vertices = GenerateCube(colPtr->minCorner, colPtr->maxCorner);
 
 		GetRegistry().AddContent(newID, std::move(newCol));
 

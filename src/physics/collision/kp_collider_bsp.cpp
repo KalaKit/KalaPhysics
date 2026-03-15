@@ -83,7 +83,7 @@ namespace KalaPhysics::Physics::Collision
 
 		colPtr->SetCenter(center);
 		colPtr->SetRadius(radius);
-		colPtr->vertices = std::move(GenerateSphere(colPtr->radius));
+		colPtr->vertices = GenerateSphere(colPtr->radius);
 
 		GetRegistry().AddContent(newID, std::move(newCol));
 

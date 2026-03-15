@@ -31,13 +31,13 @@ action: forcecopy
 //
 
 //copy debug so
-origin: build@debug-linux@libKalaPhysics1d.so
-target: ..@elypso-engine@_external_shared@KalaPhysics@debug@libKalaPhysics1d.so, ..@kalakit_test_projects@_external_shared@KalaPhysics@debug@libKalaPhysics1d.so
+origin: build@debug-linux@libkalaphysicsd.so
+target: ..@elypso-engine@_external_shared@KalaPhysics@debug@libkalaphysicsd.so, ..@kalakit_test_projects@_external_shared@KalaPhysics@debug@libkalaphysicsd.so
 action: forcecopy
 
 //copy release so
-origin: build@release-linux@libKalaPhysics1.so
-target: ..@elypso-engine@_external_shared@KalaPhysics@release@libKalaPhysics1.so, ..@kalakit_test_projects@_external_shared@KalaPhysics@release@libKalaPhysics1.so
+origin: build@release-linux@libkalaphysics.so
+target: ..@elypso-engine@_external_shared@KalaPhysics@release@libkalaphysics.so, ..@kalakit_test_projects@_external_shared@KalaPhysics@release@libkalaphysics.so
 action: forcecopy
 
 //
