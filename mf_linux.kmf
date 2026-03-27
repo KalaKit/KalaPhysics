@@ -8,43 +8,34 @@
 
 //copy readme
 origin: README.md
-target: ..@elypso-engine@_external_shared@KalaPhysics@README.md, ..@kalakit_test_projects@_external_shared@KalaPhysics@README.md
+target: ..@external-shared@KalaPhysics@README.md
 action: forcecopy
 
 //copy license
 origin: LICENSE.md
-target: ..@elypso-engine@_external_shared@KalaPhysics@LICENSE.md, ..@kalakit_test_projects@_external_shared@KalaPhysics@LICENSE.md
+target: ..@external-shared@KalaPhysics@LICENSE.md
 action: forcecopy
 
 //copy include files
 origin: include
-target: ..@elypso-engine@_external_shared@KalaPhysics@include, ..@kalakit_test_projects@_external_shared@KalaPhysics@include
+target: ..@external-shared@KalaPhysics@include
 action: forcecopy
 
 //copy docs
 origin: docs
-target: ..@elypso-engine@_external_shared@KalaPhysics@docs, ..@kalakit_test_projects@_external_shared@KalaPhysics@docs
+target: ..@external-shared@KalaPhysics@docs
 action: forcecopy
 
 //
 // BINARIES
 //
 
-//copy debug a
+//copy debug
 origin: build@debug-linux@libkalaphysicsd.a
-target: ..@elypso-engine@_external_shared@KalaPhysics@debug@libkalaphysicsd.a, ..@kalakit_test_projects@_external_shared@KalaPhysics@debug@libkalaphysicsd.a
+target: ..@external-shared@KalaPhysics@debug@libkalaphysicsd.a
 action: forcecopy
 
-//copy release a
+//copy release
 origin: build@release-linux@libkalaphysics.a
-target: ..@elypso-engine@_external_shared@KalaPhysics@release@libkalaphysics.a, ..@kalakit_test_projects@_external_shared@KalaPhysics@release@libkalaphysics.a
+target: ..@external-shared@KalaPhysics@release@libkalaphysics.a
 action: forcecopy
-
-//
-// EXTERNAL LIBRARIES
-//
-
-//KalaHeaders
-origin: _external_shared@KalaHeaders
-target: ..@elypso-engine@_external_shared@KalaHeaders, ..@kalakit_test_projects@_external_shared@KalaHeaders
-action: copy
