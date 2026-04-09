@@ -2,19 +2,7 @@
 
 **KalaPhysics** aims to cover most physics needs for ray casting, collision with most popular shapes in broadphase and narrowphase and will experiment with many various other things like **instant vs delayed rays**.
 
----
-
-## Supported platforms
-
-| Platform  | Status         | Notes                                                 |
-|-----------|----------------|-------------------------------------------------------|
-| Windows   | Supported      | Recommended Windows 10 (build 1809 / 17763) or higher |
-| Linux     | Planned        | Support coming in a future version                    |
-| WebGL     | Planned        | Support coming in a future version                    |
-| Mac       | Not Supported  | No plans for macOS compatibility                      |
-| ARM       | Not Supported  | ARM architecture will not be targeted                 |
-| Console   | Not Supported  | No plans for console platforms                        |
-| Mobile    | Not Supported  | No plans for mobile platforms                         |
+This project relies on several [external dependencies](https://github.com/greeenlaser/external-shared), they are not shipped inside this project, please make sure you have that repository cloned into a folder inside the same parent directory as this project folder before compiling this project from source.
 
 ---
 
