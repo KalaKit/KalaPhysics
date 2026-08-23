@@ -1,6 +1,8 @@
 # KalaPhysics
 
-**KalaPhysics** aims to cover most physics needs for ray casting, collision with most popular shapes in broadphase and narrowphase and will experiment with many various other things like **instant vs delayed rays**.
+# THIS PROJECT IS IN EARLY DEVELOPMENT AND IS NOT READY FOR PRODUCTION USE
+
+**KalaPhysics** aims to cover most physics needs for ray casting, collision with most popular shapes in broadphase and narrowphase.
 
 This project relies on several [external dependencies](https://github.com/greeenlaser/external-shared), they are not shipped inside this project, please make sure you have that repository cloned into a folder inside the same parent directory as this project folder before compiling this project from source.
 

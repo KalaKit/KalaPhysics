@@ -12,22 +12,16 @@
 namespace KalaPhysics::Core
 {
 	using std::string;
-
-	using u32 = uint32_t;
 	
 	class LIB_API KalaPhysicsCore
 	{
 	public:
-		static void SetGlobalID(u32 newID);
+		KNODISCARD
 		static u32 GetGlobalID();
-		
-		//Run when you want all KalaPhysics resources freed relative to a window ID
-		static void CleanAllWindowResources(u32 windowID);
-		
-		//Run when you want all KalaPhysics resources to be freed
-		static void CleanAllResources();
+		static void SetGlobalID(u32 newID);
 		
 		//Force-close the program right this very moment with no cleanups
+		KNORETURN
 		static void ForceClose(
 			const string& target,
 			const string& reason);

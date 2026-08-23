@@ -7,8 +7,6 @@
 #include <csignal>
 #endif
 
-#include <string>
-
 #include "log_utils.hpp"
 
 #include "core/kp_core.hpp"
@@ -22,31 +20,13 @@ using KalaHeaders::KalaLog::DateFormat;
 using std::raise;
 #endif
 
-using std::to_string;
-
 namespace KalaPhysics::Core
 {
 	//The ID that is bumped by every object when it needs a new ID
 	static u32 globalID{};
 
-	void KalaPhysicsCore::SetGlobalID(u32 newID) { globalID = newID; }
 	u32 KalaPhysicsCore::GetGlobalID() { return globalID; }
-
-	void KalaPhysicsCore::CleanAllWindowResources(u32 windowID)
-	{
-		Log::Print(
-			"Cleaning resources for window '" + to_string(windowID) + "'.",
-			"KALAPHYSICS",
-			LogType::LOG_INFO);
-	}
-	
-	void KalaPhysicsCore::CleanAllResources()
-	{
-		Log::Print(
-			"Cleaning all KalaPhysics resources.",
-			"KALAPHYSICS",
-			LogType::LOG_INFO);
-	}
+	void KalaPhysicsCore::SetGlobalID(u32 newID) { globalID = newID; }
 
 	void KalaPhysicsCore::ForceClose(
 		const string& target,
@@ -72,5 +52,7 @@ namespace KalaPhysics::Core
 #else
 		raise(SIGTRAP);
 #endif
+
+		_Exit(1);
 	}
 }
