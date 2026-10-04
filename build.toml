@@ -1,0 +1,47 @@
+[project]
+name="kalaphysics"
+version="0-0-1"
+kmake="project.kmake"
+
+[references]
+dir_kh="../kalaheaders"
+ext_kh="external/kalaheaders"
+
+[windows-sync]
+kh_license=[ "${dir_kh}/LICENSE.md", "${ext_kh}/LICENSE.md", "copy" ]
+kh_readme=[ "${dir_kh}/README.md", "${ext_kh}/README.md", "copy" ]
+kh_include=[ "${dir_kh}/include", "${ext_kh}/include", "copy" ]
+
+[windows-post-build-sync]
+kp_bin_rel=[ "build/temp/release-windows/kalaphysics.lib", "build/${version}/kalaphysics.lib", "copy" ]
+kp_bin_deb=[ "build/temp/debug-windows/kalaphysicsd.lib", "build/${version}/kalaphysicsd.lib", "copy" ]
+kp_include=[ "include", "build/${version}/include", "copy" ]
+kp_license=[ "LICENSE.md", "build/${version}/LICENSE.md", "copy" ]
+kp_readme=[ "README.md", "build/${version}/README.md", "copy" ]
+kh_stuff=[ "${ext_kh}", "build/${version}/kalaheaders", "copy" ]
+
+[windows-gnu-sync]
+kh_license=[ "${dir_kh}/LICENSE.md", "${ext_kh}/LICENSE.md", "copy" ]
+kh_readme=[ "${dir_kh}/README.md", "${ext_kh}/README.md", "copy" ]
+kh_include=[ "${dir_kh}/include", "${ext_kh}/include", "copy" ]
+
+[windows-gnu-post-build-sync]
+kp_bin_rel=[ "build/temp/release-windows-gnu/kalaphysics-gnu.lib", "build/${version}/kalaphysics-gnu.lib", "copy" ]
+kp_bin_deb=[ "build/temp/debug-windows-gnu/kalaphysics-gnud.lib", "build/${version}/kalaphysics-gnud.lib", "copy" ]
+kp_include=[ "include", "build/${version}/include", "copy" ]
+kp_license=[ "LICENSE.md", "build/${version}/LICENSE.md", "copy" ]
+kp_readme=[ "README.md", "build/${version}/README.md", "copy" ]
+kh_stuff=[ "${ext_kh}", "build/${version}/kalaheaders", "copy" ]
+
+[linux-sync]
+kh_license=[ "${dir_kh}/LICENSE.md", "${ext_kh}/LICENSE.md", "copy" ]
+kh_readme=[ "${dir_kh}/README.md", "${ext_kh}/README.md", "copy" ]
+kh_include=[ "${dir_kh}/include", "${ext_kh}/include", "copy" ]
+
+[linux-post-build-sync]
+kp_bin_rel=[ "build/temp/release-linux/libkalaphysics.a", "build/${version}/libkalaphysics.a", "copy" ]
+kp_bin_deb=[ "build/temp/debug-linux/libkalaphysicsd.a", "build/${version}/libkalaphysicsd.a", "copy" ]
+kp_include=[ "include", "build/${version}/include", "copy" ]
+kp_license=[ "LICENSE.md", "build/${version}/LICENSE.md", "copy" ]
+kp_readme=[ "README.md", "build/${version}/README.md", "copy" ]
+kh_stuff=[ "${ext_kh}", "build/${version}/kalaheaders", "copy" ]
