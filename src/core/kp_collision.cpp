@@ -3,23 +3,28 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
-#include "collision/kp_collision.hpp"
+#include "core/kp_collision.hpp"
+#include "core/kp_core.hpp"
+#include "collision/kp_collider.hpp"
+#include "collision/kp_rigidbody.hpp"
 
 using KalaHeaders::KalaMath::vec3;
 
-using KalaPhysics::Collision::DEFAULT_GLOBAL_GRAVITY;
-using KalaPhysics::Collision::CollisionMatrix;
-using KalaPhysics::Collision::IgnoreList;
+using KalaPhysics::Core::DEFAULT_GLOBAL_GRAVITY;
+using KalaPhysics::Core::CollisionMatrix;
+using KalaPhysics::Core::IgnoreList;
+using KalaPhysics::Collision::Collider;
+using KalaPhysics::Collision::RigidBody;
 
 static bool isInitialized{};
 static vec3 globalGravity = DEFAULT_GLOBAL_GRAVITY;
 static CollisionMatrix collisionMatrix{};
 static IgnoreList ignoreList{};
 
-namespace KalaPhysics::Collision
+namespace KalaPhysics::Core
 {
-    bool CollisionHandler::IsInitialized() { return isInitialized; }
-    void CollisionHandler::Initialize()
+    bool CollisionManager::IsInitialized() { return isInitialized; }
+    void CollisionManager::Initialize()
     {
         if (isInitialized)
         {
@@ -28,7 +33,7 @@ namespace KalaPhysics::Collision
         }
     }
 
-    void CollisionHandler::Update(u8 substeps)
+    void CollisionManager::Update(u8 substeps)
     {
         if (!isInitialized)
         {
@@ -37,11 +42,11 @@ namespace KalaPhysics::Collision
         }
     }
 
-    const vec3& CollisionHandler::GetGlobalGravity() { return globalGravity; }
-    void CollisionHandler::SetGlobalGravity(const vec3& newValue) { globalGravity = newValue; }
+    const vec3& CollisionManager::GetGlobalGravity() { return globalGravity; }
+    void CollisionManager::SetGlobalGravity(const vec3& newValue) { globalGravity = newValue; }
 
-    const CollisionMatrix& CollisionHandler::GetCollisionMatrix() { return collisionMatrix; }
-    void CollisionHandler::SetCollisionMatrix(CollisionMatrix&& newValue)
+    const CollisionMatrix& CollisionManager::GetCollisionMatrix() { return collisionMatrix; }
+    void CollisionManager::SetCollisionMatrix(CollisionMatrix&& newValue)
     {
         if (!isInitialized)
         {
@@ -50,8 +55,8 @@ namespace KalaPhysics::Collision
         }
     }
 
-    const IgnoreList& CollisionHandler::GetIgnoreList() { return ignoreList; }
-    void CollisionHandler::SetIgnoreList(IgnoreList&& newValue)
+    const IgnoreList& CollisionManager::GetIgnoreList() { return ignoreList; }
+    void CollisionManager::SetIgnoreList(IgnoreList&& newValue)
     {
         if (!isInitialized)
         {
@@ -59,7 +64,7 @@ namespace KalaPhysics::Collision
             return;
         }
     }
-    void CollisionHandler::AddToIgnoreList(IgnorePair&& newValue)
+    void CollisionManager::AddToIgnoreList(IgnorePair&& newValue)
     {
         if (!isInitialized)
         {
@@ -67,7 +72,7 @@ namespace KalaPhysics::Collision
             return;
         }
     }
-    void CollisionHandler::RemoveFromIgnoreList(IgnorePair&& newValue)
+    void CollisionManager::RemoveFromIgnoreList(IgnorePair&& newValue)
     {
         if (!isInitialized)
         {
@@ -76,7 +81,7 @@ namespace KalaPhysics::Collision
         }
     }
     
-    void CollisionHandler::Shutdown()
+    void CollisionManager::Shutdown()
     {
         if (!isInitialized)
         {

@@ -13,7 +13,7 @@
 #include "core_utils.hpp"
 #include "math_utils.hpp"
 
-namespace KalaPhysics::Collision
+namespace KalaPhysics::Core
 {
     using KalaHeaders::KalaMath::vec3;
 
@@ -34,7 +34,7 @@ namespace KalaPhysics::Collision
         array<string, 256> layerNames{};
     };
 
-    class LIB_API CollisionHandler
+    class LIB_API CollisionManager
     {
     public:
         static bool IsInitialized();

@@ -4,17 +4,21 @@
 //Read LICENSE.md for more information.
 
 #include "collision/kp_collider.hpp"
-#include "collision/kp_collision.hpp"
+#include "collision/kp_rigidbody.hpp"
+#include "core/kp_core.hpp"
+#include "core/kp_collision.hpp"
+
+using KalaPhysics::Core::KalaPhysicsCore;
+using KalaPhysics::Core::CollisionManager;
 
 namespace KalaPhysics::Collision
 {
     Collider* Collider::Initialize(
         ColliderType colliderType,
-        const Transform3D& transform,
-        const vector<vec3>& vertices,
+        const vector<Vertex>& vertices,
         const vector<u32>& indices)
     {
-        if (!CollisionHandler::IsInitialized())
+        if (!CollisionManager::IsInitialized())
         {
             //not allowed...
             return nullptr;
@@ -22,9 +26,6 @@ namespace KalaPhysics::Collision
     }
 
     u32 Collider::GetID() const { return ID; }
-
-    u8 Collider::GetMovementRotationLock() const { return moveRotLock; }
-    void Collider::SetMovementRotationLock(u8 newValue) { moveRotLock = newValue; }
 
     const bitset<256>& Collider::GetCollisionLayers() const { return collisionLayers; }
     //Override all collision layer states
@@ -74,8 +75,6 @@ namespace KalaPhysics::Collision
 
         colliderType = newValue;
     }
-
-    Transform3D& Collider::GetTransform() { return transform; }
 
     const vector<vec3>& Collider::GetVertices() const { return vertices; }
     void Collider::SetVertices(const vector<vec3>& newValue)
@@ -137,11 +136,6 @@ namespace KalaPhysics::Collision
     {
         triggerExitEvent = newValue;
     }
-
-    StationaryData& Collider::GetStationaryData() { return stationaryData; }
-    LinearMotionData& Collider::GetLinearMotionData() { return linearMotionData; }
-    AngularMotionData& Collider::GetAngularMotionData() { return angularMotionData; }
-    const RuntimeData& Collider::GetRuntimeData() const { return runtimeData; }
 
     void Collider::Destroy()
     {
