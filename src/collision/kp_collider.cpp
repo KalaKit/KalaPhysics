@@ -3,10 +3,15 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
+#include "log_utils.hpp"
+
 #include "collision/kp_collider.hpp"
 #include "collision/kp_rigidbody.hpp"
 #include "core/kp_core.hpp"
 #include "core/kp_collision.hpp"
+
+using KalaHeaders::KalaLog::Log;
+using KalaHeaders::KalaLog::LogType;
 
 using KalaPhysics::Core::KalaPhysicsCore;
 using KalaPhysics::Core::CollisionManager;
@@ -20,7 +25,11 @@ namespace KalaPhysics::Collision
     {
         if (!CollisionManager::IsInitialized())
         {
-            //not allowed...
+            Log::Print(
+                "Failed to initialize collider because the collision manager has not yet been initialized!",
+                "KP_COLLIDER",
+                LogType::LOG_WARNING);
+
             return nullptr;
         }
     }
@@ -76,8 +85,8 @@ namespace KalaPhysics::Collision
         colliderType = newValue;
     }
 
-    const vector<vec3>& Collider::GetVertices() const { return vertices; }
-    void Collider::SetVertices(const vector<vec3>& newValue)
+    const vector<Vertex>& Collider::GetVertices() const { return vertices; }
+    void Collider::SetVertices(const vector<Vertex>& newValue)
     {
         if (colliderType != ColliderType::CT_MESH)
         {

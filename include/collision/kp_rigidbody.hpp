@@ -64,7 +64,7 @@ namespace KalaPhysics::Collision
 
     class LIB_API RigidBody
     {
-    friend class CollisionHandler;
+    friend class CollisionManager;
 	friend struct default_delete<RigidBody>;
     public:
         static RigidBody* Initialize(const Transform3D& transform);

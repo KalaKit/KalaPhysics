@@ -49,11 +49,13 @@ namespace KalaPhysics::Collision
         vec3 pos{};
         //X, Y, Z
         vec3 normal{};
+
+        bool operator==(const Vertex& other) const = default;
     };
 
     class LIB_API Collider
     {
-    friend class CollisionHandler;
+    friend class CollisionManager;
 	friend struct default_delete<Collider>;
     public:
         //Create a new collider,
@@ -87,10 +89,10 @@ namespace KalaPhysics::Collision
         //then the vertices and indices of the mesh shape will be set to that mesh shape
         void SetColliderType(ColliderType newValue);
 
-        const vector<vec3>& GetVertices() const;
+        const vector<Vertex>& GetVertices() const;
         //Update existing vertices for this collider,
         //only allowed to be called if the collider is a mesh type
-        void SetVertices(const vector<vec3>& newValue);
+        void SetVertices(const vector<Vertex>& newValue);
 
         const vector<u32>& GetIndices() const;
         //Update existing indices for this collider,
@@ -121,7 +123,7 @@ namespace KalaPhysics::Collision
         bool isTrigger{};
 
         ColliderType colliderType{};
-        vector<vec3> vertices{};
+        vector<Vertex> vertices{};
         vector<u32> indices{};
 
         function<void(u32)> collisionEvent{};

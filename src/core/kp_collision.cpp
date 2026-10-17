@@ -3,10 +3,15 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
+#include "log_utils.hpp"
+
 #include "core/kp_collision.hpp"
 #include "core/kp_core.hpp"
 #include "collision/kp_collider.hpp"
 #include "collision/kp_rigidbody.hpp"
+
+using KalaHeaders::KalaLog::Log;
+using KalaHeaders::KalaLog::LogType;
 
 using KalaHeaders::KalaMath::vec3;
 
@@ -28,7 +33,11 @@ namespace KalaPhysics::Core
     {
         if (isInitialized)
         {
-            //not allowed...
+            Log::Print(
+                "Failed to initialize collision manager because it has already been initialized!",
+                "KP_COLLISION_MANAGER",
+                LogType::LOG_WARNING);
+
             return;
         }
     }
@@ -37,7 +46,11 @@ namespace KalaPhysics::Core
     {
         if (!isInitialized)
         {
-            //not allowed...
+            Log::Print(
+                "Failed to update collision manager because it has not yet been initialized!",
+                "KP_COLLISION_MANAGER",
+                LogType::LOG_WARNING);
+
             return;
         }
     }
@@ -50,7 +63,11 @@ namespace KalaPhysics::Core
     {
         if (!isInitialized)
         {
-            //not allowed...
+            Log::Print(
+                "Failed to set collision matrix because the collision manager has not yet been initialized!",
+                "KP_COLLISION_MANAGER",
+                LogType::LOG_WARNING);
+
             return;
         }
     }
@@ -60,7 +77,11 @@ namespace KalaPhysics::Core
     {
         if (!isInitialized)
         {
-            //not allowed...
+            Log::Print(
+                "Failed to set ignore list because the collision manager has not yet been initialized!",
+                "KP_COLLISION_MANAGER",
+                LogType::LOG_WARNING);
+
             return;
         }
     }
@@ -68,7 +89,11 @@ namespace KalaPhysics::Core
     {
         if (!isInitialized)
         {
-            //not allowed...
+            Log::Print(
+                "Failed to add to ignore list because the collision manager has not yet been initialized!",
+                "KP_COLLISION_MANAGER",
+                LogType::LOG_WARNING);
+
             return;
         }
     }
@@ -76,7 +101,11 @@ namespace KalaPhysics::Core
     {
         if (!isInitialized)
         {
-            //not allowed...
+            Log::Print(
+                "Failed to remove from ignore list because the collision manager has not yet been initialized!",
+                "KP_COLLISION_MANAGER",
+                LogType::LOG_WARNING);
+
             return;
         }
     }
@@ -85,7 +114,11 @@ namespace KalaPhysics::Core
     {
         if (!isInitialized)
         {
-            //not allowed...
+            Log::Print(
+                "Failed to shut down collision manager because it has not yet been initialized!",
+                "KP_COLLISION_MANAGER",
+                LogType::LOG_WARNING);
+
             return;
         }
     }

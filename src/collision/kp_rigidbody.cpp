@@ -3,10 +3,15 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
+#include "log_utils.hpp"
+
 #include "collision/kp_rigidbody.hpp"
 #include "collision/kp_collider.hpp"
 #include "core/kp_core.hpp"
 #include "core/kp_collision.hpp"
+
+using KalaHeaders::KalaLog::Log;
+using KalaHeaders::KalaLog::LogType;
 
 using KalaPhysics::Core::KalaPhysicsCore;
 using KalaPhysics::Core::CollisionManager;
@@ -15,7 +20,15 @@ namespace KalaPhysics::Collision
 {
     RigidBody* RigidBody::Initialize(const Transform3D& transform)
     {
+        if (!CollisionManager::IsInitialized())
+        {
+            Log::Print(
+                "Failed to initialize rigidbody because the collision manager has not yet been initialized!",
+                "KP_RIGIDBODY",
+                LogType::LOG_WARNING);
 
+            return nullptr;
+        }
     }
 
     u8 RigidBody::GetMovementRotationLock() const { return moveRotLock; }
