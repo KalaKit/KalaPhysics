@@ -10,10 +10,14 @@
 #include "core_utils.hpp"
 #include "math_utils.hpp"
 
+#include "core/kp_registry.hpp"
+
 namespace KalaPhysics::Collision
 {
     using KalaHeaders::KalaMath::Transform3D;
     using KalaHeaders::KalaMath::vec3;
+
+    using KalaPhysics::Core::KalaPhysicsRegistry;
 
     using std::default_delete;
 
@@ -67,6 +71,8 @@ namespace KalaPhysics::Collision
     friend class CollisionManager;
 	friend struct default_delete<RigidBody>;
     public:
+        static KalaPhysicsRegistry<RigidBody>& GetRegistry();
+
         static RigidBody* Initialize(const Transform3D& transform);
 
         u32 GetID() const;

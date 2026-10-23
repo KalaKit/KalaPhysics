@@ -16,8 +16,17 @@ using KalaHeaders::KalaLog::LogType;
 using KalaPhysics::Core::KalaPhysicsCore;
 using KalaPhysics::Core::CollisionManager;
 
+using std::string;
+using std::to_string;
+using std::unique_ptr;
+using std::make_unique;
+
 namespace KalaPhysics::Collision
 {
+    static KalaPhysicsRegistry<RigidBody> registry{};
+
+    KalaPhysicsRegistry<RigidBody>& RigidBody::GetRegistry() { return registry; }
+
     RigidBody* RigidBody::Initialize(const Transform3D& transform)
     {
         if (!CollisionManager::IsInitialized())
@@ -29,6 +38,32 @@ namespace KalaPhysics::Collision
 
             return nullptr;
         }
+
+		u32 newID = KalaPhysicsCore::GetGlobalID() + 1;
+		KalaPhysicsCore::SetGlobalID(newID);
+
+		unique_ptr<RigidBody> newRigidBody = make_unique<RigidBody>();
+		RigidBody* rbPtr = newRigidBody.get();
+
+		rbPtr->ID = newID;
+        rbPtr->transform = transform;
+
+		string err = registry.AddContent(
+			newID, 
+			std::move(newRigidBody));
+		if (!err.empty())
+		{
+			KalaPhysicsCore::ForceClose(
+				"KalaPhysics rigidbody error",
+				"Failed to initialize rigidbody! Reason: " + err);
+		}
+
+		Log::Print(
+			"Created new rigidbody '" + to_string(newID) + "'!",
+			"KP_RIGIDBODY",
+			LogType::LOG_SUCCESS);
+
+		return rbPtr;
     }
 
     u8 RigidBody::GetMovementRotationLock() const { return moveRotLock; }

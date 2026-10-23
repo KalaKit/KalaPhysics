@@ -16,12 +16,20 @@ using KalaHeaders::KalaLog::LogType;
 using KalaPhysics::Core::KalaPhysicsCore;
 using KalaPhysics::Core::CollisionManager;
 
+using std::string;
+using std::to_string;
+using std::unique_ptr;
+using std::make_unique;
+
 namespace KalaPhysics::Collision
 {
+    static KalaPhysicsRegistry<Collider> registry{};
+
+    KalaPhysicsRegistry<Collider>& Collider::GetRegistry() { return registry; }
+
     Collider* Collider::Initialize(
         ColliderType colliderType,
-        const vector<Vertex>& vertices,
-        const vector<u32>& indices)
+        const Transform3D& transform)
     {
         if (!CollisionManager::IsInitialized())
         {
@@ -32,6 +40,33 @@ namespace KalaPhysics::Collision
 
             return nullptr;
         }
+
+		u32 newID = KalaPhysicsCore::GetGlobalID() + 1;
+		KalaPhysicsCore::SetGlobalID(newID);
+
+		unique_ptr<Collider> newCollider = make_unique<Collider>();
+		Collider* cPtr = newCollider.get();
+
+		cPtr->ID = newID;
+        cPtr->colliderType = colliderType;
+        cPtr->transform = transform;
+
+		string err = registry.AddContent(
+			newID, 
+			std::move(newCollider));
+		if (!err.empty())
+		{
+			KalaPhysicsCore::ForceClose(
+				"KalaPhysics collider error",
+				"Failed to initialize collider! Reason: " + err);
+		}
+
+		Log::Print(
+			"Created new collider '" + to_string(newID) + "'!",
+			"KP_COLLIDER",
+			LogType::LOG_SUCCESS);
+
+		return cPtr;
     }
 
     u32 Collider::GetID() const { return ID; }
@@ -72,6 +107,8 @@ namespace KalaPhysics::Collision
 
         isTrigger = newValue;
     }
+
+    Transform3D& Collider::GetTransform() { return transform; }
 
     ColliderType Collider::GetColliderType() const { return colliderType; }
     void Collider::SetColliderType(ColliderType newValue)
@@ -129,21 +166,29 @@ namespace KalaPhysics::Collision
         indices = newValue;
     }
 
-    void Collider::OnCollisionEvent(const function<void(u32)>& newValue)
+    void Collider::SetOnCollisionEnterEvent(const function<void(u32)>& newValue)
     {
-        collisionEvent = newValue;
+        onCollisionEnter = newValue;
     }
-    void Collider::OnTriggerEnterEvent(const function<void(u32)>& newValue)
+    void Collider::SetOnCollisionStayEvent(const function<void(u32)>& newValue)
     {
-        triggerEnterEvent = newValue;
+        onCollisionStay = newValue;
     }
-        void Collider::OnTriggerStayEvent(const function<void(u32)>& newValue)
+    void Collider::SetOnCollisionExitEvent(const function<void(u32)>& newValue)
     {
-        triggerStayEvent = newValue;
+        onCollisionExit = newValue;
     }
-        void Collider::OnTriggerExitEvent(const function<void(u32)>& newValue)
+    void Collider::SetOnTriggerEnterEvent(const function<void(u32)>& newValue)
     {
-        triggerExitEvent = newValue;
+        onTriggerEnter = newValue;
+    }
+    void Collider::SetOnTriggerStayEvent(const function<void(u32)>& newValue)
+    {
+        onTriggerStay = newValue;
+    }
+    void Collider::SetOnTriggerExitEvent(const function<void(u32)>& newValue)
+    {
+        onTriggerExit = newValue;
     }
 
     void Collider::Destroy()

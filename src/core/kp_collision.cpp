@@ -40,6 +40,8 @@ namespace KalaPhysics::Core
 
             return;
         }
+
+        isInitialized = true;
     }
 
     void CollisionManager::Update(u8 substeps)
