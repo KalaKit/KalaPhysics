@@ -62,7 +62,7 @@ namespace KalaPhysics::Core
 			else
 			{
 				ForceClose(
-					"KalaGraphics viewport error",
+					"KalaPhysics core error",
 					"Failed to get path to executable!");
 			}
 #else
