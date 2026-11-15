@@ -34,7 +34,7 @@ namespace KalaPhysics::Collision
             Log::Print(
                 "Failed to initialize rigidbody because the collision manager has not yet been initialized!",
                 "KP_RIGIDBODY",
-                LogType::LOG_WARNING);
+                LogType::WARNING);
 
             return nullptr;
         }
@@ -61,7 +61,7 @@ namespace KalaPhysics::Collision
 		Log::Print(
 			"Created new rigidbody '" + to_string(newID) + "'!",
 			"KP_RIGIDBODY",
-			LogType::LOG_SUCCESS);
+			LogType::SUCCESS);
 
 		return rbPtr;
     }

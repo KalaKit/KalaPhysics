@@ -36,7 +36,7 @@ namespace KalaPhysics::Collision
             Log::Print(
                 "Failed to initialize collider because the collision manager has not yet been initialized!",
                 "KP_COLLIDER",
-                LogType::LOG_WARNING);
+                LogType::WARNING);
 
             return nullptr;
         }
@@ -64,7 +64,7 @@ namespace KalaPhysics::Collision
 		Log::Print(
 			"Created new collider '" + to_string(newID) + "'!",
 			"KP_COLLIDER",
-			LogType::LOG_SUCCESS);
+			LogType::SUCCESS);
 
 		return cPtr;
     }
@@ -125,7 +125,7 @@ namespace KalaPhysics::Collision
     const vector<Vertex>& Collider::GetVertices() const { return vertices; }
     void Collider::SetVertices(const vector<Vertex>& newValue)
     {
-        if (colliderType != ColliderType::CT_MESH)
+        if (colliderType != ColliderType::MESH)
         {
             //not allowed...
             return;
@@ -147,7 +147,7 @@ namespace KalaPhysics::Collision
     const vector<u32>& Collider::GetIndices() const { return indices; }
     void Collider::SetIndices(const vector<u32>& newValue)
     {
-        if (colliderType != ColliderType::CT_MESH)
+        if (colliderType != ColliderType::MESH)
         {
             //not allowed...
             return;
