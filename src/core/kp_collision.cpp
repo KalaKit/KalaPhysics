@@ -36,7 +36,7 @@ namespace KalaPhysics::Core
             Log::Print(
                 "Failed to initialize collision manager because it has already been initialized!",
                 "KP_COLLISION_MANAGER",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
 
             return;
         }
@@ -51,7 +51,7 @@ namespace KalaPhysics::Core
             Log::Print(
                 "Failed to update collision manager because it has not yet been initialized!",
                 "KP_COLLISION_MANAGER",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
 
             return;
         }
@@ -68,7 +68,7 @@ namespace KalaPhysics::Core
             Log::Print(
                 "Failed to set collision matrix because the collision manager has not yet been initialized!",
                 "KP_COLLISION_MANAGER",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
 
             return;
         }
@@ -82,7 +82,7 @@ namespace KalaPhysics::Core
             Log::Print(
                 "Failed to set ignore list because the collision manager has not yet been initialized!",
                 "KP_COLLISION_MANAGER",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
 
             return;
         }
@@ -94,7 +94,7 @@ namespace KalaPhysics::Core
             Log::Print(
                 "Failed to add to ignore list because the collision manager has not yet been initialized!",
                 "KP_COLLISION_MANAGER",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
 
             return;
         }
@@ -106,7 +106,7 @@ namespace KalaPhysics::Core
             Log::Print(
                 "Failed to remove from ignore list because the collision manager has not yet been initialized!",
                 "KP_COLLISION_MANAGER",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
 
             return;
         }
@@ -119,7 +119,7 @@ namespace KalaPhysics::Core
             Log::Print(
                 "Failed to shut down collision manager because it has not yet been initialized!",
                 "KP_COLLISION_MANAGER",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
 
             return;
         }

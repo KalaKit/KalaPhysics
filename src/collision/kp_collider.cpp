@@ -36,7 +36,7 @@ namespace KalaPhysics::Collision
             Log::Print(
                 "Failed to initialize collider because the collision manager has not yet been initialized!",
                 "KP_COLLIDER",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
 
             return nullptr;
         }
@@ -64,7 +64,7 @@ namespace KalaPhysics::Collision
 		Log::Print(
 			"Created new collider '" + to_string(newID) + "'!",
 			"KP_COLLIDER",
-			LogType::SUCCESS);
+			LogType::LOG_SUCCESS);
 
 		return cPtr;
     }
