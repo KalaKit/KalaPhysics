@@ -18,8 +18,6 @@ using KalaPhysics::Core::CollisionManager;
 
 using std::string;
 using std::to_string;
-using std::unique_ptr;
-using std::make_unique;
 
 namespace KalaPhysics::Collision
 {
@@ -44,22 +42,18 @@ namespace KalaPhysics::Collision
 		u32 newID = KalaPhysicsCore::GetGlobalID() + 1;
 		KalaPhysicsCore::SetGlobalID(newID);
 
-		unique_ptr<Collider> newCollider = make_unique<Collider>();
-		Collider* cPtr = newCollider.get();
-
-		cPtr->ID = newID;
-        cPtr->colliderType = colliderType;
-        cPtr->transform = transform;
-
-		string err = registry.AddContent(
-			newID, 
-			std::move(newCollider));
+		Collider* cPtr{};
+		string err = registry.AddContent(newID, cPtr);
 		if (!err.empty())
 		{
 			KalaPhysicsCore::ForceClose(
 				"KalaPhysics collider error",
 				"Failed to initialize collider! Reason: " + err);
 		}
+
+		cPtr->ID = newID;
+        cPtr->colliderType = colliderType;
+        cPtr->transform = transform;
 
 		Log::Print(
 			"Created new collider '" + to_string(newID) + "'!",

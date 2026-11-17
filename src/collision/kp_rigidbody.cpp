@@ -18,8 +18,6 @@ using KalaPhysics::Core::CollisionManager;
 
 using std::string;
 using std::to_string;
-using std::unique_ptr;
-using std::make_unique;
 
 namespace KalaPhysics::Collision
 {
@@ -42,21 +40,17 @@ namespace KalaPhysics::Collision
 		u32 newID = KalaPhysicsCore::GetGlobalID() + 1;
 		KalaPhysicsCore::SetGlobalID(newID);
 
-		unique_ptr<RigidBody> newRigidBody = make_unique<RigidBody>();
-		RigidBody* rbPtr = newRigidBody.get();
-
-		rbPtr->ID = newID;
-        rbPtr->transform = transform;
-
-		string err = registry.AddContent(
-			newID, 
-			std::move(newRigidBody));
+		RigidBody* rbPtr{};
+		string err = registry.AddContent(newID, rbPtr);
 		if (!err.empty())
 		{
 			KalaPhysicsCore::ForceClose(
 				"KalaPhysics rigidbody error",
 				"Failed to initialize rigidbody! Reason: " + err);
 		}
+
+		rbPtr->ID = newID;
+        rbPtr->transform = transform;
 
 		Log::Print(
 			"Created new rigidbody '" + to_string(newID) + "'!",
